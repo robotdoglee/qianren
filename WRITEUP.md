@@ -1,6 +1,6 @@
 # 论坛作品介绍草稿（StudyHack 赛道）
 
-> 草稿，未发布。站点：https://qianren-brr3o5rk8ow.qoder.zone （发帖前需确认访问范围）
+> 草稿，未发布。站点：https://qianren-9o3elwijmv8.qoder.zone （公开访问，无需登录）
 
 ## 前人做过吗：一句话查清前人做过什么、还空着什么
 

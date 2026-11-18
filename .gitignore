@@ -8,3 +8,4 @@ data-gen/gather.log
 .DS_Store
 .tmp-dom/
 dev/shots/
+*.qoder.site
