@@ -3,6 +3,7 @@ import {
   BACKGROUND_VOICE, CLUES, METHOD_LABELS, OWN_STRUCTURAL_VOICE, OWN_VOICE, keywords, matchKnownDatasets,
   matchKnownMetrics, matchMethodLabels
 } from './terms.js';
+import { annotatePapers } from './derive.js';
 
 export const MISSING = '摘要未提及';
 const EXCERPT_TAG = '原文摘录';
@@ -523,7 +524,7 @@ export function rulesResult({ id, mode, input, queries, papers, counts, dedupedT
   const withFields = (papers || []).map((p) => (p.fields ? { ...p } : { ...p, fields: extractFields(p, terms) }));
   const isProblem = mode === 'problem';
   const clusters = clusterPapers(withFields).map((c) => ({ name: c.name, summary: c.summary, papers: c.papers }));
-  return {
+  return annotatePapers({
     id: id || 'live',
     mode: isProblem ? 'problem' : 'idea',
     input: input || '',
@@ -542,5 +543,5 @@ export function rulesResult({ id, mode, input, queries, papers, counts, dedupedT
     clusters,
     gaps: pickGaps(findGaps(withFields, { excludeWords: terms }), isProblem ? 'problem' : 'idea'),
     approaches: isProblem ? buildApproaches(withFields, clusters) : []
-  };
+  });
 }

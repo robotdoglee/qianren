@@ -51,7 +51,9 @@
     "result": "RAG 配置在所有指标上均优于基线，其中 BLEU-4 从 0.3015 升至 0.4224、BERTScore 从 0.8487 升至 0.8691；定性分析显示遗漏更少、领域术语使用更准确；增大检索数可提升语义相似度。",
     "limitation": "摘要指出检索语料与目标问题分布不对齐时（domain shift）有效性下降，即在 PubMedQA 上的表现不如域内设置。",
     "relation": "与用户想法高度重合：给出了「检索增强确实降低 MedQA 幻觉/提升事实性」的量化证据，同时划出边界——语料与问题分布不匹配时收益会明显缩水。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 1
   },
   {
    "title": "Benchmarking Retrieval-Augmented Generation for Medicine",
@@ -89,7 +91,9 @@
     "result": "MEDRAG 相比 chain-of-thought 使 6 个 LLM 的准确率最高提升 18%，把 GPT-3.5 与 Mixtral 提升到 GPT-4 水平；多种医学语料与检索器的组合取得最好表现；发现 log-linear scaling 性质与「lost-in-the-middle」效应。",
     "limitation": "摘要未提及",
     "relation": "是用户想法最直接的「已被做过」证据：以幻觉与知识过时为动机，系统性验证了检索增强对医学问答准确率的提升，并给出组件选型指南。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 1
   },
   {
    "title": "Medical Question Answering System Based on Retrieval-augmented Generation",
@@ -124,7 +128,9 @@
     "result": "RAG 显著提升模型回答的语义一致性并在 BERTScore F1 上超过基线模型，在拒答率与归因准确率上表现良好；检索量 k=5 时综合表现最佳。",
     "limitation": "摘要未提及",
     "relation": "与用户想法几乎同题，且把「可溯源」与「该拒答时拒答」作为幻觉治理的独立评测维度；差异在于只覆盖单一疾病知识库与两个 Qwen 模型，规模有限。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 0
   },
   {
    "title": "Leveraging long context in retrieval augmented language models for medical question answering",
@@ -169,7 +175,9 @@
     "result": "在多种 LLM 主干与多个 QA 数据集上展示了该流程的优势，摘要未给出具体数值。",
     "limitation": "摘要未提及",
     "relation": "补上用户想法中「检索到证据之后如何使用」这一环：针对长上下文中部信息丢失做结构优化，与减少幻觉的目标一致但切入机制不同。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 1
   },
   {
    "title": "Two-Layer Retrieval-Augmented Generation Framework for Low-Resource Medical Question Answering Using Reddit Data: Proof-of-Concept Study",
@@ -215,7 +223,9 @@
     "result": "两个模型在各维度中位分相当：coverage（U=733.0，P=.89）、coherence（U=670.0，P=.49）、relevance（U=662.0，P=.15）、length（U=672.0，P=.55）、hallucination（U=859.0，P=.01），仅 Coleman-Liau Index 差异显著（U=307.5，P<.001）。",
     "limitation": "摘要将其定位为 proof-of-concept study，评测规模仅 20 个查询、76 个样本，主题限于 xylazine 与 ketamine 两类物质。",
     "relation": "为用户想法提供了把 hallucination 作为独立评分维度的可操作评测做法；差异在于知识源是社媒经验而非权威医学文献，非常规医学问答场景。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 0
   },
   {
    "title": "Development of a liver disease–specific large language model chat interface using retrieval-augmented generation",
@@ -256,7 +266,9 @@
     "result": "LiVersa 在 10 题知识测评中全部答对；专家评价其输出比 ChatGPT 4 更准确，但在全面性与安全性上评分更低。",
     "limitation": "摘要明确指出：因用于 RAG 的文档数量限制而存在不足，在真正上线部署前还需进一步打磨。",
     "relation": "直接支撑用户想法（RAG 提高专科问答准确性），同时给出反向证据——准确率提升不等于更全面、更安全，只盯单一指标会低估临床风险。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 2
   },
   {
    "title": "Integrating Retrieval-Augmented Generation with Large Language Models in Nephrology: Advancing Practical Applications",
@@ -294,7 +306,9 @@
     "result": "展示了专科化 RAG 聊天模型可提供 specialized、accurate medical advice 的潜力，摘要未给出量化结果。",
     "limitation": "摘要未提及",
     "relation": "同属「指南语料 + RAG」路线，但摘要停留在 showcase 层面、缺少与非 RAG 基线的幻觉对比；用户若做量化对照，正是这篇没有覆盖的部分。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 2
   },
   {
    "title": "Design and Implementation of a Medical Question Answering System Based on Retrieval-Augmented Generation",
@@ -333,7 +347,9 @@
     "result": "完成了可对外提供高质量医学问答服务的系统实现；摘要未报告任何实验结果。",
     "limitation": "摘要未提及",
     "relation": "证明中文医疗 RAG 问答的工程实现已有人做过，但摘要中完全没有幻觉或准确性的量化评估——正是用户想法可以补上的位置。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 0
   },
   {
    "title": "Survey of Retrieval-Augmented Generation Methods for Medical Question Answering",
@@ -370,7 +386,9 @@
     "result": "归纳了现有方法的主要特点、适用范围与局限，并从知识协同、检索优化、证据整合、临床应用四方面提出医学 RAG 的未来研究方向。",
     "limitation": "摘要未提及",
     "relation": "主题与用户想法直接重合（医学问答 + 幻觉）的中文系统综述，说明该选题已被综述性覆盖，新的贡献需要落在具体机制或评测上。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 3
   },
   {
    "title": "Retrieval-Augmented Generation (RAG) in Healthcare: A Comprehensive Review",
@@ -407,7 +425,9 @@
     "result": "识别出持续存在的挑战：retrieval noise、domain shift、generation latency 与 limited explainability。",
     "limitation": "摘要未提及",
     "relation": "为用户想法提供「该方向已被系统综述」的判断，并指出评估幻觉应使用 FactScore 等临床特异性指标而非仅通用文本相似度。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 3
   },
   {
    "title": "Retrieval-Augmented Large Language Models for Clinical Decision Support: A Systematic Review of Hallucination Mitigation and Evidence Grounding",
@@ -441,7 +461,9 @@
     "result": "识别出 single-step retrieval、iterative 或 agentic retrieval、graph-based retrieval、hybrid symbolic–neural 四类架构；RAG 相比无检索 LLM 改善了事实支撑并减少了 unsupported claims，在基于指南与诊疗规程的任务上尤为明显；但反复出现检索错误、证据整合不完整、有检索上下文仍有残余幻觉等失效模式。",
     "limitation": "摘要指出评估实践以回顾性和指标驱动为主、临床医生参与有限、没有前瞻性临床结局研究；当前证据基础是架构创新而临床验证未同步成熟。",
     "relation": "与用户想法最接近的证据整合工作，直接回答「RAG 到底有没有减少医疗文本幻觉」——有改善但缺少临床级验证；用户的实证工作可在前瞻性验证与医生评价上差异化。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 3
   },
   {
    "title": "Mitigating Large Language Model Hallucinations for Clinical Data Extraction: A Retrieval-Augmented Framework With Structured Output Enforcement",
@@ -475,7 +497,9 @@
     "result": "归纳并分类了 entity conflation、temporal reasoning errors、ontology boundary violations 等失效模式并把已发表的缓解策略逐一对应；引用文献指出幻觉率从优化条件下的低个位数到对抗提示下的 50% 以上不等。",
     "limitation": "摘要明确标注 [LIMITATION]：该框架尚未做实证验证，本文贡献的是文献导出的参考架构与有待未来实现研究检验的评估策略。",
     "relation": "同属「用 RAG 治医疗幻觉」，但任务落在结构化临床数据抽取而非问答、且停留在设计层面；其组件清单（约束解码、NLI 校验、校准拒答）可作为用户方案可选环节的对照参考。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 0
   }
  ],
  "clusters": [

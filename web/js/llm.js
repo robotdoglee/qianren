@@ -150,6 +150,7 @@ export async function llmExpandQueries(input, mode) {
 }
 
 const FIELD_KEYS = ['question', 'method', 'dataset', 'metric', 'result', 'limitation', 'relation'];
+const RELEVANCE_KEYS = ['high', 'mid', 'low'];
 
 function brief(p) {
   return {
@@ -162,7 +163,7 @@ function brief(p) {
 
 export function buildAnalyzePrompt({ mode, input, queries, papers }) {
   const schema = JSON.stringify({
-    papers: [{ n: 1, fields: Object.fromEntries(FIELD_KEYS.map((k) => [k, ''])) }],
+    papers: [{ n: 1, relevance: 'high|mid|low', fields: Object.fromEntries(FIELD_KEYS.map((k) => [k, ''])) }],
     clusters: [{ name: '', summary: '', papers: [1] }],
     gaps: [{ title: '', detail: '引用 [1][2]', papers: [1, 2] }],
     approaches: [{ name: '', summary: '', papers: [1], effect: '', limits: '' }]
@@ -172,6 +173,7 @@ export function buildAnalyzePrompt({ mode, input, queries, papers }) {
     '任何字段在摘要中找不到依据时，必须逐字填写「' + MISSING + '」。',
     '用简体中文填写；数据集名、指标名、模型名等原文专有名词保留英文。',
     'relation 字段说明该论文与用户' + (mode === 'problem' ? '问题' : '想法') + '的关系（相同点/差异点）。',
+    '每篇论文另给 relevance：high=直接相关、mid=同路线可参考、low=仅背景。',
     'clusters 为 3-5 个方法簇；gaps 为 2-4 条空白点，每条 detail 里用 [编号] 引用具体论文，papers 数组同步这些编号。',
     'approaches 仅在 mode=problem 时需要：按解决思路分组，每组 2-4 篇，effect 为摘要中报告的效果，limits 为摘要中的局限。',
     '只输出一个 JSON 对象，结构为：' + schema
@@ -194,8 +196,10 @@ export async function llmAnalyze(ctx) {
   const papers = ctx.papers.map((p) => {
     const hit = (data.papers || []).find((x) => Number(x.n) === p.n) || {};
     const fields = hit.fields || {};
+    const rel = String(hit.relevance || '').toLowerCase();
     return {
       ...p,
+      relevance: RELEVANCE_KEYS.includes(rel) ? rel : undefined,
       fields: Object.fromEntries(FIELD_KEYS.map((k) => {
         const v = String(fields[k] || '').trim();
         return [k, v || MISSING];

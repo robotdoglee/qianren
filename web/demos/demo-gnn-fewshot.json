@@ -56,7 +56,9 @@
     "result": "在两个公开多性质数据集上优于多种 state-of-the-art 方法；摘要未给出具体数值。",
     "limitation": "摘要未提及",
     "relation": "用户想法的核心先行工作（GNN + 元学习做少样本分子性质预测），可直接作为对照基线；差异是摘要未报告具体数值，需查原文才能对齐实验设定。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 0
   },
   {
    "title": "Property-Aware Relation Networks for Few-Shot Molecular Property Prediction",
@@ -92,7 +94,9 @@
     "result": "在基准数据上一致优于现有方法，并能获得 property-aware 分子表示、较为合理地建模分子关系图；摘要未给出数值。",
     "limitation": "摘要未提及",
     "relation": "同样直接命中用户想法，并把「子结构与分子间关系随性质改变」明确为少样本迁移失效的原因，可作为方法对比与失效讨论的出发点。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 1
   },
   {
    "title": "Meta-Learning GNN Initializations for Low-Resource Molecular Property Prediction",
@@ -128,7 +132,9 @@
     "result": "meta-initializations 在 20 项 in-distribution 任务中的 16 项、以及全部 out-of-distribution 任务上与多任务预训练基线持平或更优，平均 AUPRC 分别提升 11.2% 与 26.9%。",
     "limitation": "摘要未提及",
     "relation": "与用户想法几乎同题（元学习初始化 GNN + 低资源性质预测），并给出分布外任务上量化增益，是「已做过」证据中最直接的一条；用户若要差异化，需要超出 MAML 系初始化这一路线。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 0
   },
   {
    "title": "Graph Sampling-based Meta-Learning for Molecular Property Prediction",
@@ -166,7 +172,9 @@
     "result": "在 5 个常用基准上一致优于 state-of-the-art 方法，ROC-AUC 提升 5.71%–6.93%，并验证了各提出模块的有效性；代码公开。",
     "limitation": "摘要未提及",
     "relation": "覆盖用户想法且给出可复现代码与明确的增益区间；差异在于它把「关系图」用于组织分子-性质任务结构，而非改造分子图编码器本身。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 0
   },
   {
    "title": "PACIA: Parameter-Efficient Adapter for Few-Shot Molecular Property Prediction",
@@ -202,7 +210,9 @@
     "result": "在少样本 MPP 任务上取得 state-of-the-art 表现，并说明所提分层适配机制合理有效；摘要未给出数值。",
     "limitation": "摘要未提及",
     "relation": "与用户想法同一路线，但切入点是用「减少可训练参数」来避免少样本过拟合；如果用户的方案是全参数微调，这篇提供了直接可比的替代做法。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 1
   },
   {
    "title": "Adaptive Transfer of Graph Neural Networks for Few-Shot Molecular Property Prediction",
@@ -242,7 +252,9 @@
     "result": "在四个真实数据集上验证了 ATGNN 框架的有效性；摘要未给出具体数值。",
     "limitation": "摘要指出微调后的 GNN 会过拟合基础性质、损害预训练 GNN 在新性质上的可迁移性（这正是该方法要解决的问题）；此外摘要未提及其他局限。",
     "relation": "直接针对用户想法最可能踩到的坑——「预训练 + 微调」在少样本新性质上不一定有效，并给出按任务预测权重的规避方案，是必须对照的工作。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 1
   },
   {
    "title": "Few-shot learning via graph embeddings with convolutional networks for low-data molecular property prediction",
@@ -278,7 +290,9 @@
     "result": "10-shot 设定下 Tox21 平均提升 +11.37%、SIDER 平均提升 +0.53%，优于常规图基线。",
     "limitation": "摘要未提及",
     "relation": "与用户想法重合并给出了小样本设定下的相对增益幅度；同时说明该方法族并不把 GNN 当作唯一必需组件（CNN 架构也被纳入），用户需要解释为何选择 GNN。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 2
   },
   {
    "title": "Few-shot learning with transformers via graph embeddings for molecular property prediction",
@@ -314,7 +328,9 @@
     "result": "在 Tox21 与 SIDER 上优于更简单的图基线；摘要未给出具体数值；代码与数据公开。",
     "limitation": "摘要未提及",
     "relation": "同路线（GNN + 元学习）的变体，额外引入 Transformer 建模长程依赖，可作为用户方案「骨干架构选择」维度的对照。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 2
   },
   {
    "title": "Meta Learning with Attention Based FP-GNNs for Few-Shot Molecular Property Prediction",
@@ -352,7 +368,9 @@
     "result": "在四项任务中的三项以及不同支持集规模下均表现更优；摘要未给出数值。",
     "limitation": "摘要未提及",
     "relation": "覆盖用户想法，并显式使用了 FS-Mol 这一少样本分子基准，可在数据集选择与「指纹 + 图」混合特征上做参考。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 0
   },
   {
    "title": "Molecular property prediction in the ultra‐low data regime",
@@ -388,7 +406,9 @@
     "result": "在多个分子性质基准上一致超过或持平近期监督方法；在可持续航空燃料场景中仅用 29 个标注样本即可学到准确的性质预测模型。",
     "limitation": "摘要未提及",
     "relation": "把「小样本」推进到 ultra-low data 区间并给出 29 个标注样本的真实世界案例，可用来论证用户想法的应用价值；差异在于其任务域不限于药物分子（含溶剂、聚合物、能源载体）。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 2
   },
   {
    "title": "MolecularGPT: Open Large Language Model (LLM) for Few-Shot Molecular Property Prediction",
@@ -426,7 +446,9 @@
     "result": "在 10 个下游数据集上展现出有竞争力的 in-context 推理能力；仅用 two-shot 示例即在 7 个数据集中的 4 个上超过标准监督 GNN 方法；zero-shot 下相较 state-of-the-art LLM 基线分类准确率最高提升 15.7%、回归指标（如 RMSE）降低 17.9。",
     "limitation": "摘要未提及",
     "relation": "与用户想法构成路线对照：不用 GNN、改用 LLM 指令微调 + 上下文学习也能做少样本分子性质预测，并在部分数据集上超过监督 GNN；用户的方案需要与之比较才有说服力。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 3
   },
   {
    "title": "Few-Shot Learning with Graph Neural Networks",
@@ -460,7 +482,9 @@
     "result": "在数值表现上有提升，并表明基于图的模型能在 relational 任务上良好运行；摘要未给出具体数值。",
     "limitation": "摘要未提及",
     "relation": "是「用 GNN 做少样本」的方法源头之一，但摘要面向图像关系任务而非分子性质；用户可引用其元学习 + 消息传递的形式化，同时说明尚未在分子性质上验证。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 0
   },
   {
    "title": "A compact review of molecular property prediction with graph neural networks",
@@ -499,7 +523,9 @@
     "result": "整理出该方向高度活跃研究的体系结构（80 个 GNN × 20+ 性质 × 48 个数据集的分类）。",
     "limitation": "摘要未提及",
     "relation": "可用于快速核查用户想法的坐标：GNN 做分子性质预测的架构谱系已被整理，但摘要层面未见按「小样本/低数据」维度做的专门对比。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 3
   }
  ],
  "clusters": [

@@ -51,7 +51,9 @@
     "result": "四个数据集上所有类的 mean F1 分别为 86.20、65.20、91.32、87.18，rare classes 分别为 81.40、63.87、82.62、79.09，达到 state-of-the-art 并优于广泛使用的类别不平衡方法。",
     "limitation": "摘要未提及",
     "relation": "对用户问题的最直接回应：显式报告了稀有类别的指标并超过常用重加权/重采样方法，既可作为方法上的对标对象，也是「应当如何报告少数类性能」的范式参考。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 0
   },
   {
    "title": "Dynamically Weighted Balanced Loss: Class Imbalanced Learning and Confidence Calibration of Deep Neural Networks",
@@ -84,7 +86,9 @@
     "result": "摘要称在两类应用的高度不平衡数据上展现稳健泛化，并有理论结果与更优的经验性能支持 DWB 损失的有效性；未给出具体数值。",
     "limitation": "摘要未提及",
     "relation": "属于用户问题最经典的解法族（重加权损失），并额外把「置信度校准」纳入同一损失设计；差异是其医学实验只有 ISIC2019 一个数据集，且摘要未报告召回率类指标。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 0
   },
   {
    "title": "Synthetic Data Generation for Long-Tail Medical Image Classification: A Case Study in Skin Lesions",
@@ -118,7 +122,9 @@
     "result": "在 ISIC2019 上整体性能显著提升，尾部类增益尤为明显，样本量最少的类别提升超过 28%。",
     "limitation": "摘要未提及",
     "relation": "直接针对「少数类表现差」并给出稀有类的量化增益（>28%）；与用户方案的差异在解决层次——造数据而不是改损失或模型结构，可与之叠加。"
-   }
+   },
+   "relevance": "high",
+   "cluster": 0
   },
   {
    "title": "Deep learning model calibration for improving performance in class-imbalanced medical image classification tasks",
@@ -152,7 +158,9 @@
     "result": "在默认阈值 0.5 下，校准后的性能显著优于使用未校准概率（p < 0.05）；而在 PR 引导的阈值下这些增益不再显著（p > 0.05）；该结论在两种模态与不同不平衡程度下均成立。",
     "limitation": "摘要指出在 PR 最优阈值下校准带来的提升不显著，即校准的价值高度依赖阈值是否已被调优。",
     "relation": "为用户问题提供一条低成本排查路径：少数类召回率低可能部分来自固定 0.5 阈值而非模型本身，先做校准/按 PR 曲线调阈值即可显著改善，再决定是否改造训练方法。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 1
   },
   {
    "title": "MONICA: Benchmarking on Long-tailed Medical Image Classification",
@@ -188,7 +196,9 @@
     "result": "提供了可复现的基准、实用指导与组件级分析讨论；摘要未给出数值结论。",
     "limitation": "摘要未提及",
     "relation": "用户不必自行复现即可在同一设定下横向比较 30+ 方法与 12 个数据集，是判断「我的思路是否已有人做过、比谁更好」的首要工具。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 1
   },
   {
    "title": "Text-Guided Foundation Model Adaptation for Long-Tailed Medical Image Classification",
@@ -224,7 +234,9 @@
     "result": "只需当前性能最佳算法 6.1% 的 GPU 显存，准确率最高提升 27.1%。",
     "limitation": "摘要未提及",
     "relation": "给出另一条路线：不重新设计损失或采样，而用基础模型 + 极轻量适配来改善长尾表现，特别适合显存与标注都受限的场景，可与用户的重加权方案直接对比。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 2
   },
   {
    "title": "Imbalanced Classification in Medical Imaging via Regrouping",
@@ -261,7 +273,9 @@
     "result": "初步结果显示这一朴素想法能大幅提升以 average precision 衡量的分类性能；摘要未给出具体数值。",
     "limitation": "摘要将其结果自述为 preliminary result（初步结果）。",
     "relation": "与用户思路的差异是「改标签结构而非改类别权重」；同时它明确指出应以 AUPRC 而非 balanced accuracy 评测不平衡任务，正对应少数类召回率这一关注点。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 2
   },
   {
    "title": "Cost-sensitive learning for imbalanced medical data: a review",
@@ -293,7 +307,9 @@
     "result": "发现该方向发文量显著上升（尤其 2020 年之后）、方法上强烈偏好 CSL direct 类方法、数据类型中医学影像占多数，同时指出 cost-related metrics 利用不足、Python 为主要开发工具。",
     "limitation": "摘要指出该领域存在 cost-related metrics 利用不足等问题（作为综述发现而非本文自身局限）；此外摘要未提及其他局限。",
     "relation": "如果用户走「代价敏感/重加权」路线，这 173 篇的综述可快速说明该分支已被大量研究覆盖，并提示应补报代价相关指标以体现少数类改进。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 0
   },
   {
    "title": "Handling imbalanced medical datasets: review of a decade of research",
@@ -327,7 +343,9 @@
     "result": "识别出主要研究趋势，给出推测性见解与研究走向，并就缓解长期存在的方法学问题建立最佳实践共识。",
     "limitation": "摘要自称提供 speculative insights（推测性见解），并指出既有研究存在 methodological constraints 因而方法学结论受限。",
     "relation": "为用户问题提供了最合适的分类框架（预处理 / 学习算法 / 混合），可据此定位自己方案所属分支并引用其最佳实践共识来说明差异点。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 0
   },
   {
    "title": "FCA: Taming Long-tailed Federated Medical Image Classification by Classifier Anchoring",
@@ -359,7 +377,9 @@
     "result": "在两项任务的全面对比中，以较大差距超过 state-of-the-art 方法，被认为在临床场景下更可行；摘要未给出具体数值。",
     "limitation": "摘要未提及",
     "relation": "若用户的不平衡来自多中心、数据不能汇合的现实约束，这篇给出联邦设定下的对应解法（分类器锚定 + 按类分布去偏）；与单中心方案不同，它同时要求兼顾全局泛化与本地专门化。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 2
   },
   {
    "title": "Addressing Imbalance for Class Incremental Learning in Medical Image Classification",
@@ -393,7 +413,9 @@
     "result": "在三个基准数据集上的大量实验显示其方法超过 state-of-the-art；摘要未给出具体数值。",
     "limitation": "摘要未提及",
     "relation": "处理的是「增量场景下的不平衡」，与用户的静态分类模型问题不同；但若用户后续需不断加入新病种，其 logit adjustment 分类损失是可直接借用的组件。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 2
   },
   {
    "title": "Mitigating class imbalance and promoting fairness in medical image classification with limited data using deep learning",
@@ -425,7 +447,9 @@
     "result": "SIA-SMOTE 比常规 SMOTE 变体生成更具代表性的样本，并在基准与医学影像数据集上取得一致的性能提升；self-attention fusion 改善了 ISIC 2017 上的 balanced accuracy 与 F1；FedCIAL 在保护隐私的同时提升准确率与公平性；联合处理不平衡与域偏移能在亚组公平性与整体性能上产生协同改进。",
     "limitation": "摘要未提及",
     "relation": "覆盖用户「极度不平衡 + 数据有限」的组合场景，并提示还应检查人群亚组是否公平；作为学位论文其内容跨度较大，建议按 oversampling / 表示学习 / 联邦公平三条线分别参考。"
-   }
+   },
+   "relevance": "mid",
+   "cluster": 0
   },
   {
    "title": "Unraveling the Impact of Class Imbalance on Deep-Learning Models for Medical Image Classification",
@@ -460,7 +484,9 @@
     "result": "论证了数据集中的类别分离（class separation）会影响训练好的模型、是未来研究更应关注的策略；结果对许多研究中为达到类平衡而采用的类别分组做法提出疑问。",
     "limitation": "摘要未提及",
     "relation": "与用户问题的关系是提醒式的：少数类召回率低可能部分源于评测指标口径与类别分组方式，在改造模型之前应先确认指标定义与分组是否掩盖了稀有类表现。"
-   }
+   },
+   "relevance": "low",
+   "cluster": 1
   }
  ],
  "clusters": [
