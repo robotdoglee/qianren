@@ -93,12 +93,14 @@ export function createProgress(panelEl, { onFinish } = {}) {
       rows.clear();
       for (const [key, label] of STEP_DEFS) {
         const detail = EL('span', { class: 'step-detail' });
+        const hint = EL('span', { class: 'step-hint', style: 'display:block;margin-top:2px;color:var(--warn)', hidden: true });
+        const main = EL('span', { class: 'step-main', style: 'display:block' }, [detail, hint]);
         const row = EL('li', { class: 'step', dataset: { key } }, [
           EL('span', { class: 'step-icon', text: STATE_ICON.pending }),
           EL('span', { class: 'step-label', text: label }),
-          detail
+          main
         ]);
-        rows.set(key, { row, detail, icon: row.firstChild });
+        rows.set(key, { row, detail, hint, icon: row.firstChild });
         list.appendChild(row);
       }
       noteEl.textContent = note || '';
@@ -112,6 +114,12 @@ export function createProgress(panelEl, { onFinish } = {}) {
       entry.icon.textContent = STATE_ICON[state] || STATE_ICON.pending;
       entry.row.dataset.state = state;
       if (detail != null) entry.detail.textContent = detail;
+    },
+    setHint(key, text) {
+      const entry = rows.get(key);
+      if (!entry) return;
+      entry.hint.textContent = text || '';
+      entry.hint.hidden = !text;
     },
     setNote(text) {
       noteEl.textContent = text;
@@ -325,6 +333,10 @@ export function renderResult(container, result, { onExport } = {}) {
     result.stats?.seconds != null ? EL('span', { class: 'chip', text: `用时 ${result.stats.seconds}s` }) : null
   ].filter(Boolean);
 
+  const statsNote = result.stats?.note
+    ? EL('p', { class: 'muted tiny stats-note', text: result.stats.note })
+    : null;
+
   const queries = (result.queries || []).length
     ? EL('div', { class: 'queries' }, [
       EL('h3', { text: '检索式' }),
@@ -419,7 +431,7 @@ export function renderResult(container, result, { onExport } = {}) {
     ? EL('p', { class: 'notice', text: '没有检索到可分析的论文：可能是三个数据源同时不可用，或检索式过窄。可换个说法重试。' })
     : null;
 
-  container.appendChild(EL('div', { class: 'result-head' }, [inputBlock, EL('div', { class: 'chips' }, statChips), queries, sourceNotes, empty]));
+  container.appendChild(EL('div', { class: 'result-head' }, [inputBlock, EL('div', { class: 'chips' }, statChips), statsNote, queries, sourceNotes, empty]));
   if (papers.length) {
     container.appendChild(approaches || EL('div'));
     container.appendChild(clusters || EL('div'));

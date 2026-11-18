@@ -1,0 +1,594 @@
+{
+ "id": "demo-gnn-fewshot",
+ "mode": "idea",
+ "input": "用图神经网络在小样本数据上预测分子性质",
+ "engine": "demo",
+ "generatedAt": "2026-11-18",
+ "queries": [
+  "few-shot molecular property prediction graph neural network",
+  "meta-learning molecular property prediction low data"
+ ],
+ "stats": {
+  "openalex": 24,
+  "arxiv": 0,
+  "s2": 0,
+  "deduped": 21,
+  "kept": 13,
+  "seconds": 0,
+  "note": "演示数据生成时 arXiv 与 Semantic Scholar 对生成环境 IP 限流，故仅含 OpenAlex 结果；实时模式会同时检索三个来源。"
+ },
+ "papers": [
+  {
+   "title": "Few-Shot Graph Learning for Molecular Property Prediction",
+   "authors": [
+    "Zhichun Guo",
+    "Chuxu Zhang",
+    "Wenhao Yu",
+    "John E. Herr",
+    "Olaf Wiest",
+    "Meng Jiang",
+    "Nitesh V. Chawla"
+   ],
+   "year": 2021,
+   "venue": "International World Wide Web Conference (WWW)",
+   "url": "https://doi.org/10.1145/3442381.3450112",
+   "doi": "10.1145/3442381.3450112",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 242,
+   "abstract": "The recent success of graph neural networks has significantly boosted molecular property prediction, advancing activities such as drug discovery. The existing deep neural network methods usually require large training dataset for each property, impairing their performance in cases (especially for new molecular properties) with a limited amount of experimental data, which are common in real situations. To this end, we propose Meta-MGNN, a novel model for few-shot molecular property prediction. Meta-MGNN applies molecular graph neural network to learn molecular representations and builds a meta-learning framework for model optimization. To exploit unlabeled molecular information and address task heterogeneity of different molecular properties, Meta-MGNN further incorporates molecular structures, attribute based self-supervised modules and self-attentive task weights into the former framework, strengthening the whole learning model. Extensive experiments on two public multi-property datasets demonstrate that Meta-MGNN outperforms a variety of state-of-the-art methods.",
+   "openalex": "https://openalex.org/W3130274530",
+   "n": 1,
+   "id": "doi:10.1145/3442381.3450112",
+   "score": 6.68,
+   "matchedTerms": [
+    "graph neural network",
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "现有深度方法对每个性质都需要大规模训练数据，而现实中（尤其是新的分子性质）实验数据量常常有限。",
+    "method": "Meta-MGNN：用分子图神经网络学习分子表示并构建元学习优化框架；再引入分子结构与基于属性的自监督模块以利用无标注分子信息，并用 self-attentive task weights 处理不同性质间的任务异质性。",
+    "dataset": "两个公开的多性质数据集（摘要未点名）。",
+    "metric": "摘要未提及",
+    "result": "在两个公开多性质数据集上优于多种 state-of-the-art 方法；摘要未给出具体数值。",
+    "limitation": "摘要未提及",
+    "relation": "用户想法的核心先行工作（GNN + 元学习做少样本分子性质预测），可直接作为对照基线；差异是摘要未报告具体数值，需查原文才能对齐实验设定。"
+   }
+  },
+  {
+   "title": "Property-Aware Relation Networks for Few-Shot Molecular Property Prediction",
+   "authors": [
+    "Yaqing Wang",
+    "Abulikemu Abuduweili",
+    "Quanming Yao",
+    "Dejing Dou"
+   ],
+   "year": 2021,
+   "venue": "arXiv (Cornell University)",
+   "url": "https://doi.org/10.48550/arxiv.2107.07994",
+   "doi": "10.48550/arxiv.2107.07994",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 102,
+   "abstract": "Molecular property prediction plays a fundamental role in drug discovery to identify candidate molecules with target properties. However, molecular property prediction is essentially a few-shot problem which makes it hard to use regular machine learning models. In this paper, we propose Property-Aware Relation networks (PAR) to handle this problem. In comparison to existing works, we leverage the fact that both relevant substructures and relationships among molecules change across different molecular properties. We first introduce a property-aware embedding function to transform the generic molecular embeddings to substructure-aware space relevant to the target property. Further, we design an adaptive relation graph learning module to jointly estimate molecular relation graph and refine molecular embeddings w.r.t. the target property, such that the limited labels can be effectively propagated among similar molecules. We adopt a meta-learning strategy where the parameters are selectively updated within tasks in order to model generic and property-aware knowledge separately. Extensive experiments on benchmark molecular property prediction datasets show that PAR consistently outperforms existing methods and can obtain property-aware molecular embeddings and model molecular relation graph properly.",
+   "openalex": "https://openalex.org/W3211477647",
+   "n": 2,
+   "id": "doi:10.48550/arxiv.2107.07994",
+   "score": 5.454,
+   "matchedTerms": [
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "分子性质预测本质是 few-shot 问题，且相关的子结构与分子间关系会随目标性质变化，常规机器学习模型难以直接使用。",
+    "method": "Property-Aware Relation networks (PAR)：property-aware embedding function 把通用分子表示变换到与目标 property 相关的 substructure-aware 空间；adaptive relation graph learning 模块联合估计分子关系图并针对目标性质细化表示，使有限标签能在相似分子间传播；采用元学习策略在任务内有选择地更新参数，以分别建模通用知识与 property-aware 知识。",
+    "dataset": "基准分子性质预测数据集（benchmark molecular property prediction datasets，摘要未点名）。",
+    "metric": "摘要未提及",
+    "result": "在基准数据上一致优于现有方法，并能获得 property-aware 分子表示、较为合理地建模分子关系图；摘要未给出数值。",
+    "limitation": "摘要未提及",
+    "relation": "同样直接命中用户想法，并把「子结构与分子间关系随性质改变」明确为少样本迁移失效的原因，可作为方法对比与失效讨论的出发点。"
+   }
+  },
+  {
+   "title": "Meta-Learning GNN Initializations for Low-Resource Molecular Property Prediction",
+   "authors": [
+    "Cuong Q. Nguyen",
+    "Constantine Kreatsoulas",
+    "Kim Branson"
+   ],
+   "year": 2020,
+   "venue": "arXiv (Cornell University)",
+   "url": "https://doi.org/10.48550/arxiv.2003.05996",
+   "doi": "10.48550/arxiv.2003.05996",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 43,
+   "abstract": "Building in silico models to predict chemical properties and activities is a crucial step in drug discovery. However, limited labeled data often hinders the application of deep learning in this setting. Meanwhile advances in meta-learning have enabled state-of-the-art performances in few-shot learning benchmarks, naturally prompting the question: Can meta-learning improve deep learning performance in low-resource drug discovery projects? In this work, we assess the transferability of graph neural networks initializations learned by the Model-Agnostic Meta-Learning (MAML) algorithm - and its variants FO-MAML and ANIL - for chemical properties and activities tasks. Using the ChEMBL20 dataset to emulate low-resource settings, our benchmark shows that meta-initializations perform comparably to or outperform multi-task pre-training baselines on 16 out of 20 in-distribution tasks and on all out-of-distribution tasks, providing an average improvement in AUPRC of 11.2% and 26.9% respectively. Finally, we observe that meta-initializations consistently result in the best performing models across fine-tuning sets with $k \\in \\{16, 32, 64, 128, 256\\}$ instances.",
+   "openalex": "https://openalex.org/W3042448193",
+   "n": 3,
+   "id": "doi:10.48550/arxiv.2003.05996",
+   "score": 5.055,
+   "matchedTerms": [
+    "graph neural network",
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "标注数据不足长期阻碍深度学习在化学性质与活性预测中的应用；由此提出「元学习能否改善低资源药物发现项目中的深度学习表现」。",
+    "method": "用 MAML 及其变体 FO-MAML、ANIL 学习 GNN 初始化并评估其可迁移性，与 multi-task pre-training 基线比较；进一步在 k∈{16, 32, 64, 128, 256} 的微调集上考察。",
+    "dataset": "ChEMBL20（用于模拟低资源设定）。",
+    "metric": "AUPRC。",
+    "result": "meta-initializations 在 20 项 in-distribution 任务中的 16 项、以及全部 out-of-distribution 任务上与多任务预训练基线持平或更优，平均 AUPRC 分别提升 11.2% 与 26.9%。",
+    "limitation": "摘要未提及",
+    "relation": "与用户想法几乎同题（元学习初始化 GNN + 低资源性质预测），并给出分布外任务上量化增益，是「已做过」证据中最直接的一条；用户若要差异化，需要超出 MAML 系初始化这一路线。"
+   }
+  },
+  {
+   "title": "Graph Sampling-based Meta-Learning for Molecular Property Prediction",
+   "authors": [
+    "Xiang Zhuang",
+    "Qiang Zhang",
+    "Bin Wu",
+    "Keyan Ding",
+    "Yin Fang",
+    "Huajun Chen"
+   ],
+   "year": 2023,
+   "venue": "International Joint Conference on Artificial Intelligence",
+   "url": "https://doi.org/10.24963/ijcai.2023/526",
+   "doi": "10.24963/ijcai.2023/526",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 34,
+   "abstract": "Molecular property is usually observed with a limited number of samples, and researchers have considered property prediction as a few-shot problem. One important fact that has been ignored by prior works is that each molecule can be recorded with several different properties simultaneously. To effectively utilize many-to-many correlations of molecules and properties, we propose a Graph Sampling-based Meta-learning (GS-Meta) framework for few-shot molecular property prediction. First, we construct a Molecule-Property relation Graph (MPG): molecule and properties are nodes, while property labels decide edges. Then, to utilize the topological information of MPG, we reformulate an episode in meta-learning as a subgraph of the MPG, containing a target property node, molecule nodes, and auxiliary property nodes. Third, as episodes in the form of subgraphs are no longer independent of each other, we propose to schedule the subgraph sampling process with a contrastive loss function, which considers the consistency and discrimination of subgraphs. Extensive experiments on 5 commonly-used benchmarks show GS-Meta consistently outperforms state-of-the-art methods by 5.71%-6.93% in ROC-AUC and verify the effectiveness of each proposed module. Our code is available at https://github.com/HICAI-ZJU/GS-Meta.",
+   "openalex": "https://openalex.org/W4385767935",
+   "n": 4,
+   "id": "doi:10.24963/ijcai.2023/526",
+   "score": 4.73,
+   "matchedTerms": [
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "以往工作忽略了一个事实：每个分子可同时记录多个性质，需要有效利用分子与性质之间的多对多关联。",
+    "method": "GS-Meta：先构建 Molecule-Property relation Graph（MPG，分子与性质为节点、性质标签决定边），再把元学习中的一个 episode 重构为 MPG 的子图（含目标性质节点、分子节点与辅助性质节点），并用考虑子图一致性与区分性的对比损失来调度子图采样过程。",
+    "dataset": "5 个常用基准数据集。",
+    "metric": "ROC-AUC。",
+    "result": "在 5 个常用基准上一致优于 state-of-the-art 方法，ROC-AUC 提升 5.71%–6.93%，并验证了各提出模块的有效性；代码公开。",
+    "limitation": "摘要未提及",
+    "relation": "覆盖用户想法且给出可复现代码与明确的增益区间；差异在于它把「关系图」用于组织分子-性质任务结构，而非改造分子图编码器本身。"
+   }
+  },
+  {
+   "title": "PACIA: Parameter-Efficient Adapter for Few-Shot Molecular Property Prediction",
+   "authors": [
+    "Shiguang Wu",
+    "Yaqing Wang",
+    "Quanming Yao"
+   ],
+   "year": 2024,
+   "venue": "International Joint Conference on Artificial Intelligence",
+   "url": "https://doi.org/10.24963/ijcai.2024/576",
+   "doi": "10.24963/ijcai.2024/576",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 16,
+   "abstract": "Molecular property prediction (MPP) plays a crucial role in biomedical applications, but it often encounters challenges due to a scarcity of labeled data. Existing works commonly adopt gradient-based strategy to update a large amount of parameters for task-level adaptation. However, the increase of adaptive parameters can lead to overfitting and poor performance. Observing that graph neural network (GNN) performs well as both encoder and predictor, we propose PACIA, a parameter-efficient GNN adapter for few-shot MPP. We design a unified adapter to generate a few adaptive parameters to modulate the message passing process of GNN. We then adopt a hierarchical adaptation mechanism to adapt the encoder at task-level and the predictor at query-level by the unified GNN adapter. Extensive results show that PACIA obtains the state-of-the-art performance in few-shot MPP problems, and our proposed hierarchical adaptation mechanism is rational and effective.",
+   "openalex": "https://openalex.org/W4401024332",
+   "n": 5,
+   "id": "doi:10.24963/ijcai.2024/576",
+   "score": 5.727,
+   "matchedTerms": [
+    "graph neural network",
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "现有工作普遍用基于梯度的策略更新大量参数来做任务级适配，而自适应参数的增加会导致过拟合与性能下降。",
+    "method": "PACIA：面向少样本 MPP 的 parameter-efficient GNN adapter，设计统一 adapter 生成少量自适应参数来调制 GNN 的消息传递过程；再用分层适配机制在 task-level 适配 encoder、在 query-level 适配 predictor。",
+    "dataset": "少样本分子性质预测问题（few-shot MPP，摘要未点名数据集）。",
+    "metric": "摘要未提及",
+    "result": "在少样本 MPP 任务上取得 state-of-the-art 表现，并说明所提分层适配机制合理有效；摘要未给出数值。",
+    "limitation": "摘要未提及",
+    "relation": "与用户想法同一路线，但切入点是用「减少可训练参数」来避免少样本过拟合；如果用户的方案是全参数微调，这篇提供了直接可比的替代做法。"
+   }
+  },
+  {
+   "title": "Adaptive Transfer of Graph Neural Networks for Few-Shot Molecular Property Prediction",
+   "authors": [
+    "Baoquan Zhang",
+    "Chuyao Luo",
+    "Hao Jiang",
+    "Shanshan Feng",
+    "Xutao Li",
+    "Bowen Zhang",
+    "Yunming Ye"
+   ],
+   "year": 2023,
+   "venue": "IEEE Transactions on Computational Biology and Bioinformatics",
+   "url": "https://doi.org/10.1109/tcbb.2023.3327452",
+   "doi": "10.1109/tcbb.2023.3327452",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 9,
+   "abstract": "Few-Shot Molecular Property Prediction (FSMPP) is an improtant task on drug discovery, which aims to learn transferable knowledge from base property prediction tasks with sufficient data for predicting novel properties with few labeled molecules. Its key challenge is how to alleviate the data scarcity issue of novel properties. Pretrained Graph Neural Network (GNN) based FSMPP methods effectively address the challenge by pre-training a GNN from large-scale self-supervised tasks and then finetuning it on base property prediction tasks to perform novel property prediction. However, in this paper, we find that the GNN finetuning step is not always effective, which even degrades the performance of pretrained GNN on some novel properties. This is because these molecule-property relationships among molecules change across different properties, which results in the finetuned GNN overfits to base properties and harms the transferability performance of pretrained GNN on novel properties. To address this issue, in this paper, we propose a novel Adaptive Transfer framework of GNN for FSMPP, called ATGNN, which transfers the knowledge of pretrained and finetuned GNNs in a task-adaptive manner to adapt novel properties. Specifically, we first regard the pretrained and finetuned GNNs as model priors of target-property GNN. Then, a task-adaptive weight prediction network is designed to leverage these priors to predict target GNN weights for novel properties. Finally, we combine our ATGNN framework with existing FSMPP methods for FSMPP. Extensive experiments on four real-world datasets, i.e., Tox21, SIDER, MUV, and ToxCast, show the effectiveness of our ATGNN framework.",
+   "openalex": "https://openalex.org/W4387934986",
+   "n": 6,
+   "id": "doi:10.1109/tcbb.2023.3327452",
+   "score": 8.322,
+   "matchedTerms": [
+    "graph neural network",
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "基于预训练 GNN 的少样本分子性质预测（FSMPP）通常先大尺度自监督预训练、再在基础性质任务上微调，但作者发现微调步骤并不总是有效，甚至在某些新性质上会降低预训练 GNN 的性能。",
+    "method": "ATGNN：把预训练 GNN 与微调后 GNN 视为目标性质 GNN 的 model priors，设计 task-adaptive weight prediction network 利用这些先验直接预测目标 GNN 权重，并可 framework 式地与已有 FSMPP 方法结合。",
+    "dataset": "Tox21、SIDER、MUV、ToxCast 四个真实数据集。",
+    "metric": "摘要未提及",
+    "result": "在四个真实数据集上验证了 ATGNN 框架的有效性；摘要未给出具体数值。",
+    "limitation": "摘要指出微调后的 GNN 会过拟合基础性质、损害预训练 GNN 在新性质上的可迁移性（这正是该方法要解决的问题）；此外摘要未提及其他局限。",
+    "relation": "直接针对用户想法最可能踩到的坑——「预训练 + 微调」在少样本新性质上不一定有效，并给出按任务预测权重的规避方案，是必须对照的工作。"
+   }
+  },
+  {
+   "title": "Few-shot learning via graph embeddings with convolutional networks for low-data molecular property prediction",
+   "authors": [
+    "Luis H.M. Torres",
+    "Joel Perdiz Arrais",
+    "Bernardete Ribeiro"
+   ],
+   "year": 2023,
+   "venue": "Neural Computing and Applications",
+   "url": "https://doi.org/10.1007/s00521-023-08403-5",
+   "doi": "10.1007/s00521-023-08403-5",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 11,
+   "abstract": "Abstract Graph neural networks and convolutional architectures have proven to be pivotal in improving the prediction of molecular properties in drug discovery. However, this is fundamentally a low data problem that is incompatible with regular deep learning approaches. Contemporary deep networks require large amounts of training data, which severely limits the prediction of new molecular entities from limited available data. In this paper, we address the challenge of low data in molecular property prediction by: (1) defining a set of deep learning architectures that accept compound chemical structures in the form of molecular graphs, (2) creating a few-shot learning strategy across graph neural networks and convolutional neural networks to leverage the rich information of graph embeddings, and (3) proposing a two-module meta-learning framework to learn from task-transferable knowledge and predict molecular properties on few-shot data. Furthermore, we conduct multiple experiments on two benchmark multiproperty datasets to demonstrate a superior performance over conventional graph-based baselines. ROC-AUC results for 10-shot experiments show an average improvement of $$+11.37\\%$$ + 11.37 % on Tox21 and $$+0.53\\%$$ + 0.53 % on SIDER, which are representative small-sized biological datasets for molecular property prediction.",
+   "openalex": "https://openalex.org/W4323833122",
+   "n": 7,
+   "id": "doi:10.1007/s00521-023-08403-5",
+   "score": 6.396,
+   "matchedTerms": [
+    "graph neural network",
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "分子性质预测根本上是低数据问题，与需要大量训练数据的常规深度学习方法不兼容，限制了从有限数据预测新分子实体的能力。",
+    "method": "(1) 定义一组接受分子图输入的深度学习架构；(2) 在图神经网络与卷积网络之上构建 few-shot 学习策略以利用 graph embeddings 的丰富信息；(3) 提出基于 task-transferable knowledge 的双模块 meta-learning 框架。",
+    "dataset": "两个多性质基准数据集，为代表性的较小规模生物数据集 Tox21 与 SIDER。",
+    "metric": "ROC-AUC（10-shot 实验）。",
+    "result": "10-shot 设定下 Tox21 平均提升 +11.37%、SIDER 平均提升 +0.53%，优于常规图基线。",
+    "limitation": "摘要未提及",
+    "relation": "与用户想法重合并给出了小样本设定下的相对增益幅度；同时说明该方法族并不把 GNN 当作唯一必需组件（CNN 架构也被纳入），用户需要解释为何选择 GNN。"
+   }
+  },
+  {
+   "title": "Few-shot learning with transformers via graph embeddings for molecular property prediction",
+   "authors": [
+    "Luis H.M. Torres",
+    "Bernardete Ribeiro",
+    "Joel Perdiz Arrais"
+   ],
+   "year": 2023,
+   "venue": "Expert Systems with Applications",
+   "url": "https://doi.org/10.1016/j.eswa.2023.120005",
+   "doi": "10.1016/j.eswa.2023.120005",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 36,
+   "abstract": "Molecular property prediction is an essential task in drug discovery. Recently, deep neural networks have accelerated the discovery of compounds with improved molecular profiles for effective drug development. In particular, graph neural networks (GNNs) have played a pivotal role in identifying promising drug candidates with desirable molecular properties. However, it is common for only a few molecules to share the same set of properties, which presents a low-data problem unanswered by regular machine learning (ML) approaches. Transformer networks have also emerged as a promising solution to model the long-range dependence in molecular embeddings and achieve encouraging results across a wide range of molecular property prediction tasks. Nonetheless, these methods still require a large number of data points per task to achieve acceptable performance. In this study, we propose a few-shot GNN-Transformer architecture, FS-GNNTR to face the challenge of low-data in molecular property prediction. The proposed model accepts molecules in the form of molecular graphs to model the local spatial context of molecular graph embeddings while preserving the global information of deep representations. Furthermore, we introduce a two-module meta-learning framework to iteratively update model parameters across few-shot tasks and predict new molecular properties with limited available data. Finally, we conduct multiple experiments on small-sized biological datasets for molecular property prediction, Tox21 and SIDER, and our results demonstrate the superior performance of FS-GNNTR compared to simpler graph-based baselines. The code and data underlying this article are available in the repository, https://github.com/ltorres97/FS-GNNTR.",
+   "openalex": "https://openalex.org/W4362468772",
+   "n": 8,
+   "id": "doi:10.1016/j.eswa.2023.120005",
+   "score": 6.38,
+   "matchedTerms": [
+    "graph neural network",
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "GNN 与 Transformer 在分子性质预测上都有效，但两者仍需每任务大量数据才能达到可接受性能，而共享同一组性质的分子常常很少（低数据问题）。",
+    "method": "FS-GNNTR：少样本 GNN-Transformer 架构，以分子图为输入建模图嵌入的局部空间上下文并保留深度表示的全局信息；引入双模块 meta-learning 框架在少样本任务间迭代更新参数。",
+    "dataset": "较小规模的生物数据集 Tox21 与 SIDER。",
+    "metric": "摘要未提及",
+    "result": "在 Tox21 与 SIDER 上优于更简单的图基线；摘要未给出具体数值；代码与数据公开。",
+    "limitation": "摘要未提及",
+    "relation": "同路线（GNN + 元学习）的变体，额外引入 Transformer 建模长程依赖，可作为用户方案「骨干架构选择」维度的对照。"
+   }
+  },
+  {
+   "title": "Meta Learning with Attention Based FP-GNNs for Few-Shot Molecular Property Prediction",
+   "authors": [
+    "Xiaoliang Qian",
+    "Bin Ju",
+    "Ping Shen",
+    "Keda Yang",
+    "Li Li",
+    "Qi Liu"
+   ],
+   "year": 2024,
+   "venue": "ACS Omega",
+   "url": "https://doi.org/10.1021/acsomega.4c02147",
+   "doi": "10.1021/acsomega.4c02147",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 22,
+   "abstract": "Molecular property prediction holds significant importance in drug discovery, enabling the identification of biologically active compounds with favorable drug-like properties. However, the low data problem, arising from the scarcity of labeled data in drug discovery, poses a substantial obstacle for accurate predictions. To address this challenge, we introduce a novel architecture, AttFPGNN-MAML, for few-shot molecular property prediction. The proposed approach incorporates a hybrid feature representation to enrich molecular representations and model intermolecular relationships specific to the task. By leveraging ProtoMAML, a meta-learning strategy, our model is trained and adapted to new tasks. Evaluation on two few-shot data sets, MoleculeNet and FS-Mol, demonstrates our method's superior performance in three out of four tasks and across various support set sizes. These results convincingly validate the effectiveness of our method in the realm of few-shot molecular property prediction. The source code is publicly available at https://github.com/sanomics-lab/AttFPGNN-MAML.",
+   "openalex": "https://openalex.org/W4398250535",
+   "n": 9,
+   "id": "doi:10.1021/acsomega.4c02147",
+   "score": 5.453,
+   "matchedTerms": [
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "药物发现中标注数据稀缺造成的 low data 问题严重阻碍准确预测分子性质。",
+    "method": "AttFPGNN-MAML：用混合特征表示（指纹与基于图的表示）丰富分子表示并建模任务特定的分子间关系，再用 ProtoMAML 这一元学习策略训练并适配到新任务。",
+    "dataset": "两个少样本数据集 MoleculeNet 与 FS-Mol。",
+    "metric": "摘要未点名指标（仅说明在四项任务与多种 support set 规模下比较）。",
+    "result": "在四项任务中的三项以及不同支持集规模下均表现更优；摘要未给出数值。",
+    "limitation": "摘要未提及",
+    "relation": "覆盖用户想法，并显式使用了 FS-Mol 这一少样本分子基准，可在数据集选择与「指纹 + 图」混合特征上做参考。"
+   }
+  },
+  {
+   "title": "Molecular property prediction in the ultra‐low data regime",
+   "authors": [
+    "Basem A. Eraqi",
+    "Dmitrii Khizbullin",
+    "Shashank S. Nagaraja",
+    "S. Mani Sarathy"
+   ],
+   "year": 2025,
+   "venue": "Communications Chemistry",
+   "url": "https://doi.org/10.1038/s42004-025-01592-1",
+   "doi": "10.1038/s42004-025-01592-1",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 32,
+   "abstract": "Data scarcity remains a major obstacle to effective machine learning in molecular property prediction and design, affecting diverse domains such as pharmaceuticals, solvents, polymers, and energy carriers. Although multi-task learning (MTL) can leverage correlations among properties to improve predictive performance, imbalanced training datasets often degrade its efficacy through negative transfer. Here, we present adaptive checkpointing with specialization (ACS), a training scheme for multi-task graph neural networks that mitigates detrimental inter-task interference while preserving the benefits of MTL. We validate ACS on multiple molecular property benchmarks, where it consistently surpasses or matches the performance of recent supervised methods. To illustrate its practical utility, we deploy ACS in a real-world scenario of predicting sustainable aviation fuel properties, showing that it can learn accurate models with as few as 29 labeled samples. By enabling reliable property prediction in low-data regimes, ACS broadens the scope and accelerates the pace of artificial intelligence-driven materials discovery and design. Multi-task learning has been shown to improve the predicting performance of machine learning models despite data scarcity, but imbalanced training datasets often degrade its efficacy through negative transfer. Here, the authors introduce adaptive checkpointing with specialization, a training scheme that mitigates detrimental inter-task interference, and demonstrate its practical utility by predicting sustainable aviation fuel properties.",
+   "openalex": "https://openalex.org/W4412150896",
+   "n": 10,
+   "id": "doi:10.1038/s42004-025-01592-1",
+   "score": 4.845,
+   "matchedTerms": [
+    "graph neural network",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "数据稀缺是分子性质预测与设计的主要障碍；多任务学习虽能利用性质间相关性提升性能，但训练数据不均衡常通过 negative transfer 削弱其效果。",
+    "method": "ACS（adaptive checkpointing with specialization）：面向 multi-task graph neural networks 的训练方案，在保留多任务学习收益的同时减轻有害的任务间干扰。",
+    "dataset": "多个分子性质基准；真实场景应用为可持续航空燃料（sustainable aviation fuel）性质预测。",
+    "metric": "摘要未点名指标。",
+    "result": "在多个分子性质基准上一致超过或持平近期监督方法；在可持续航空燃料场景中仅用 29 个标注样本即可学到准确的性质预测模型。",
+    "limitation": "摘要未提及",
+    "relation": "把「小样本」推进到 ultra-low data 区间并给出 29 个标注样本的真实世界案例，可用来论证用户想法的应用价值；差异在于其任务域不限于药物分子（含溶剂、聚合物、能源载体）。"
+   }
+  },
+  {
+   "title": "MolecularGPT: Open Large Language Model (LLM) for Few-Shot Molecular Property Prediction",
+   "authors": [
+    "Yuyan Liu",
+    "Sirui Ding",
+    "Zhou Sheng",
+    "Wenqi Fan",
+    "Qiaoyu Tan"
+   ],
+   "year": 2024,
+   "venue": "arXiv (Cornell University)",
+   "url": "https://doi.org/10.48550/arxiv.2406.12950",
+   "doi": "10.48550/arxiv.2406.12950",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 94,
+   "abstract": "Molecular property prediction (MPP) is a fundamental and crucial task in drug discovery. However, prior methods are limited by the requirement for a large number of labeled molecules and their restricted ability to generalize for unseen and new tasks, both of which are essential for real-world applications. To address these challenges, we present MolecularGPT for few-shot MPP. From a perspective on instruction tuning, we fine-tune large language models (LLMs) based on curated molecular instructions spanning over 1000 property prediction tasks. This enables building a versatile and specialized LLM that can be adapted to novel MPP tasks without any fine-tuning through zero- and few-shot in-context learning (ICL). MolecularGPT exhibits competitive in-context reasoning capabilities across 10 downstream evaluation datasets, setting new benchmarks for few-shot molecular prediction tasks. More importantly, with just two-shot examples, MolecularGPT can outperform standard supervised graph neural network methods on 4 out of 7 datasets. It also excels state-of-the-art LLM baselines by up to 15.7% increase on classification accuracy and decrease of 17.9 on regression metrics (e.g., RMSE) under zero-shot. This study demonstrates the potential of LLMs as effective few-shot molecular property predictors. The code is available at https://github.com/NYUSHCS/MolecularGPT.",
+   "openalex": "https://openalex.org/W4399912177",
+   "n": 11,
+   "id": "doi:10.48550/arxiv.2406.12950",
+   "score": 5.94,
+   "matchedTerms": [
+    "graph neural network",
+    "few-shot",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "已有分子性质预测方法受限于需要大量标注分子、且对未见任务和新任务的泛化能力不足，而这两点正是真实应用所需。",
+    "method": "MolecularGPT：从 instruction tuning 视角，在覆盖 1000 多个性质预测任务的精选分子指令上微调大语言模型，使其无需再微调即可通过 zero-/few-shot in-context learning (ICL) 适配新的 MPP 任务。",
+    "dataset": "10 个下游评测数据集（摘要未点名）。",
+    "metric": "classification accuracy 与回归指标（如 RMSE）。",
+    "result": "在 10 个下游数据集上展现出有竞争力的 in-context 推理能力；仅用 two-shot 示例即在 7 个数据集中的 4 个上超过标准监督 GNN 方法；zero-shot 下相较 state-of-the-art LLM 基线分类准确率最高提升 15.7%、回归指标（如 RMSE）降低 17.9。",
+    "limitation": "摘要未提及",
+    "relation": "与用户想法构成路线对照：不用 GNN、改用 LLM 指令微调 + 上下文学习也能做少样本分子性质预测，并在部分数据集上超过监督 GNN；用户的方案需要与之比较才有说服力。"
+   }
+  },
+  {
+   "title": "Few-Shot Learning with Graph Neural Networks",
+   "authors": [
+    "Víctor García",
+    "Joan Bruna"
+   ],
+   "year": 2017,
+   "venue": "arXiv (Cornell University)",
+   "url": "https://doi.org/10.48550/arxiv.1711.04043",
+   "doi": "10.48550/arxiv.1711.04043",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 1134,
+   "abstract": "We propose to study the problem of few-shot learning with the prism of inference on a partially observed graphical model, constructed from a collection of input images whose label can be either observed or not. By assimilating generic message-passing inference algorithms with their neural-network counterparts, we define a graph neural network architecture that generalizes several of the recently proposed few-shot learning models. Besides providing improved numerical performance, our framework is easily extended to variants of few-shot learning, such as semi-supervised or active learning, demonstrating the ability of graph-based models to operate well on 'relational' tasks.",
+   "openalex": "https://openalex.org/W2770468159",
+   "n": 12,
+   "id": "doi:10.48550/arxiv.1711.04043",
+   "score": 5.413,
+   "matchedTerms": [
+    "graph neural network",
+    "few-shot"
+   ],
+   "fields": {
+    "question": "把少样本学习看成由输入图像构成、标签部分可观测的图模型上的推断问题，从而统一已有少样本模型。",
+    "method": "将通用的 message-passing 推断算法与其神经网络对应物融合，定义可泛化若干已有少样本学习模型的图神经网络架构；框架可 easy 扩展到 semi-supervised、active learning 等少样本变体。",
+    "dataset": "由输入图像构造的部分可观测图模型（摘要未点名具体数据集，且非分子数据）。",
+    "metric": "摘要未提及",
+    "result": "在数值表现上有提升，并表明基于图的模型能在 relational 任务上良好运行；摘要未给出具体数值。",
+    "limitation": "摘要未提及",
+    "relation": "是「用 GNN 做少样本」的方法源头之一，但摘要面向图像关系任务而非分子性质；用户可引用其元学习 + 消息传递的形式化，同时说明尚未在分子性质上验证。"
+   }
+  },
+  {
+   "title": "A compact review of molecular property prediction with graph neural networks",
+   "authors": [
+    "Oliver Wieder",
+    "Stefan M. Kohlbacher",
+    "Mélaine A. Kuenemann",
+    "Arthur Garon",
+    "Pierre Ducrot",
+    "Thomas Seidel",
+    "Thierry Langer"
+   ],
+   "year": 2020,
+   "venue": "Drug Discovery Today Technologies",
+   "url": "https://doi.org/10.1016/j.ddtec.2020.11.009",
+   "doi": "10.1016/j.ddtec.2020.11.009",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 689,
+   "abstract": "As graph neural networks are becoming more and more powerful and useful in the field of drug discovery, many pharmaceutical companies are getting interested in utilizing these methods for their own in-house frameworks. This is especially compelling for tasks such as the prediction of molecular properties which is often one of the most crucial tasks in computer-aided drug discovery workflows. The immense hype surrounding these kinds of algorithms has led to the development of many different types of promising architectures and in this review we try to structure this highly dynamic field of AI-research by collecting and classifying 80 GNNs that have been used to predict more than 20 molecular properties using 48 different datasets.",
+   "openalex": "https://openalex.org/W3110901318",
+   "n": 13,
+   "id": "doi:10.1016/j.ddtec.2020.11.009",
+   "score": 7.636,
+   "matchedTerms": [
+    "graph neural network",
+    "molecular property prediction"
+   ],
+   "fields": {
+    "question": "GNN 在药物发现（尤其是作为计算机辅助药物发现核心环节的分子性质预测）中日益受药企关注，相关架构高度分散，需要结构化梳理。",
+    "method": "综述：收集并分类用于分子性质预测的 80 个 GNN。",
+    "dataset": "综述覆盖 20 多个分子性质、48 个不同数据集。",
+    "metric": "摘要未提及",
+    "result": "整理出该方向高度活跃研究的体系结构（80 个 GNN × 20+ 性质 × 48 个数据集的分类）。",
+    "limitation": "摘要未提及",
+    "relation": "可用于快速核查用户想法的坐标：GNN 做分子性质预测的架构谱系已被整理，但摘要层面未见按「小样本/低数据」维度做的专门对比。"
+   }
+  }
+ ],
+ "clusters": [
+  {
+   "name": "元学习初始化与 episode 构造",
+   "summary": "用 MAML/ProtoMAML 或把 episode 重构为分子-性质子图，让 GNN 学到可跨任务迁移的初始化与训练流程。",
+   "papers": [
+    1,
+    3,
+    4,
+    9,
+    12
+   ]
+  },
+  {
+   "name": "任务自适应表示与参数高效适配",
+   "summary": "针对「性质间关系会变」这一失效原因，做性质感知嵌入 [2]、直接预测目标 GNN 权重 [6] 或用少量自适应参数调制消息传递 [5]。",
+   "papers": [
+    2,
+    5,
+    6
+   ]
+  },
+  {
+   "name": "混合编码器与低数据训练策略",
+   "summary": "把 GNN 与 CNN/Transformer/分子指纹混合建模 [7][8]，或用自适应检查点选择抑制多任务负迁移 [10]。",
+   "papers": [
+    7,
+    8,
+    10
+   ]
+  },
+  {
+   "name": "非 GNN 路线与领域综述",
+   "summary": "用 LLM 指令微调 + 零/少样本上下文学习绕开 GNN [11]，以及整理 80 个 GNN 架构谱系的综述 [13]。",
+   "papers": [
+    11,
+    13
+   ]
+  }
+ ],
+ "gaps": [
+  {
+   "title": "指标与基准不统一，方法之间难以直接比较",
+   "detail": "从摘要看，[3] 报 AUPRC、[4][7] 报 ROC-AUC、[11] 报 accuracy 与 RMSE，而 [1][2][5][6][8][9][10] 的摘要未给出指标名甚至未点名数据集；[13] 整理了 48 个数据集但按架构分类。缺少一个以「少样本设定」为轴心、同一指标口径的横向榜单，新提出的 GNN 小样本方法需要自行拼基线。",
+   "papers": [
+    1,
+    3,
+    4,
+    7,
+    9,
+    11,
+    13
+   ]
+  },
+  {
+   "title": "真正极低标注量与真实研发闭环的验证仍稀薄",
+   "detail": "这些工作的评测都在公开基准上完成——Tox21、SIDER、MUV、ToxCast [6]、ChEMBL20 [3]、MoleculeNet 与 FS-Mol [9]，其中 [7] 明确给出 10-shot 设定、[3] 明确 k∈{16, 32, 64, 128, 256} 的微调集；而就摘要所述，只有 [10] 报告了 29 个标注样本的真实可持续航空燃料场景、[11] 报告 two-shot 结果。针对新药研发中真实新性质（没有公开数据可用）的极低标注闭环验证，在摘要层面尚未看到。",
+   "papers": [
+    3,
+    6,
+    7,
+    9,
+    10,
+    11
+   ]
+  },
+  {
+   "title": "「预训练+微调」失效的机制诊断不足",
+   "detail": "[6] 明确指出微调步骤不总有效、会过拟合基础性质，[2] 指出子结构与分子间关系随性质变化，[10] 指出数据不均衡通过 negative transfer 削弱多任务收益，[4] 则利用分子-性质多对多关系；但除这些方法设计外，从摘要看不到对失效条件的系统诊断（哪一类性质、低于多少样本量时失效、失效与任务异质性的量化关系）。",
+   "papers": [
+    2,
+    4,
+    6,
+    10
+   ]
+  },
+  {
+   "title": "分布外泛化与图之外模态的结合尚未验证",
+   "detail": "就摘要可见，只有 [3] 单独统计 out-of-distribution 任务（平均 AUPRC +26.9%），[1] 处理 task heterogeneity 但未报告分布外结果；模态方面 [7][8][9] 混用 CNN/Transformer/分子指纹、[11] 使用文本指令，而其余工作都以分子图为唯一输入。从摘要看，「分布外/全新性质 × 非图模态」这一组合缺少交叉验证。",
+   "papers": [
+    1,
+    3,
+    7,
+    8,
+    9,
+    11
+   ]
+  }
+ ],
+ "approaches": []
+}

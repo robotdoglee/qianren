@@ -1,0 +1,164 @@
+{
+  "id": "demo-rag-med",
+  "keep": [6, 11, 2, 13, 1, 5, 8, 9, 4, 12, 14, 10],
+  "dropped": [
+    { "n": 3, "reason": "与 n=2 标题、DOI 实质相同（同一篇《Medical Question Answering System Based on Retrieval-augmented Generation》，DOI 带 /pdf 后缀），去重保留 DOI 不带 /pdf 的 n=2" },
+    { "n": 7, "reason": "PoisonedRAG：研究对 RAG 知识库的投毒攻击与防御，场景为通用开放域问答，既非医学问答也以攻击成功率为目标，与「用 RAG 减少医学问答幻觉」明显无关" },
+    { "n": 15, "reason": "KDD 的 RA-LLMs 通用综述，摘要完全未涉及医学/临床场景，与输入的医学问答限定不符（医学 RAG 综述已由 n=4、n=12 覆盖）" }
+  ],
+  "fields": {
+    "6": {
+      "question": "在不额外微调基座模型的前提下，仅靠检索增强能否提升医学问答（MedQA）的事实可靠性、抑制幻觉。",
+      "method": "GPT-4 接入基于 FAISS 的稠密检索模块（嵌入模型 BAAI/bge-small-en），与无检索的 GPT-4 基线对照；检索深度取 k=1、3、5；并补做跨数据集实验。",
+      "dataset": "MedQuAD（留出 1,000 题做评测）；跨数据集泛化用 PubMedQA。",
+      "metric": "BLEU-1 至 BLEU-4、ROUGE-L、METEOR、text-level F1、Exact Match (EM)、BERTScore、SBERT。",
+      "result": "RAG 配置在所有指标上均优于基线，其中 BLEU-4 从 0.3015 升至 0.4224、BERTScore 从 0.8487 升至 0.8691；定性分析显示遗漏更少、领域术语使用更准确；增大检索数可提升语义相似度。",
+      "limitation": "摘要指出检索语料与目标问题分布不对齐时（domain shift）有效性下降，即在 PubMedQA 上的表现不如域内设置。",
+      "relation": "与用户想法高度重合：给出了「检索增强确实降低 MedQA 幻觉/提升事实性」的量化证据，同时划出边界——语料与问题分布不匹配时收益会明显缩水。"
+    },
+    "11": {
+      "question": "医学 RAG 系统包含多个可自由组合的组件，针对不同的医学用途缺少关于最优 RAG 设置（语料、检索器、基座 LLM）的最佳实践。",
+      "method": "提出 MIRAGE 基准与 MEDRAG 工具包，对 41 种语料/检索器/基座 LLM 组合开展大规模实验（超过 1.8 万亿 prompt token）。",
+      "dataset": "MIRAGE：由 5 个医学 QA 数据集组成、共 7,663 个问题（摘要未列出各数据集名称）。",
+      "metric": "accuracy（准确率），与 chain-of-thought prompting 对照。",
+      "result": "MEDRAG 相比 chain-of-thought 使 6 个 LLM 的准确率最高提升 18%，把 GPT-3.5 与 Mixtral 提升到 GPT-4 水平；多种医学语料与检索器的组合取得最好表现；发现 log-linear scaling 性质与「lost-in-the-middle」效应。",
+      "limitation": "摘要未提及",
+      "relation": "是用户想法最直接的「已被做过」证据：以幻觉与知识过时为动机，系统性验证了检索增强对医学问答准确率的提升，并给出组件选型指南。"
+    },
+    "2": {
+      "question": "RAG 用于医学问答任务是否可行可靠，针对大模型在医疗场景中的幻觉与不可溯源问题。",
+      "method": "以 Kaggle 医疗健康数据集的癌症相关子集构建医学知识库，接入 Qwen-Plus 与 Qwen-Flash，从答案准确性、来源可追溯性、拒答能力三个维度评测，并分析不同检索量（top-k）的影响。",
+      "dataset": "Kaggle healthcare dataset 的癌症相关子集（摘要未给出具体数据集名称与规模）。",
+      "metric": "BERTScore F1，以及 refusal rate（拒答率）与 attribution accuracy（归因准确率）。",
+      "result": "RAG 显著提升模型回答的语义一致性并在 BERTScore F1 上超过基线模型，在拒答率与归因准确率上表现良好；检索量 k=5 时综合表现最佳。",
+      "limitation": "摘要未提及",
+      "relation": "与用户想法几乎同题，且把「可溯源」与「该拒答时拒答」作为幻觉治理的独立评测维度；差异在于只覆盖单一疾病知识库与两个 Qwen 模型，规模有限。"
+    },
+    "13": {
+      "question": "检索结果中关键信息的排名与密度会显著影响 RAG 回答质量（「lost-in-the-middle」问题），如何提升医学领域 RAG 流程的稳健性与可靠性。",
+      "method": "提出 map-reduce 策略 BriefContext，在不修改模型权重的前提下处理长上下文检索结果。",
+      "dataset": "摘要仅说明在多个 QA 数据集（multiple QA datasets）上验证，未点名具体数据集。",
+      "metric": "摘要未提及",
+      "result": "在多种 LLM 主干与多个 QA 数据集上展示了该流程的优势，摘要未给出具体数值。",
+      "limitation": "摘要未提及",
+      "relation": "补上用户想法中「检索到证据之后如何使用」这一环：针对长上下文中部信息丢失做结构优化，与减少幻觉的目标一致但切入机制不同。"
+    },
+    "1": {
+      "question": "如何从海量社交媒体（Reddit）用户生成内容中，回答临床医生关于 xylazine、ketamine 等新兴药物相关健康问题的提问。",
+      "method": "两层 RAG 框架：先生成 query-focused 的单条摘要，再聚合为总摘要；对比可低资源部署的量化模型 Nous-Hermes-2-7B-DPO 与 GPT-4。",
+      "dataset": "Reddit 上围绕 xylazine 与 ketamine 的用户生成帖子，对应临床医生提问；共 20 个查询、76 个样本。",
+      "metric": "由 GPT-4 评分的 relevance、length、hallucination、coverage、coherence 中位数（Mann-Whitney U 检验），另加 Coleman-Liau Index 可读性。",
+      "result": "两个模型在各维度中位分相当：coverage（U=733.0，P=.89）、coherence（U=670.0，P=.49）、relevance（U=662.0，P=.15）、length（U=672.0，P=.55）、hallucination（U=859.0，P=.01），仅 Coleman-Liau Index 差异显著（U=307.5，P<.001）。",
+      "limitation": "摘要将其定位为 proof-of-concept study，评测规模仅 20 个查询、76 个样本，主题限于 xylazine 与 ketamine 两类物质。",
+      "relation": "为用户想法提供了把 hallucination 作为独立评分维度的可操作评测做法；差异在于知识源是社媒经验而非权威医学文献，非常规医学问答场景。"
+    },
+    "5": {
+      "question": "用 RAG 构建疾病专科、符合健康信息合规要求的 LLM 聊天接口，以减少商用 LLM 易产生幻觉信息的问题。",
+      "method": "在机构内部合规平台「Versa」上构建肝病专科模型 LiVersa，对 30 份公开的 AASLD 指南文档做 RAG；两轮评测：先与已发表知识测评中的培训学员对比，再请 15 名肝病专家评价 LiVersa、ChatGPT 4 与 Llama 2 各 10 个肝胆主题问题的输出。",
+      "dataset": "30 份公开的 AASLD（美国肝病研究学会）指南文档；10 题已发表知识测评 + 10 个肝胆主题问题。",
+      "metric": "回答正确性；专家给出的准确性、全面性（comprehensive）与安全性（safe）评分。",
+      "result": "LiVersa 在 10 题知识测评中全部答对；专家评价其输出比 ChatGPT 4 更准确，但在全面性与安全性上评分更低。",
+      "limitation": "摘要明确指出：因用于 RAG 的文档数量限制而存在不足，在真正上线部署前还需进一步打磨。",
+      "relation": "直接支撑用户想法（RAG 提高专科问答准确性），同时给出反向证据——准确率提升不等于更全面、更安全，只盯单一指标会低估临床风险。"
+    },
+    "8": {
+      "question": "LLM 应用于肾脏病的临床决策与教育时，如何缓解其不完美准确率与幻觉输出。",
+      "method": "同时采用 prompt engineering（chain-of-thought 分步推理）与 RAG 两种策略，把接入 RAG 的专用 ChatGPT 对齐到 KDIGO 2023 慢性肾脏病指南。",
+      "dataset": "KDIGO 2023 chronic kidney disease 指南（摘要未提到用于测试的问答集）。",
+      "metric": "摘要未提及",
+      "result": "展示了专科化 RAG 聊天模型可提供 specialized、accurate medical advice 的潜力，摘要未给出量化结果。",
+      "limitation": "摘要未提及",
+      "relation": "同属「指南语料 + RAG」路线，但摘要停留在 showcase 层面、缺少与非 RAG 基线的幻觉对比；用户若做量化对照，正是这篇没有覆盖的部分。"
+    },
+    "9": {
+      "question": "传统生成式问答模型容易产生幻觉、给出不准确的医学建议，而简单检索系统又缺乏自然流畅性。",
+      "method": "五层架构的 RAG 医学问答系统：数据处理层清洗并格式化 MedChatZH；知识存储层用 BGE-small-zh-v1.5 把文档编码为 768 维向量并建索引；检索层按余弦相似度选取相关文档；答案生成层用 ChatGLM3-6B 生成上下文相关回答；最后以 Gradio 实现 Web 界面。",
+      "dataset": "MedChatZH 数据集。",
+      "metric": "摘要未提及",
+      "result": "完成了可对外提供高质量医学问答服务的系统实现；摘要未报告任何实验结果。",
+      "limitation": "摘要未提及",
+      "relation": "证明中文医疗 RAG 问答的工程实现已有人做过，但摘要中完全没有幻觉或准确性的量化评估——正是用户想法可以补上的位置。"
+    },
+    "4": {
+      "question": "医学 RAG 如何从知识源、系统工作流与应用场景三个层面缓解 LLM 的事实幻觉、知识更新滞后与证据溯源不足。",
+      "method": "综述：知识源侧归纳 knowledge graphs、权威医学文献、电子病历、多模态医疗数据四类增强路径并比较其证据来源、适用范围与构建成本；流程侧总结意图识别、知识检索、知识整合、生成控制各环节的代表策略；场景侧覆盖循证问答、个性化诊疗推荐、病因与病理推理、多模态证据辅助问答、患者提问理解。",
+      "dataset": "综述（摘要未给出纳入研究数量）。",
+      "metric": "摘要未提及",
+      "result": "归纳了现有方法的主要特点、适用范围与局限，并从知识协同、检索优化、证据整合、临床应用四方面提出医学 RAG 的未来研究方向。",
+      "limitation": "摘要未提及",
+      "relation": "主题与用户想法直接重合（医学问答 + 幻觉）的中文系统综述，说明该选题已被综述性覆盖，新的贡献需要落在具体机制或评测上。"
+    },
+    "12": {
+      "question": "RAG 在临床领域的应用研究较为零散，需要梳理其在诊断支持、电子病历摘要与医学问答三类应用中的架构与评估方式。",
+      "method": "遵循 PRISMA 指南的系统性文献综述（SLR），合成 30 篇同行评审研究，归纳 naïve、advanced、modular 三类架构变体并比较其部署与评估策略。",
+      "dataset": "综述（30 篇同行评审研究）。",
+      "metric": "在标准指标之外重点比较 FactScore、RadGraph-F1、MED-F1 等临床特定指标。",
+      "result": "识别出持续存在的挑战：retrieval noise、domain shift、generation latency 与 limited explainability。",
+      "limitation": "摘要未提及",
+      "relation": "为用户想法提供「该方向已被系统综述」的判断，并指出评估幻觉应使用 FactScore 等临床特异性指标而非仅通用文本相似度。"
+    },
+    "14": {
+      "question": "RAG 在临床决策支持系统中的架构模式有哪些、缓解幻觉的实证证据有多强，以及现有评估实践是否符合有临床意义的安全标准。",
+      "method": "遵循 PRISMA 指南系统综述 2023 年 1 月至 2025 年 12 月在临床场景评估检索增强 LLM 的研究（纳入要求：推理时检索、实证评估、评估正确性/grounding/安全性），因临床任务与报告指标异质而做叙述性综合。",
+      "dataset": "综述（30 项研究符合纳入标准）。",
+      "metric": "按 correctness、grounding、safety 三类归纳（摘要未列出具体的指标名）。",
+      "result": "识别出 single-step retrieval、iterative 或 agentic retrieval、graph-based retrieval、hybrid symbolic–neural 四类架构；RAG 相比无检索 LLM 改善了事实支撑并减少了 unsupported claims，在基于指南与诊疗规程的任务上尤为明显；但反复出现检索错误、证据整合不完整、有检索上下文仍有残余幻觉等失效模式。",
+      "limitation": "摘要指出评估实践以回顾性和指标驱动为主、临床医生参与有限、没有前瞻性临床结局研究；当前证据基础是架构创新而临床验证未同步成熟。",
+      "relation": "与用户想法最接近的证据整合工作，直接回答「RAG 到底有没有减少医疗文本幻觉」——有改善但缺少临床级验证；用户的实证工作可在前瞻性验证与医生评价上差异化。"
+    },
+    "10": {
+      "question": "监管提交中的临床数据抽取错误风险高，而 LLM 各类单一幻觉缓解技术缺少面向受监管数据标准的系统化架构组合分析。",
+      "method": "提出概念性 defense-in-depth 参考架构：hybrid RAG（sparse–dense 检索）+ 约束解码产出 schema-valid 结构化输出 + 基于 NLI 的证据锚定与 provenance tracking + 不确定性下的校准拒答（calibrated abstention），面向 SDTM 映射、不良事件编码与检验值归一化。",
+      "dataset": "摘要未提及（未开展实验）。",
+      "metric": "提出统一评估协议：offline retrieval metrics、以 FActScore 分解做生成事实性评估、领域特定临床指标与人工评估 rubric（并设计以避免数据泄漏）。",
+      "result": "归纳并分类了 entity conflation、temporal reasoning errors、ontology boundary violations 等失效模式并把已发表的缓解策略逐一对应；引用文献指出幻觉率从优化条件下的低个位数到对抗提示下的 50% 以上不等。",
+      "limitation": "摘要明确标注 [LIMITATION]：该框架尚未做实证验证，本文贡献的是文献导出的参考架构与有待未来实现研究检验的评估策略。",
+      "relation": "同属「用 RAG 治医疗幻觉」，但任务落在结构化临床数据抽取而非问答、且停留在设计层面；其组件清单（约束解码、NLI 校验、校准拒答）可作为用户方案可选环节的对照参考。"
+    }
+  },
+  "clusters": [
+    {
+      "name": "端到端医学问答 RAG 系统实现",
+      "summary": "自建知识库 + 现成（多为开源）大模型搭出可运行的医学问答系统，并报告幻觉、可溯源或拒答方面的表现。",
+      "papers": [3, 5, 8, 12]
+    },
+    {
+      "name": "检索语料、检索器与长上下文组织方式的组合优化",
+      "summary": "把 RAG 当成可调变量做系统消融：语料/检索器/LLM 的组合选型 [2]、检索深度与指标口径 [1]、检索结果的 map-reduce 压缩 [4]。",
+      "papers": [1, 2, 4]
+    },
+    {
+      "name": "指南对齐的专科临床问答落地",
+      "summary": "以学会指南（AASLD、KDIGO）为知识源构建专科问答，并用临床专家评分检验输出的准确性与安全性。",
+      "papers": [6, 7]
+    },
+    {
+      "name": "医学 RAG 的综述与证据整合",
+      "summary": "从知识源/流程/场景、架构变体与评估方法等角度总结医学 RAG 的现状、局限与未来方向。",
+      "papers": [9, 10, 11]
+    }
+  ],
+  "gaps": [
+    {
+      "title": "「幻觉」缺少跨研究可比的直接度量",
+      "detail": "从摘要看，只有 [5] 把 hallucination 单独列为评分维度，[3] 用 BERTScore F1 加拒答率与归因准确率，[1] 用 BLEU/ROUGE-L/METEOR/text-level F1/EM/BERTScore/SBERT 等通用文本指标，[6] 依赖专家的准确性/全面性/安全性打分；[10] 建议改用 FactScore、RadGraph-F1、MED-F1，[12] 也提出以 FActScore 为核心的评估协议。也就是说各文对「幻觉减少」的度量互不可通，统一的幻觉率口径尚未建立。",
+      "papers": [1, 3, 5, 6, 10, 12]
+    },
+    {
+      "title": "检索语料与问题分布不匹配时 RAG 的收益不明确",
+      "detail": "[1] 报告当检索语料与目标问题分布不对齐时 RAG 效果下降，[10] 把 domain shift 列为持续挑战，[2] 发现最优表现依赖医学语料与检索器的组合并存在「lost-in-the-middle」效应，[4] 针对排名与密度提出 BriefContext；但中文系统实现 [8] 与专科展示 [7] 的摘要都没有任何跨语料、跨分布的量化结果。语料选择与语料规模对幻觉率的影响仍缺系统消融（[6] 仅定性提到不足源于用于 RAG 的文档数量限制）。",
+      "papers": [1, 2, 4, 6, 7, 8, 10]
+    },
+    {
+      "title": "中文医疗问答有系统实现、缺量化幻觉评测",
+      "detail": "[8] 用 MedChatZH 数据集、BGE-small-zh-v1.5 与 ChatGLM3-6B 搭建了完整的中文 RAG 问答系统，但其摘要完全没有给出任何评测指标；[3] 用 Qwen-Plus/Qwen-Flash 在癌症子集上做了准确性/可溯源/拒答三维度评测，也只说 BERTScore F1 优于基线而未报幻觉数值；主要的量化证据仍集中在英文基准 MedQuAD/PubMedQA [1] 与 MIRAGE 的 5 个数据集 7,663 题 [2] 上。从摘要看，中文医学问答上的幻觉基线与 RAG/非 RAG 对照实验仍是空白。",
+      "papers": [1, 2, 3, 8]
+    },
+    {
+      "title": "验证停留在回顾性指标，缺少前瞻性与临床安全结局",
+      "detail": "[11] 明确指出纳入研究的评估以回顾性、指标驱动为主，临床医生参与有限且无前瞻性临床结局研究；[6] 的专家评分显示 RAG 系统虽更准确但在全面性与安全性上评分更低；[12] 列出 generation latency 与 limited explainability 等落地障碍；[10] 的架构则尚未实证验证。RAG 是否真正降低临床风险、而不只是提高文本指标，摘要层面还没有前瞻性证据。",
+      "papers": [6, 10, 11, 12]
+    }
+  ],
+  "approaches": []
+}

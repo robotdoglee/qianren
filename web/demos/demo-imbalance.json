@@ -1,0 +1,584 @@
+{
+ "id": "demo-imbalance",
+ "mode": "problem",
+ "input": "我的医学影像分类模型在类别极度不平衡时少数类召回率很低",
+ "engine": "demo",
+ "generatedAt": "2026-11-18",
+ "queries": [
+  "class imbalance medical image classification deep learning",
+  "long-tailed medical image classification minority class",
+  "imbalanced medical imaging loss reweighting oversampling"
+ ],
+ "stats": {
+  "openalex": 36,
+  "arxiv": 0,
+  "s2": 0,
+  "deduped": 35,
+  "kept": 13,
+  "seconds": 0,
+  "note": "演示数据生成时 arXiv 与 Semantic Scholar 对生成环境 IP 限流，故仅含 OpenAlex 结果；实时模式会同时检索三个来源。"
+ },
+ "papers": [
+  {
+   "title": "PCCT: Progressive Class-Center Triplet Loss for Imbalanced Medical Image Classification",
+   "authors": [
+    "Kanghao Chen",
+    "Weixian Lei",
+    "Shen Zhao",
+    "Wei‐Shi Zheng",
+    "Ruixuan Wang"
+   ],
+   "year": 2023,
+   "venue": "IEEE Journal of Biomedical and Health Informatics",
+   "url": "https://doi.org/10.1109/jbhi.2023.3240136",
+   "doi": "10.1109/jbhi.2023.3240136",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 46,
+   "abstract": "Imbalanced training data in medical image diagnosis is a significant challenge for diagnosing rare diseases. For this purpose, we propose a novel two-stage Progressive Class-Center Triplet (PCCT) framework to overcome the class imbalance issue. In the first stage, PCCT designs a class-balanced triplet loss to coarsely separate distributions of different classes. Triplets are sampled equally for each class at each training iteration, which alleviates the imbalanced data issue and lays solid foundation for the successive stage. In the second stage, PCCT further designs a class-center involved triplet strategy to enable a more compact distribution for each class. The positive and negative samples in each triplet are replaced by their corresponding class centers, which prompts compact class representations and benefits training stability. The idea of class-center involved loss can be extended to the pair-wise ranking loss and the quadruplet loss, which demonstrates the generalization of the proposed framework. Extensive experiments support that the PCCT framework works effectively for medical image classification with imbalanced training images. On four challenging class-imbalanced datasets (two skin datasets Skin7 and Skin 198, one chest X-ray dataset ChestXray-COVID, and one eye dataset Kaggle EyePACs), the proposed approach respectively obtains the mean F1 score 86.20, 65.20, 91.32, and 87.18 over all classes and 81.40, 63.87, 82.62, and 79.09 for rare classes, achieving state-of-the-art performance and outperforming the widely used methods for the class imbalance issue.",
+   "openalex": "https://openalex.org/W4319999780",
+   "n": 1,
+   "id": "doi:10.1109/jbhi.2023.3240136",
+   "score": 0.385,
+   "matchedTerms": [],
+   "fields": {
+    "question": "医学影像诊断中的训练数据不平衡使罕见病的诊断成为突出难题。",
+    "method": "两阶段 Progressive Class-Center Triplet (PCCT) 框架：阶段一设计 class-balanced triplet loss，每次迭代对每类等量采样三元组以粗分各类分布；阶段二把三元组中的正负样本替换为对应的类中心（class-center involved triplet）以获得更紧凑的类内分布，该思路还可推广到 pair-wise ranking loss 与 quadruplet loss。",
+    "dataset": "四个具挑战性的类别不平衡数据集：两个皮肤数据集 Skin7 与 Skin 198、一个胸部 X 光数据集 ChestXray-COVID、一个眼科数据集 Kaggle EyePACs。",
+    "metric": "mean F1（分别报告所有类的平均 F1 与 rare classes 的 F1）。",
+    "result": "四个数据集上所有类的 mean F1 分别为 86.20、65.20、91.32、87.18，rare classes 分别为 81.40、63.87、82.62、79.09，达到 state-of-the-art 并优于广泛使用的类别不平衡方法。",
+    "limitation": "摘要未提及",
+    "relation": "对用户问题的最直接回应：显式报告了稀有类别的指标并超过常用重加权/重采样方法，既可作为方法上的对标对象，也是「应当如何报告少数类性能」的范式参考。"
+   }
+  },
+  {
+   "title": "Dynamically Weighted Balanced Loss: Class Imbalanced Learning and Confidence Calibration of Deep Neural Networks",
+   "authors": [
+    "K. Ruwani M. Fernando",
+    "Chris P. Tsokos"
+   ],
+   "year": 2021,
+   "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+   "url": "https://doi.org/10.1109/tnnls.2020.3047335",
+   "doi": "10.1109/tnnls.2020.3047335",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 426,
+   "abstract": "Imbalanced class distribution is an inherent problem in many real-world classification tasks where the minority class is the class of interest. Many conventional statistical and machine learning classification algorithms are subject to frequency bias, and learning discriminating boundaries between the minority and majority classes could be challenging. To address the class distribution imbalance in deep learning, we propose a class rebalancing strategy based on a class-balanced dynamically weighted loss function where weights are assigned based on the class frequency and predicted probability of ground-truth class. The ability of dynamic weighting scheme to self-adapt its weights depending on the prediction scores allows the model to adjust for instances with varying levels of difficulty resulting in gradient updates driven by hard minority class samples. We further show that the proposed loss function is classification calibrated. Experiments conducted on highly imbalanced data across different applications of cyber intrusion detection (CICIDS2017 data set) and medical imaging (ISIC2019 data set) show robust generalization. Theoretical results supported by superior empirical performance provide justification for the validity of the proposed dynamically weighted balanced (DWB) loss function.",
+   "openalex": "https://openalex.org/W3120093105",
+   "n": 2,
+   "id": "doi:10.1109/tnnls.2020.3047335",
+   "score": 1.437,
+   "matchedTerms": [
+    "medical imaging"
+   ],
+   "fields": {
+    "question": "类别分布不平衡是许多真实分类任务的固有问题，少数类与多数类之间难以学到判别边界，传统方法还受频率偏差影响。",
+    "method": "Dynamically Weighted Balanced (DWB) loss：按类别频率与真实类的预测概率分配权重，使权重能依预测分数自适应调节，从而由难度不同的、尤其是少数类的困难样本驱动梯度更新；并进一步证明该损失函数是 classification calibrated。",
+    "dataset": "高度不平衡数据上的两类应用：网络入侵检测 CICIDS2017 数据集与医学影像 ISIC2019 数据集。",
+    "metric": "摘要未点名具体指标。",
+    "result": "摘要称在两类应用的高度不平衡数据上展现稳健泛化，并有理论结果与更优的经验性能支持 DWB 损失的有效性；未给出具体数值。",
+    "limitation": "摘要未提及",
+    "relation": "属于用户问题最经典的解法族（重加权损失），并额外把「置信度校准」纳入同一损失设计；差异是其医学实验只有 ISIC2019 一个数据集，且摘要未报告召回率类指标。"
+   }
+  },
+  {
+   "title": "Synthetic Data Generation for Long-Tail Medical Image Classification: A Case Study in Skin Lesions",
+   "authors": [
+    "Jiaxiang Jiang",
+    "Mahesh M. Subedar",
+    "Omesh Tickoo"
+   ],
+   "year": 2026,
+   "venue": "arXiv (Cornell University)",
+   "url": "https://doi.org/10.48550/arxiv.2605.03221",
+   "doi": "10.48550/arxiv.2605.03221",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 2,
+   "abstract": "Long-tailed class distributions are pervasive in multi-class medical datasets and pose significant challenges for deep learning models which typically underperform on tail classes with limited samples. This limitation is particularly problematic in medical applications, where rare classes often correspond to severe or high-risk diseases and therefore require high diagnostic accuracy. Existing solutions-including specialized architectures, rebalanced loss functions, and handcrafted data augmentation-offer only marginal improvements and struggle to scale due to their limited and largely deterministic variability. To address these challenges, we introduce a diffusion-model-driven synthetic data augmentation pipeline tailored for medical long-tailed classification. Our approach features a novel inpainting diffusion model combined with an Out-of-Distribution (OOD) post-selection mechanism to ensure diverse, realistic, and clinically meaningful synthetic samples. Evaluated on the ISIC2019 skin lesion classification dataset, one of the largest and most imbalanced medical imaging benchmarks, our method yields substantial improvements in overall performance, with particularly pronounced gains on tail classes with more than $28\\%$ improvement on the class with the fewest samples. These results demonstrate the effectiveness of diffusion-based augmentation in mitigating long-tail imbalance and enhancing medical classification robustness.",
+   "openalex": "https://openalex.org/W7160384136",
+   "n": 3,
+   "id": "doi:10.48550/arxiv.2605.03221",
+   "score": 0.942,
+   "matchedTerms": [
+    "medical imaging"
+   ],
+   "fields": {
+    "question": "多类医学数据集普遍存在长尾分布，尾部类样本少导致模型在尾部类上表现不佳，而稀有类常对应高危疾病、需要高诊断准确率；现有专用架构、重平衡损失与手工数据增强只带来边际改进且因变化有限而难以扩展。",
+    "method": "面向医学长尾分类的 diffusion 驱动合成数据增强流水线：新型 inpainting diffusion model 生成样本，配合 Out-of-Distribution (OOD) post-selection 机制以保证合成样本多样、真实且具有临床意义。",
+    "dataset": "ISIC2019 皮肤病变分类数据集（摘要称其为最大且最不平衡的医学影像基准之一）。",
+    "metric": "整体性能与尾部类别性能（摘要未点名指标）。",
+    "result": "在 ISIC2019 上整体性能显著提升，尾部类增益尤为明显，样本量最少的类别提升超过 28%。",
+    "limitation": "摘要未提及",
+    "relation": "直接针对「少数类表现差」并给出稀有类的量化增益（>28%）；与用户方案的差异在解决层次——造数据而不是改损失或模型结构，可与之叠加。"
+   }
+  },
+  {
+   "title": "Deep learning model calibration for improving performance in class-imbalanced medical image classification tasks",
+   "authors": [
+    "Sivaramakrishnan Rajaraman",
+    "Prasanth Ganesan",
+    "Sameer Antani"
+   ],
+   "year": 2022,
+   "venue": "PLoS ONE",
+   "url": "https://doi.org/10.1371/journal.pone.0262838",
+   "doi": "10.1371/journal.pone.0262838",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 119,
+   "abstract": "In medical image classification tasks, it is common to find that the number of normal samples far exceeds the number of abnormal samples. In such class-imbalanced situations, reliable training of deep neural networks continues to be a major challenge, therefore biasing the predicted class probabilities toward the majority class. Calibration has been proposed to alleviate some of these effects. However, there is insufficient analysis explaining whether and when calibrating a model would be beneficial. In this study, we perform a systematic analysis of the effect of model calibration on its performance on two medical image modalities, namely, chest X-rays and fundus images, using various deep learning classifier backbones. For this, we study the following variations: (i) the degree of imbalances in the dataset used for training; (ii) calibration methods; and (iii) two classification thresholds, namely, default threshold of 0.5, and optimal threshold from precision-recall (PR) curves. Our results indicate that at the default classification threshold of 0.5, the performance achieved through calibration is significantly superior (p < 0.05) to using uncalibrated probabilities. However, at the PR-guided threshold, these gains are not significantly different (p > 0.05). This observation holds for both image modalities and at varying degrees of imbalance. The code is available at https://github.com/sivaramakrishnan-rajaraman/Model_calibration.",
+   "openalex": "https://openalex.org/W4210374324",
+   "n": 4,
+   "id": "doi:10.1371/journal.pone.0262838",
+   "score": 0.479,
+   "matchedTerms": [
+    "recall"
+   ],
+   "fields": {
+    "question": "医学影像分类中正常样本常远多于异常样本，类不平衡使深度网络预测的类别概率偏向多数类；但「模型校准何时有用」缺乏充分分析。",
+    "method": "系统分析模型校准对性能的影响：在胸片与眼底两种影像模态、多种深度学习分类器主干上，考察三个变量——(i) 训练集不平衡程度、(ii) 校准方法、(iii) 两个分类阈值（默认 0.5 与由 precision-recall 曲线得到的最优阈值）。",
+    "dataset": "胸部 X 光与眼底（fundus）影像两种模态（摘要未点名具体数据集）。",
+    "metric": "在默认 0.5 阈值与 PR 曲线最优阈值下的性能比较，并做显著性检验（p 值）。",
+    "result": "在默认阈值 0.5 下，校准后的性能显著优于使用未校准概率（p < 0.05）；而在 PR 引导的阈值下这些增益不再显著（p > 0.05）；该结论在两种模态与不同不平衡程度下均成立。",
+    "limitation": "摘要指出在 PR 最优阈值下校准带来的提升不显著，即校准的价值高度依赖阈值是否已被调优。",
+    "relation": "为用户问题提供一条低成本排查路径：少数类召回率低可能部分来自固定 0.5 阈值而非模型本身，先做校准/按 PR 曲线调阈值即可显著改善，再决定是否改造训练方法。"
+   }
+  },
+  {
+   "title": "MONICA: Benchmarking on Long-tailed Medical Image Classification",
+   "authors": [
+    "Lie Ju",
+    "Yan, Siyuan",
+    "Yukun Zhou",
+    "Nan Yang",
+    "Xiaodan Xing",
+    "Peibo Duan",
+    "Zongyuan Ge"
+   ],
+   "year": 2024,
+   "venue": "arXiv (Cornell University)",
+   "url": "https://doi.org/10.48550/arxiv.2410.02010",
+   "doi": "10.48550/arxiv.2410.02010",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 13,
+   "abstract": "Long-tailed learning is considered to be an extremely challenging problem in data imbalance learning. It aims to train well-generalized models from a large number of images that follow a long-tailed class distribution. In the medical field, many diagnostic imaging exams such as dermoscopy and chest radiography yield a long-tailed distribution of complex clinical findings. Recently, long-tailed learning in medical image analysis has garnered significant attention. However, the field currently lacks a unified, strictly formulated, and comprehensive benchmark, which often leads to unfair comparisons and inconclusive results. To help the community improve the evaluation and advance, we build a unified, well-structured codebase called Medical OpeN-source Long-taIled ClassifiCAtion (MONICA), which implements over 30 methods developed in relevant fields and evaluated on 12 long-tailed medical datasets covering 6 medical domains. Our work provides valuable practical guidance and insights for the field, offering detailed analysis and discussion on the effectiveness of individual components within the inbuilt state-of-the-art methodologies. We hope this codebase serves as a comprehensive and reproducible benchmark, encouraging further advancements in long-tailed medical image learning. The codebase is publicly available on https://github.com/PyJulie/MONICA.",
+   "openalex": "https://openalex.org/W4403854194",
+   "n": 5,
+   "id": "doi:10.48550/arxiv.2410.02010",
+   "score": 0.264,
+   "matchedTerms": [],
+   "fields": {
+    "question": "医学影像长尾学习领域缺少统一、严格规范且全面的基准，导致方法之间比较不公平、结论不一致。",
+    "method": "构建统一、结构良好的开源代码库 MONICA（Medical OpeN-source Long-taIled ClassifiCAtion），实现相关领域开发的 30 多种方法，并在 12 个长尾医学数据集上评测，对内置 state-of-the-art 方法内部各组件的有效性做详细分析与讨论。",
+    "dataset": "12 个长尾医学数据集，覆盖 6 个医学领域。",
+    "metric": "摘要未点名具体指标。",
+    "result": "提供了可复现的基准、实用指导与组件级分析讨论；摘要未给出数值结论。",
+    "limitation": "摘要未提及",
+    "relation": "用户不必自行复现即可在同一设定下横向比较 30+ 方法与 12 个数据集，是判断「我的思路是否已有人做过、比谁更好」的首要工具。"
+   }
+  },
+  {
+   "title": "Text-Guided Foundation Model Adaptation for Long-Tailed Medical Image Classification",
+   "authors": [
+    "Sirui Li",
+    "Li Lin",
+    "Yijin Huang",
+    "Pujin Cheng",
+    "Xiaoying Tang"
+   ],
+   "year": 2024,
+   "venue": "IEEE International Symposium on Biomedical Imaging (ISBI)",
+   "url": "https://doi.org/10.1109/isbi56570.2024.10635462",
+   "doi": "10.1109/isbi56570.2024.10635462",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 14,
+   "abstract": "In medical contexts, the imbalanced data distribution in long-tailed datasets, due to scarce labels for rare diseases, greatly impairs the diagnostic accuracy of deep learning models. Recent multimodal text-image supervised foundation models offer new solutions to data scarcity through effective representation learning. However, their limited medical-specific pretraining hinders their performance in medical image classification relative to natural images. To address this issue, we propose a novel Text-guided Foundation model Adaptation for Long-Tailed medical image classification (TFA-LT). We adopt a two-stage training strategy, integrating representations from the foundation model using just two linear adapters and a single ensembler for balanced outcomes. Experimental results on two long-tailed medical image datasets validate the simplicity, lightweight and efficiency of our approach: requiring only 6.1% GPU memory usage of the current best-performing algorithm, our method achieves an accuracy improvement of up to 27.1%, highlighting the substantial |potential of foundation model adaptation in this area.",
+   "openalex": "https://openalex.org/W4401749553",
+   "n": 6,
+   "id": "doi:10.1109/isbi56570.2024.10635462",
+   "score": 1.103,
+   "matchedTerms": [
+    "medical imaging"
+   ],
+   "fields": {
+    "question": "长尾医学数据集中稀有疾病标签稀缺严重损害深度学习模型的诊断准确率；多模态图文基础模型虽提供新思路，但医学特定预训练不足使其在医学影像分类上不如自然图像表现。",
+    "method": "TFA-LT（Text-guided Foundation model Adaptation for Long-Tailed medical image classification）：文本引导的基础模型适配，采用两阶段训练策略，仅用两个线性 adapter 与一个 ensembler 融合基础模型表示以获得平衡的结果。",
+    "dataset": "两个长尾医学影像数据集（摘要未点名）。",
+    "metric": "accuracy；以及相对当前最佳算法的 GPU 显存占用比例。",
+    "result": "只需当前性能最佳算法 6.1% 的 GPU 显存，准确率最高提升 27.1%。",
+    "limitation": "摘要未提及",
+    "relation": "给出另一条路线：不重新设计损失或采样，而用基础模型 + 极轻量适配来改善长尾表现，特别适合显存与标注都受限的场景，可与用户的重加权方案直接对比。"
+   }
+  },
+  {
+   "title": "Imbalanced Classification in Medical Imaging via Regrouping",
+   "authors": [
+    "Le Peng",
+    "Yash Travadi",
+    "Rui Zhang",
+    "Ying Cui",
+    "Ju Sun"
+   ],
+   "year": 2022,
+   "venue": "arXiv (Cornell University)",
+   "url": "https://doi.org/10.48550/arxiv.2210.12234",
+   "doi": "10.48550/arxiv.2210.12234",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 6,
+   "abstract": "We propose performing imbalanced classification by regrouping majority classes into small classes so that we turn the problem into balanced multiclass classification. This new idea is dramatically different from popular loss reweighting and class resampling methods. Our preliminary result on imbalanced medical image classification shows that this natural idea can substantially boost the classification performance as measured by average precision (approximately area-under-the-precision-recall-curve, or AUPRC), which is more appropriate for evaluating imbalanced classification than other metrics such as balanced accuracy.",
+   "openalex": "https://openalex.org/W4307534111",
+   "n": 7,
+   "id": "doi:10.48550/arxiv.2210.12234",
+   "score": 3.513,
+   "matchedTerms": [
+    "medical imaging",
+    "recall"
+   ],
+   "fields": {
+    "question": "类别不平衡分类是否一定要依赖损失重加权或类重采样，能否通过改变类别组织方式来解决。",
+    "method": "把多数类 regrouping 拆分为更小的类，从而把原始的不平衡问题转化为平衡的多类分类问题；作者称这与主流的 loss reweighting 和 class resampling 方法有显著不同。",
+    "dataset": "不平衡医学影像分类（摘要未点名具体数据集）。",
+    "metric": "average precision（近似 precision-recall 曲线下面积 AUPRC），并论证其比 balanced accuracy 等其他指标更适合评测不平衡分类。",
+    "result": "初步结果显示这一朴素想法能大幅提升以 average precision 衡量的分类性能；摘要未给出具体数值。",
+    "limitation": "摘要将其结果自述为 preliminary result（初步结果）。",
+    "relation": "与用户思路的差异是「改标签结构而非改类别权重」；同时它明确指出应以 AUPRC 而非 balanced accuracy 评测不平衡任务，正对应少数类召回率这一关注点。"
+   }
+  },
+  {
+   "title": "Cost-sensitive learning for imbalanced medical data: a review",
+   "authors": [
+    "Imane Araf",
+    "Ali Idri",
+    "Ikram Chairi"
+   ],
+   "year": 2024,
+   "venue": "Artificial Intelligence Review",
+   "url": "https://doi.org/10.1007/s10462-023-10652-8",
+   "doi": "10.1007/s10462-023-10652-8",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 315,
+   "abstract": "Abstract Integrating Machine Learning (ML) in medicine has unlocked many opportunities to harness complex medical data, enhancing patient outcomes and advancing the field. However, the inherent imbalanced distribution of medical data poses a significant challenge, resulting in biased ML models that perform poorly on minority classes. Mitigating the impact of class imbalance has prompted researchers to explore various strategies, wherein Cost-Sensitive Learning (CSL) arises as a promising approach to improve the accuracy and reliability of ML models. This paper presents the first review of CSL for imbalanced medical data. A comprehensive exploration of the existing literature encompassed papers published from January 2010 to December 2022 and sourced from five major digital libraries. A total of 173 papers were selected, analysed, and classified based on key criteria, including publication years, channels and sources, research types, empirical types, medical sub-fields, medical tasks, CSL approaches, strengths and weaknesses of CSL, frequently used datasets and data types, evaluation metrics, and development tools. The results indicate a noteworthy publication rise, particularly since 2020, and a strong preference for CSL direct approaches. Data type analysis unveiled diverse modalities, with medical images prevailing. The underutilisation of cost-related metrics and the prevalence of Python as the primary programming tool are highlighted. The strengths and weaknesses analysis covered three aspects: CSL strategy, CSL approaches, and relevant works. This study serves as a valuable resource for researchers seeking to explore the current state of research, identify strengths and gaps in the existing literature and advance CSL’s application for imbalanced medical data.",
+   "openalex": "https://openalex.org/W4392356648",
+   "n": 8,
+   "id": "doi:10.1007/s10462-023-10652-8",
+   "score": 0.576,
+   "matchedTerms": [],
+   "fields": {
+    "question": "医学数据固有的不平衡分布导致训练出的模型偏向多数类、在少数类上表现差，而成本敏感学习（CSL）作为缓解手段此前缺少专门综述。",
+    "method": "首个面向不平衡医学数据的 CSL 综述：系统检索 2010 年 1 月至 2022 年 12 月、来自五大数字文献库的 173 篇论文，按发表年份、渠道与来源、研究类型、实证类型、医学子领域、医学任务、CSL 方法、优缺点、常用数据集与数据类型、评测指标与开发工具等标准进行分类分析。",
+    "dataset": "综述（173 篇论文）。",
+    "metric": "统计各研究使用的 evaluation metrics 与代价相关指标（摘要未点名具体指标）。",
+    "result": "发现该方向发文量显著上升（尤其 2020 年之后）、方法上强烈偏好 CSL direct 类方法、数据类型中医学影像占多数，同时指出 cost-related metrics 利用不足、Python 为主要开发工具。",
+    "limitation": "摘要指出该领域存在 cost-related metrics 利用不足等问题（作为综述发现而非本文自身局限）；此外摘要未提及其他局限。",
+    "relation": "如果用户走「代价敏感/重加权」路线，这 173 篇的综述可快速说明该分支已被大量研究覆盖，并提示应补报代价相关指标以体现少数类改进。"
+   }
+  },
+  {
+   "title": "Handling imbalanced medical datasets: review of a decade of research",
+   "authors": [
+    "Mabrouka Salmi",
+    "Dalia Atif",
+    "Diego A. Oliva",
+    "Ajith Abraham",
+    "Sebastián Ventura"
+   ],
+   "year": 2024,
+   "venue": "Artificial Intelligence Review",
+   "url": "https://doi.org/10.1007/s10462-024-10884-2",
+   "doi": "10.1007/s10462-024-10884-2",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 441,
+   "abstract": "Abstract Machine learning and medical diagnostic studies often struggle with the issue of class imbalance in medical datasets, complicating accurate disease prediction and undermining diagnostic tools. Despite ongoing research efforts, specific characteristics of medical data frequently remain overlooked. This article comprehensively reviews advances in addressing imbalanced medical datasets over the past decade, offering a novel classification of approaches into preprocessing, learning levels, and combined techniques. We present a detailed evaluation of the medical datasets and metrics used, synthesizing the outcomes of previous research to reflect on the effectiveness of the methodologies despite methodological constraints. Our review identifies key research trends and offers speculative insights and research trajectories to enhance diagnostic performance. Additionally, we establish a consensus on best practices to mitigate persistent methodological issues, assisting the development of generalizable, reliable, and consistent results in medical diagnostics.",
+   "openalex": "https://openalex.org/W4402128718",
+   "n": 9,
+   "id": "doi:10.1007/s10462-024-10884-2",
+   "score": 0.609,
+   "matchedTerms": [],
+   "fields": {
+    "question": "机器学习与医学诊断研究常受类别不平衡困扰，但医学数据的具体特性在既有研究中经常被忽视，方法学问题长期存在。",
+    "method": "全面综述过去十年处理不平衡医学数据集的进展，提出把方法划分为 preprocessing、learning levels 与 combined techniques 三类；并对所使用的医学数据集与评测指标做详细评估，合成已有研究结果以反思各方法的有效性。",
+    "dataset": "综述（摘要未给出纳入研究数量）。",
+    "metric": "对综述中使用的医学数据集与 metrics 做详细评估（摘要未点名具体指标）。",
+    "result": "识别出主要研究趋势，给出推测性见解与研究走向，并就缓解长期存在的方法学问题建立最佳实践共识。",
+    "limitation": "摘要自称提供 speculative insights（推测性见解），并指出既有研究存在 methodological constraints 因而方法学结论受限。",
+    "relation": "为用户问题提供了最合适的分类框架（预处理 / 学习算法 / 混合），可据此定位自己方案所属分支并引用其最佳实践共识来说明差异点。"
+   }
+  },
+  {
+   "title": "FCA: Taming Long-tailed Federated Medical Image Classification by Classifier Anchoring",
+   "authors": [
+    "Jeffry Wicaksana",
+    "Zengqiang Yan",
+    "Kwang-Ting Tim Cheng"
+   ],
+   "year": 2023,
+   "venue": "arXiv (Cornell University)",
+   "url": "https://doi.org/10.48550/arxiv.2305.00738",
+   "doi": "10.48550/arxiv.2305.00738",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 9,
+   "abstract": "Limited training data and severe class imbalance impose significant challenges to developing clinically robust deep learning models. Federated learning (FL) addresses the former by enabling different medical clients to collaboratively train a deep model without sharing data. However, the class imbalance problem persists due to inter-client class distribution variations. To overcome this, we propose federated classifier anchoring (FCA) by adding a personalized classifier at each client to guide and debias the federated model through consistency learning. Additionally, FCA debiases the federated classifier and each client's personalized classifier based on their respective class distributions, thus mitigating divergence. With FCA, the federated feature extractor effectively learns discriminative features suitably globally for federation as well as locally for all participants. In clinical practice, the federated model is expected to be both generalized, performing well across clients, and specialized, benefiting each individual client from collaboration. According to this, we propose a novel evaluation metric to assess models' generalization and specialization performance globally on an aggregated public test set and locally at each client. Through comprehensive comparison and evaluation, FCA outperforms the state-of-the-art methods with large margins for federated long-tailed skin lesion classification and intracranial hemorrhage classification, making it a more feasible solution in clinical settings.",
+   "openalex": "https://openalex.org/W4367701133",
+   "n": 10,
+   "id": "doi:10.48550/arxiv.2305.00738",
+   "score": 0.23,
+   "matchedTerms": [],
+   "fields": {
+    "question": "训练数据有限与严重类别不平衡共同阻碍临床稳健的深度模型；联邦学习可解决数据受限，但客户端之间类别分布差异使不平衡问题持续存在。",
+    "method": "FCA（federated classifier anchoring）：在每个客户端加入个性化分类器，通过一致性学习引导并去偏联邦模型；再依据联邦分类器与各客户端个性化分类器各自的类别分布对其去偏以缓解分歧，使联邦特征提取器同时学到适合全局与本地的判别特征；并提出评估全局泛化（在聚合公共测试集）与本地专门化（各客户端）表现的新指标。",
+    "dataset": "联邦长尾皮肤病变分类与颅内出血（intracranial hemorrhage）分类（摘要未点名具体数据集）。",
+    "metric": "摘要未点名常规指标，另提出评估泛化性与专门化的新指标。",
+    "result": "在两项任务的全面对比中，以较大差距超过 state-of-the-art 方法，被认为在临床场景下更可行；摘要未给出具体数值。",
+    "limitation": "摘要未提及",
+    "relation": "若用户的不平衡来自多中心、数据不能汇合的现实约束，这篇给出联邦设定下的对应解法（分类器锚定 + 按类分布去偏）；与单中心方案不同，它同时要求兼顾全局泛化与本地专门化。"
+   }
+  },
+  {
+   "title": "Addressing Imbalance for Class Incremental Learning in Medical Image Classification",
+   "authors": [
+    "Xuze Hao",
+    "Wenqian Ni",
+    "Xuhao Jiang",
+    "Weimin Tan",
+    "Bo Yan"
+   ],
+   "year": 2024,
+   "venue": "ACM International Conference on Multimedia (ACM MM)",
+   "url": "https://doi.org/10.1145/3664647.3680719",
+   "doi": "10.1145/3664647.3680719",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 12,
+   "abstract": "Deep convolutional neural networks have made significant breakthroughs in medical image classification, under the assumption that training samples from all classes are simultaneously available. However, in real-world medical scenarios, there's a common need to continuously learn about new diseases, leading to the emerging field of class incremental learning (CIL) in the medical domain. Typically, CIL suffers from catastrophic forgetting when trained on new classes. This phenomenon is mainly caused by the imbalance between old and new classes, and it becomes even more challenging with imbalanced medical datasets. In this work, we introduce two simple yet effective plug-in methods to mitigate the adverse effects of the imbalance. First, we propose a CIL-balanced classification loss to mitigate the classifier bias toward majority classes via logit adjustment. Second, we propose a distribution margin loss that not only alleviates the inter-class overlap in embedding space but also enforces the intra-class compactness. We evaluate the effectiveness of our method with extensive experiments on three benchmark datasets (CCH5000, HAM10000, and EyePACS). The results demonstrate that our approach outperforms state-of-the-art methods.",
+   "openalex": "https://openalex.org/W4403791825",
+   "n": 11,
+   "id": "doi:10.1145/3664647.3680719",
+   "score": 0.256,
+   "matchedTerms": [],
+   "fields": {
+    "question": "真实医学场景需要持续学习新疾病（class incremental learning, CIL），而 CIL 在新类训练时因新旧类不平衡导致灾难性遗忘，在不平衡医学数据上更为困难。",
+    "method": "两个简单有效的即插即用方法：CIL-balanced classification loss 通过 logit adjustment 减轻分类器对多数类的偏好；distribution margin loss 既缓解嵌入空间中的类间重叠，又强制类内紧凑。",
+    "dataset": "三个基准数据集 CCH5000、HAM10000 与 EyePACS。",
+    "metric": "摘要未点名具体指标。",
+    "result": "在三个基准数据集上的大量实验显示其方法超过 state-of-the-art；摘要未给出具体数值。",
+    "limitation": "摘要未提及",
+    "relation": "处理的是「增量场景下的不平衡」，与用户的静态分类模型问题不同；但若用户后续需不断加入新病种，其 logit adjustment 分类损失是可直接借用的组件。"
+   }
+  },
+  {
+   "title": "Mitigating class imbalance and promoting fairness in medical image classification with limited data using deep learning",
+   "authors": [
+    "Rahmat Izwan Heroza"
+   ],
+   "year": 2026,
+   "venue": "Open Access at Essex (University of Essex)",
+   "url": "https://doi.org/10.5526/err-00043533",
+   "doi": "10.5526/err-00043533",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 0,
+   "abstract": "Class imbalance, limited data, and demographic bias are significant challenges in medical image classification, particularly in skin lesion analysis, where heterogeneous populations and privacy constraints hinder the development of robust and fair models. This thesis proposes deep learning strategies that improve classification performance, robustness, and fairness in both centralised and federated settings. First, SIA-SMOTE is introduced as a Siamese network-based oversampling method for imbalanced image data. By exploiting feature similarity in high-dimensional spaces, it generates more representative synthetic samples than conventional SMOTE variants, leading to consistent performance gains across benchmark and medical imaging datasets. Second, a self-attention fusion strategy for Vision Transformers is proposed to enhance skin lesion classification under imbalanced conditions. By fusing complementary attention mechanisms at the final transformer stage while preserving pretrained representations, the method improves balanced accuracy and F1 performance on the ISIC 2017 dataset. Third, this thesis presents FedCIAL, a federated colour-invariant adversarial learning framework for mitigating demographic bias in decentralised skin lesion classification. Using Fitzpatrick skin type transformations and adversarial domain adaptation, FedCIAL improves both accuracy and fairness while preserving data privacy on the Fitzpatrick17k dataset. Finally, a fairness-aware federated learning framework combining domain adaptation and class imbalance mitigation is developed and evaluated on the Diverse Dermatology Images (DDI) dataset. Results show that jointly addressing imbalance and domain shift yields synergistic improvements in subgroup fairness and overall performance. Overall, this thesis advances oversampling, transformer-based representation learning, and fairness-aware federated learning for developing robust and equitable medical imaging systems.",
+   "openalex": "https://openalex.org/W7167704820",
+   "n": 12,
+   "id": "doi:10.5526/err-00043533",
+   "score": 1.318,
+   "matchedTerms": [
+    "medical imaging"
+   ],
+   "fields": {
+    "question": "医学影像分类同时面临类别不平衡、数据有限与人群偏差三大挑战，在皮肤病变分析中因人群异质与隐私约束而更难得到稳健、公平的模型。",
+    "method": "四项深度学习策略：(1) SIA-SMOTE——基于 Siamese network 的过采样，利用高维特征相似性生成更具代表性的合成样本；(2) Vision Transformer 的 self-attention fusion——在最后一个 transformer 阶段融合互补注意力机制且保留预训练表示；(3) FedCIAL——联邦的颜色不变对抗学习框架，用 Fitzpatrick 肤色变换与对抗域适应减轻人群偏差并保护隐私；(4) 结合域适应与类别不平衡处理的 fairness-aware 联邦学习框架。",
+    "dataset": "ISIC 2017（注意力融合实验）、Fitzpatrick17k（FedCIAL）、Diverse Dermatology Images (DDI)（公平性联邦框架）；SIA-SMOTE 另在若干基准与医学影像数据集上评测。",
+    "metric": "balanced accuracy 与 F1（self-attention fusion 部分）；准确率与公平性指标（FedCIAL 部分，摘要未点名）；整体性能（SIA-SMOTE 部分）。",
+    "result": "SIA-SMOTE 比常规 SMOTE 变体生成更具代表性的样本，并在基准与医学影像数据集上取得一致的性能提升；self-attention fusion 改善了 ISIC 2017 上的 balanced accuracy 与 F1；FedCIAL 在保护隐私的同时提升准确率与公平性；联合处理不平衡与域偏移能在亚组公平性与整体性能上产生协同改进。",
+    "limitation": "摘要未提及",
+    "relation": "覆盖用户「极度不平衡 + 数据有限」的组合场景，并提示还应检查人群亚组是否公平；作为学位论文其内容跨度较大，建议按 oversampling / 表示学习 / 联邦公平三条线分别参考。"
+   }
+  },
+  {
+   "title": "Unraveling the Impact of Class Imbalance on Deep-Learning Models for Medical Image Classification",
+   "authors": [
+    "Carlos J. Hellín",
+    "Alvaro Olmedo",
+    "Adrián Valledor",
+    "Josefa Gómez",
+    "Miguel López‐Benítez",
+    "Abdelhamid Tayebi"
+   ],
+   "year": 2024,
+   "venue": "Applied Sciences",
+   "url": "https://doi.org/10.3390/app14083419",
+   "doi": "10.3390/app14083419",
+   "arxiv": "",
+   "sources": [
+    "openalex"
+   ],
+   "citations": 50,
+   "abstract": "The field of image analysis with artificial intelligence has grown exponentially thanks to the development of neural networks. One of its most promising areas is medical diagnosis through lung X-rays, which are crucial for diseases like pneumonia, which can be mistaken for other conditions. Despite medical expertise, precise diagnosis is challenging, and this is where well-trained algorithms can assist. However, working with medical images presents challenges, especially when datasets are limited and unbalanced. Strategies to balance these classes have been explored, but understanding their local impact and how they affect model evaluation is still lacking. This work aims to analyze how a class imbalance in a dataset can significantly influence the informativeness of metrics used to evaluate predictions. It demonstrates that class separation in a dataset impacts trained models and is a strategy deserving more attention in future research. To achieve these goals, classification models using artificial and deep neural networks implemented in the R environment are developed. These models are trained using a set of publicly available images related to lung pathologies. All results are validated using metrics obtained from the confusion matrix to verify the impact of data imbalance on the performance of medical diagnostic models. The results raise questions about the procedures used to group classes in many studies, aiming to achieve class balance in imbalanced data and open new avenues for future research to investigate the impact of class separation in datasets with clinical pathologies.",
+   "openalex": "https://openalex.org/W4394932107",
+   "n": 13,
+   "id": "doi:10.3390/app14083419",
+   "score": 0.393,
+   "matchedTerms": [],
+   "fields": {
+    "question": "类别不平衡会如何影响评价指标本身的信息量，以及各类平衡策略的局部影响仍缺乏理解。",
+    "method": "在 R 环境中实现人工神经网络与深度神经网络分类模型，用一批公开的肺部病理影像训练，通过混淆矩阵导出的指标验证数据不平衡对医学诊断模型性能的影响，并讨论研究中常见的类别分组（class grouping）做法。",
+    "dataset": "公开的肺部病理（胸片相关）影像数据集（摘要未点名具体数据集）。",
+    "metric": "由混淆矩阵导出的指标（摘要未点名）。",
+    "result": "论证了数据集中的类别分离（class separation）会影响训练好的模型、是未来研究更应关注的策略；结果对许多研究中为达到类平衡而采用的类别分组做法提出疑问。",
+    "limitation": "摘要未提及",
+    "relation": "与用户问题的关系是提醒式的：少数类召回率低可能部分源于评测指标口径与类别分组方式，在改造模型之前应先确认指标定义与分组是否掩盖了稀有类表现。"
+   }
+  }
+ ],
+ "clusters": [
+  {
+   "name": "样本与损失层面的直接重平衡",
+   "summary": "通过合成/过采样补足少数类样本，或用类别重加权、类平衡采样与度量损失迫使模型关注少数类。",
+   "papers": [
+    1,
+    2,
+    3,
+    8,
+    9,
+    12
+   ]
+  },
+  {
+   "name": "输出与评测层面：校准、阈值与统一口径",
+   "summary": "不改训练目标，而从概率校准与分类阈值入手，并强调 AUPRC 等指标与统一基准对结论的影响。",
+   "papers": [
+    4,
+    5,
+    13
+   ]
+  },
+  {
+   "name": "结构与部署层面：类别重组、基础模型适配、联邦与增量",
+   "summary": "改变类别组织或知识来源（重组多数类、文本引导的基础模型轻量适配），或在联邦与类增量等真实部署结构下处理不平衡。",
+   "papers": [
+    6,
+    7,
+    10,
+    11
+   ]
+  }
+ ],
+ "gaps": [
+  {
+   "title": "少数类召回率/敏感性本身很少被直接报告",
+   "detail": "从摘要看，只有 [1] 明确给出 rare classes 的 F1（81.40、63.87、82.62、79.09），[7] 主张用 AUPRC 而非 balanced accuracy，[4] 用 PR 曲线最优阈值做显著性比较，[8] 指出该领域 cost-related metrics 利用不足；而 [2][5][6][10][11] 的摘要只提到 accuracy、balanced accuracy/F1 或笼统的「超过 state-of-the-art」，未报少数类召回。以 recall/敏感性为主指标的规范评测仍是缺口，用户以少数类召回为目标是合理且尚未被普遍满足的口径。",
+   "papers": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    8,
+    10,
+    11
+   ]
+  },
+  {
+   "title": "极度不平衡与其他现实约束叠加时缺少联合方案与统一评测",
+   "detail": "[10] 处理跨客户端类别分布差异、[11] 处理新旧类不平衡导致的灾难性遗忘、[12] 把不平衡与数据有限、人群偏差、隐私约束一并考虑（其摘要称联合处理不平衡与域偏移可产生协同改进）；而 [3] 只在 ISIC2019 一个数据集上验证、[6] 在两个长尾数据集上验证、[4] 在两种影像模态上验证、[5] 的 12 个数据集基准也不涉及多中心或新增类别。从摘要看，「极度不平衡 + 标注稀缺 + 多中心/持续新增病种」的复合场景尚无统一基准与公认方案。",
+   "papers": [
+    3,
+    4,
+    5,
+    6,
+    10,
+    11,
+    12
+   ]
+  }
+ ],
+ "approaches": [
+  {
+   "name": "损失函数层：类别重加权、代价敏感与类平衡度量损失",
+   "summary": "按类别频率与真实类预测概率动态加权（DWB loss，并证明其 classification calibrated）[2]；两阶段设计 class-balanced triplet loss（每迭代对每类等量采样三元组）与 class-center involved triplet，使少数类分布更紧凑 [1]；综述层面则整理了 173 篇面向不平衡医学数据的成本敏感学习工作 [8]。",
+   "papers": [
+    1,
+    2,
+    8
+   ],
+   "effect": "[1] 在 Skin7、Skin 198、ChestXray-COVID、Kaggle EyePACs 上所有类 mean F1 为 86.20、65.20、91.32、87.18，rare classes 为 81.40、63.87、82.62、79.09；[2] 摘要称在高度不平衡的 CICIDS2017 与 ISIC2019 上稳健泛化并有理论与经验性能支持，未给数值；[8] 属综述，摘要未提及具体数值。",
+   "limits": "[1][2] 摘要未提及；[8] 指出该领域 cost-related metrics 利用不足、方法上偏向 CSL direct 类做法。"
+  },
+  {
+   "name": "数据层：合成与过采样补足少数类样本",
+   "summary": "用扩散模型定向生成尾部类样本并以 OOD post-selection 过滤 [3]；用 Siamese 网络相似度引导的 SIA-SMOTE 生成更具代表性的合成样本 [12]；[9] 的综述把这类手段归入 preprocessing 一层，可作为方法分类框架。",
+   "papers": [
+    3,
+    9,
+    12
+   ],
+   "effect": "[3] 在 ISIC2019 上整体性能显著提升，样本量最少的类别提升超过 28%；[12] 摘要称在基准与医学影像数据集上取得一致性能提升，摘要未提及具体数值；[9] 为综述，摘要未提及具体数值。",
+   "limits": "[3][12] 摘要未提及；[9] 自称给出的是 speculative insights，且指出既有研究存在方法学限制。"
+  },
+  {
+   "name": "输出与评测层：概率校准、阈值选择与统一基准",
+   "summary": "对分类概率做校准并比较默认 0.5 阈值与 PR 曲线最优阈值下的差异 [4]；用覆盖 6 个医学域、12 个长尾数据集、30+ 方法的统一代码库做公平比较 [5]；分析不平衡对混淆矩阵指标信息量的影响并质疑常见的类别分组做法 [13]。",
+   "papers": [
+    4,
+    5,
+    13
+   ],
+   "effect": "[4] 默认 0.5 阈值下校准显著优于未校准（p < 0.05），而 PR 引导阈值下增益不显著（p > 0.05），该结论在胸片与眼底两种模态、不同不平衡程度下均成立；[5][13] 摘要未提及具体数值。",
+   "limits": "[4] 校准的收益依赖阈值是否已调优（PR 阈值下不显著）；[5][13] 摘要未提及。"
+  },
+  {
+   "name": "结构层：类别重组与基础模型轻量适配",
+   "summary": "把多数类 regrouping 拆成更小的类、将问题转为平衡多类分类 [7]；或用文本引导的基础模型适配，仅以两个线性 adapter 加一个 ensembler 的两阶段训练获得平衡结果 [6]。",
+   "papers": [
+    6,
+    7
+   ],
+   "effect": "[6] 只需当前最佳算法 6.1% 的 GPU 显存，准确率最高提升 27.1%；[7] 摘要称可 substantially boost 以 average precision（近似 AUPRC）衡量的性能，摘要未提及具体数值。",
+   "limits": "[7] 摘要自述为 preliminary result；[6] 摘要未提及。"
+  },
+  {
+   "name": "部署场景层：联邦与类增量下的类别不平衡",
+   "summary": "联邦设定下用客户端个性化分类器 + 一致性学习并按各自类别分布去偏（FCA）[10]；类增量设定下用基于 logit adjustment 的 CIL-balanced 分类损失与 distribution margin 损失抑制遗忘 [11]。",
+   "papers": [
+    10,
+    11
+   ],
+   "effect": "[10] 在联邦长尾皮肤病变与颅内出血分类上以较大差距超过 state-of-the-art，摘要未提及具体数值；[11] 在 CCH5000、HAM10000、EyePACS 上超过 state-of-the-art，摘要未提及具体数值。",
+   "limits": "[10][11] 摘要未提及。"
+  }
+ ]
+}
