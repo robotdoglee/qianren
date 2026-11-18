@@ -11,8 +11,8 @@
 <body>
 <header class="site-head">
   <div class="brand">
+    <span class="brand-logo" aria-hidden="true">✳</span>
     <span class="brand-mark">前人做过吗</span>
-    <span class="brand-sub">一句话，查清前人做过什么、还空着什么</span>
   </div>
   <div class="head-right">
     <span id="engine-badge" class="chip badge">自动（有 key 用 Qwen）</span>
@@ -21,7 +21,12 @@
 </header>
 
 <main class="wrap">
-  <section class="card intake">
+  <section class="hero">
+    <h1>这个想法，前人做过吗？</h1>
+    <p class="hero-sub">一句话，查清前人做过什么、还空着什么。</p>
+  </section>
+
+  <section class="intake">
     <div id="mode-tabs" class="tabs" role="tablist" aria-label="选择模式">
       <button class="tab" role="tab" data-mode="idea" aria-selected="true" type="button">
         <span class="tab-t">我有个想法</span>
@@ -34,12 +39,14 @@
     </div>
 
     <label class="input-label" id="input-label" for="main-input">用一句话说出你的研究想法（中文或英文）</label>
+    <div class="composer">
     <textarea id="main-input" rows="3" autocomplete="off"
       placeholder="例如：用检索增强生成减少大模型在医学问答中的幻觉"></textarea>
 
     <div class="run-row">
+      <span class="muted tiny">OpenAlex · arXiv · Semantic Scholar 并行检索 · 免 key · ⌘/Ctrl + Enter</span>
       <button id="run-btn" class="btn primary" type="button">开始检索</button>
-      <span class="muted tiny">并行检索 OpenAlex / arXiv / Semantic Scholar · 免 key 可用 · Ctrl/⌘ + Enter 运行</span>
+    </div>
     </div>
     <div id="examples" class="chips inline"></div>
     <div id="demo-wrap" class="demos"></div>

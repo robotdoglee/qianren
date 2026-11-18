@@ -88,3 +88,6 @@ node dev/test-rules.mjs
 Thank you to arXiv for use of its open access interoperability.
 
 抽取结果基于摘要，可能不完整，请以原文为准。
+
+## 设计
+2026-11-18 起界面改为暖色纸感风格（参考 Claude）：米白底 #faf9f5、陶土色强调 #c96442、标题衬线字体、居中大输入框与分段式模式切换。线上：https://qianren-9o3elwijmv8.qoder.zone （个人账号发布，公开访问）。
