@@ -9,3 +9,4 @@ data-gen/gather.log
 .tmp-dom/
 dev/shots/
 *.qoder.site
+dev/fonts/*.ttf
