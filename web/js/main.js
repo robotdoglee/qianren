@@ -1,6 +1,9 @@
 // 主编排：模式 A/B、三种运行方式、进度展示、导出下载
 import { buildQueries, keywords } from './terms.js';
-import { dedupe, rank, searchAll, queryTermsFor, SOURCE_LABELS } from './search.js';
+import {
+  dedupe, rank, searchAll, queryTermsFor, SOURCE_LABELS,
+  pickSources, getSourcePrefs, setSourcePrefs, enrichOpenAccess
+} from './search.js';
 import { rulesResult, MISSING } from './extract-rules.js';
 import { createProgress, renderResult } from './render.js';
 import { toMarkdown, toCSV, toBibTeX, fileName } from './export.js';
@@ -14,11 +17,13 @@ const $ = (sel) => document.querySelector(sel);
 const ERROR_LABELS = {
   rate_limited: '限流，稍后重试',
   timeout: '请求超时（12s）',
-  unreachable: '不可达（浏览器限制且无可用代理）',
+  unreachable: '当前不可达',
   parse_error: '返回内容解析失败',
   cors_blocked: '浏览器跨域限制（未启用同源代理）',
   html_response: '同源代理未部署（返回了页面而非数据）',
-  proxy_required: '需服务器代理，已跳过（OpenAlex 已收录 arXiv 预印本）',
+  proxy_required: '需服务器代理，已跳过',
+  no_contact_email: '未配置联系邮箱，已跳过',
+  no_doi: '没有可查询的 DOI',
   empty_queries: '检索式为空',
   failed: '请求失败'
 };
@@ -68,8 +73,33 @@ const scrollBehavior = () => (
 function labelError(code) {
   const key = String(code || 'failed');
   if (ERROR_LABELS[key]) return ERROR_LABELS[key];
+  if (key.startsWith('upstream_')) return `上游服务异常（${key.slice(9)}）`;
   if (key.startsWith('http_')) return `服务返回 ${key.slice(5)}`;
-  return key.slice(0, 40);
+  return '请求失败';
+}
+
+function sourceDetail(st) {
+  if (st.state === 'done') {
+    const secs = st.ms ? ` · ${(st.ms / 1000).toFixed(1)}s` : '';
+    const cache = st.via === 'cache' ? ' · 缓存' : '';
+    return `命中 ${st.count} 条${secs}${cache}`;
+  }
+  if (st.state === 'skipped' || st.state === 'failed') return labelError(st.note);
+  return '';
+}
+
+function sourceNotice(name, st) {
+  const label = SOURCE_LABELS[name] || name;
+  const note = String(st.note || '');
+  if (st.state === 'skipped') return `${label} 当前不可用，已跳过`;
+  if (st.state === 'failed') {
+    if (note === 'rate_limited' || note === 'http_429' || /rate_limited|429/.test(note)) {
+      return `${label} 暂时限流，已用其他来源补齐`;
+    }
+    if (note === 'timeout') return `${label} 请求超时，已用其他来源补齐`;
+    return `${label} 当前不可达，已用其他来源补齐`;
+  }
+  return '';
 }
 
 function showError(text, kind = 'error') {
@@ -126,7 +156,8 @@ async function runLive() {
   els.run.disabled = true;
   els.run.textContent = '检索中…';
   els.result.hidden = true;
-  progress.start('检索与抽取全部在浏览器里完成，目标 60 秒内；任一数据源失败不影响其余结果。');
+  const activeSources = pickSources(input, getSourcePrefs());
+  progress.start('检索与抽取全部在浏览器里完成，目标 60 秒内；任一数据源失败不影响其余结果。', { sources: activeSources });
 
   let llmNote = '';
   try {
@@ -149,28 +180,35 @@ async function runLive() {
       progress.setHint('understand', `未识别：${unmapped.slice(0, 3).join('、')}（建议用英文描述或在设置里启用 Qwen 增强）`);
     }
 
-    for (const name of Object.keys(SOURCE_LABELS)) progress.set(`search:${name}`, 'running');
+    for (const name of activeSources) progress.set(`search:${name}`, 'running');
     const { raw, counts, status } = await searchAll(queries, {
+      sources: activeSources,
+      input,
       allowProxy: serverInfo().ok,
       onSource: (name, st) => {
-        const stepKey = `search:${name}`;
-        const detail = st.state === 'done'
-          ? `命中 ${st.count} 条`
-          : st.state === 'skipped'
-            ? '需代理，已跳过'
-            : st.state === 'failed' ? labelError(st.note) : '';
-        progress.set(stepKey, st.state === 'running' ? 'running' : st.state, detail);
+        progress.set(`search:${name}`, st.state === 'running' ? 'running' : st.state, sourceDetail(st));
       }
     });
-    const sourceNotes = Object.entries(status)
-      .filter(([, st]) => st.state === 'failed' || st.state === 'skipped')
-      .map(([name, st]) => `${SOURCE_LABELS[name]} ${labelError(st.note)}`);
+    const sourceNotes = activeSources
+      .filter((name) => status[name] && (status[name].state === 'failed' || status[name].state === 'skipped'))
+      .map((name) => sourceNotice(name, status[name]));
     if (sourceNotes.length) progress.setNote(`部分数据源缺失：${sourceNotes.join('；')}`);
 
-    progress.set('dedupe', 'running');
+    progress.set('dedupe', 'running', '去重、排序与开放获取补全…');
     const deduped = dedupe(raw);
-    const ranked = rank(deduped, terms.length ? terms : buildQueries(input), { keep: 15 });
-    progress.set('dedupe', 'done', `${raw.length} 条 → 去重 ${deduped.length} 篇 → 相关性过滤后保留 ${ranked.length} 篇`);
+    let ranked = rank(deduped, terms.length ? terms : buildQueries(input), { keep: 15 });
+    let oaCount = 0;
+    let oaState = null;
+    if (ranked.length) {
+      const oa = await enrichOpenAccess(ranked, { allowProxy: serverInfo().ok });
+      ranked = oa.papers;
+      oaState = oa.status;
+      if (oa.status.state === 'done') oaCount = oa.status.count;
+    }
+    if (oaState && oaState.state === 'failed' && /rate|429/.test(oaState.note || '')) {
+      sourceNotes.push('开放获取补全暂时限流，已跳过');
+    }
+    progress.set('dedupe', 'done', `${raw.length} 条 → 去重 ${deduped.length} 篇 → 相关性过滤后保留 ${ranked.length} 篇${oaCount ? ` · 开放获取 ${oaCount} 篇` : ''}`);
 
     if (!ranked.length) {
       progress.stop();
@@ -293,14 +331,15 @@ async function runDemoFile(path, label = path) {
   state.busy = true;
   els.run.disabled = true;
   els.result.hidden = true;
-  progress.start('回放预计算结果，不发起任何网络请求。');
+  const demoStats = result.stats || {};
+  const known = ['openalex', 'arxiv', 's2'].filter((key) => key in demoStats);
+  const demoSources = known.length ? known : ['openalex', 'arxiv', 's2'];
+  progress.start('回放预计算结果，不发起任何网络请求。', { sources: demoSources });
 
   const kept = result.stats?.kept ?? (result.papers || []).length;
   const steps = [
     ['understand', (result.queries || []).join(' ／ ') || '检索式已生成'],
-    ['search:openalex', `命中 ${result.stats?.openalex ?? '—'} 条`],
-    ['search:arxiv', `命中 ${result.stats?.arxiv ?? '—'} 条`],
-    ['search:s2', `命中 ${result.stats?.s2 ?? '—'} 条`],
+    ...demoSources.map((name) => [`search:${name}`, `命中 ${demoStats[name] ?? '—'} 条`]),
     ['dedupe', `${result.stats?.deduped ?? kept} 篇 → 取前 ${kept} 篇`],
     ['extract', `${kept} 篇 × 7 字段`],
     ['cluster', `${(result.clusters || []).length} 簇 · ${(result.gaps || []).length} 条空白点`]
@@ -360,10 +399,44 @@ function openSettings() {
   probeHealth().then(refreshSettingsUi);
 }
 
+const SOURCE_DEFAULTS = ['openalex', 's2', 'crossref', 'arxiv'];
+
+function syncSourceUi() {
+  const prefs = getSourcePrefs();
+  els.autoSources.checked = !prefs;
+  const selected = prefs || SOURCE_DEFAULTS;
+  for (const box of els.sourceChecks) {
+    box.checked = selected.includes(box.value);
+    box.disabled = !prefs;
+  }
+  els.sourceHint.textContent = prefs
+    ? `固定使用：${prefs.map((s) => SOURCE_LABELS[s] || s).join('、')}。`
+    : '自动模式只检索默认四源（OpenAlex、Semantic Scholar、Crossref、arXiv），医学/生物检索追加 Europe PMC，计算机/AI 追加 DBLP。';
+}
+
+function saveSourcePrefs() {
+  if (els.autoSources.checked) {
+    setSourcePrefs(null);
+    syncSourceUi();
+    return;
+  }
+  const picked = els.sourceChecks.filter((box) => box.checked).map((box) => box.value);
+  if (!picked.length) {
+    setSourcePrefs(null);
+    syncSourceUi();
+    return;
+  }
+  setSourcePrefs(picked);
+  syncSourceUi();
+}
+
 function wireSettings() {
   els.engineSelect.value = enginePref();
   els.modelSelect.replaceChildren(...MODELS.map((m) => EL('option', { value: m, text: m })));
   els.modelSelect.value = getModel();
+  syncSourceUi();
+  els.autoSources.addEventListener('change', saveSourcePrefs);
+  for (const box of els.sourceChecks) box.addEventListener('change', saveSourcePrefs);
   els.saveBtn.addEventListener('click', () => {
     setKey(els.keyInput.value);
     setModel(els.modelSelect.value);
@@ -400,6 +473,9 @@ function boot() {
   els.dialog = $('#settings-dialog');
   els.engineSelect = $('#engine-select');
   els.modelSelect = $('#model-select');
+  els.autoSources = $('#auto-sources');
+  els.sourceChecks = Array.from(document.querySelectorAll('.source-pref'));
+  els.sourceHint = $('#source-hint');
   els.keyInput = $('#key-input');
   els.saveBtn = $('#save-settings');
   els.clearBtn = $('#clear-key');

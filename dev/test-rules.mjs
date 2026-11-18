@@ -9,7 +9,9 @@ import { dirname, join } from 'node:path';
 import { buildQueries, keywords, segmentChinese, STOPWORDS, METHOD_LABELS, matchMethodLabels } from '../web/js/terms.js';
 import {
   dedupe, rank, restoreAbstract, titleKey, parseAtom, fromOpenAlex, fromS2, fromArxivEntry,
-  openalexUrl, s2Url, arxivUrl, proxyUrl, attempt, fetchSource, searchAll, MAX_N
+  fromCrossref, fromEuropePmc, fromDblp, stripJats, mergeTwo, pickSources, enrichOpenAccess,
+  openalexUrl, s2Url, arxivUrl, europePmcUrl, crossrefProxyUrl, dblpProxyUrl, unpaywallProxyUrl,
+  proxyUrl, attempt, fetchSource, searchAll, MAX_N
 } from '../web/js/search.js';
 import {
   extractFields, clusterPapers, findGaps, buildApproaches, rulesResult, MISSING,
@@ -419,6 +421,119 @@ test('来源适配器：OpenAlex 与 Semantic Scholar 字段归一', () => {
   assert.equal(s2.sources[0], 's2');
 });
 
+test('摘要去 JATS/HTML 标签并解码实体', () => {
+  const out = stripJats(
+    '<jats:p>We <jats:italic>propose</jats:italic> a &amp; b.</jats:p>' +
+    '<jats:p>Second &lt;part&gt;.</jats:p><h4>Background</h4>'
+  );
+  assert.equal(out, 'We propose a & b. Second <part>. Background');
+  assert.equal(stripJats('&#x4E2D;&#25991;'), '中文');
+  assert.doesNotMatch(out, /<jats:|<\/?(p|h4|i|italic)\b/, `标签未去净：${out}`);
+});
+
+test('Crossref / Europe PMC / DBLP 适配器字段归一', () => {
+  const cr = fromCrossref({
+    DOI: '10.5/ABC', title: ['A <jats:italic>JATS</jats:italic> title'],
+    author: [{ given: 'Ada', family: 'Lovelace' }],
+    issued: { 'date-parts': [[2021, 3]] }, 'container-title': ['Journal X'],
+    abstract: '<jats:p>Longer abstract with &amp; entity.</jats:p>',
+    'is-referenced-by-count': 7, URL: 'https://doi.org/10.5/abc'
+  });
+  assert.equal(cr.title, 'A JATS title');
+  assert.equal(cr.doi, '10.5/abc');
+  assert.equal(cr.year, 2021);
+  assert.equal(cr.venue, 'Journal X');
+  assert.equal(cr.venueSource, 'crossref');
+  assert.deepEqual(cr.authors, ['Ada Lovelace']);
+  assert.equal(cr.citations, 7);
+  assert.equal(cr.abstract, 'Longer abstract with & entity.');
+
+  const epmc = fromEuropePmc({
+    id: '31600000', source: 'MED', pmid: '31600000', doi: '10.1/EPMC',
+    title: 'T <i>x</i>', authorString: 'A One, B Two', pubYear: '2020',
+    journalTitle: 'Journal Y', abstractText: '<h4>Background</h4><p>Body text.</p>',
+    citedByCount: 3,
+    fullTextUrlList: { fullTextUrl: [{ url: 'https://oa/pdf', availability: 'Open access' }] }
+  });
+  assert.equal(epmc.pmid, '31600000');
+  assert.equal(epmc.doi, '10.1/epmc');
+  assert.equal(epmc.title, 'T x');
+  assert.equal(epmc.venue, 'Journal Y');
+  assert.equal(epmc.abstract, 'Background Body text.');
+  assert.equal(epmc.oaUrl, 'https://oa/pdf');
+  assert.deepEqual(epmc.authors, ['A One', 'B Two']);
+  assert.equal(epmc.sources[0], 'europepmc');
+
+  const dblp = fromDblp({
+    info: {
+      title: 'DBLP Title.', authors: { author: [{ text: 'A' }, { text: 'B' }] },
+      venue: 'Conf Z', year: '2019', doi: '10.9/D', ee: 'https://example.org/x'
+    }
+  });
+  assert.equal(dblp.title, 'DBLP Title');
+  assert.equal(dblp.doi, '10.9/d');
+  assert.equal(dblp.venue, 'Conf Z');
+  assert.equal(dblp.year, 2019);
+  assert.deepEqual(dblp.authors, ['A', 'B']);
+});
+
+test('字段合并：最长摘要、最大引用及来源、venue 优先级、oaUrl', () => {
+  const s2 = fromS2({
+    title: 'Merged Paper', year: 2021, abstract: 'short', venue: 'arXiv',
+    citationCount: 12, externalIds: { DOI: '10.5/M', PubMed: '31600000' }
+  });
+  const cr = fromCrossref({
+    DOI: '10.5/m', title: ['Merged Paper'], issued: { 'date-parts': [[2021]] },
+    'container-title': ['Journal X'], abstract: '<jats:p>a much longer abstract</jats:p>',
+    'is-referenced-by-count': 7
+  });
+  cr.oaUrl = 'https://oa.example/pdf';
+  const merged = mergeTwo(s2, cr);
+  assert.equal(merged.venue, 'Journal X', 'venue 应优先 Crossref');
+  assert.equal(merged.venueSource, 'crossref');
+  assert.equal(merged.citations, 12, '引用数取最大');
+  assert.equal(merged.citationSource, 's2', '记录引用数来源');
+  assert.equal(merged.abstract, 'a much longer abstract');
+  assert.equal(merged.oaUrl, 'https://oa.example/pdf');
+  assert.equal(merged.pmid, '31600000');
+  assert.deepEqual(merged.sources.sort(), ['crossref', 's2']);
+});
+
+test('去重：PMID 串联同一论文，标题 + 年份 ±1 兜底', () => {
+  const a = {
+    title: 'A Clinical Trial', year: 2020, doi: '10.5/trial', pmid: '31600000',
+    sources: ['crossref'], citations: 4, abstract: 'short', venue: 'Journal', venueSource: 'crossref'
+  };
+  const b = {
+    title: 'A clinical trial.', year: 2021, doi: '', pmid: '31600000',
+    sources: ['europepmc'], citations: 9, abstract: 'a longer abstract', venue: '',
+    venueSource: 'europepmc'
+  };
+  const out = dedupe([a, b]);
+  assert.equal(out.length, 1, 'PMID 相同应合并');
+  assert.deepEqual(out[0].sources.sort(), ['crossref', 'europepmc']);
+  assert.equal(out[0].id, 'doi:10.5/trial');
+  assert.equal(out[0].citations, 9);
+  assert.equal(out[0].abstract, 'a longer abstract');
+
+  const pmidOnly = { title: 'Totally Different', year: 2024, pmid: '31600000', sources: ['europepmc'] };
+  const three = dedupe([a, b, pmidOnly]);
+  assert.equal(three.length, 1, 'DOI/标题不同但 PMID 相同也要合并');
+  assert.equal(three[0].pmid, '31600000');
+});
+
+test('来源选择：按领域自动启用 Europe PMC / DBLP，手动勾选优先', () => {
+  const medical = pickSources('用检索增强生成减少大模型在医学问答中的幻觉');
+  assert.ok(medical.includes('europepmc'), medical.join(','));
+  const cs = pickSources('graph neural network for few-shot molecular property prediction');
+  assert.ok(cs.includes('dblp'), cs.join(','));
+  assert.ok(!cs.includes('europepmc'));
+  const plain = pickSources('solid state batteries for grid storage');
+  assert.deepEqual(plain, ['openalex', 's2', 'crossref', 'arxiv']);
+  assert.deepEqual(pickSources('medical imaging', ['openalex', 'arxiv']), ['openalex', 'arxiv']);
+  assert.deepEqual(pickSources('anything', ['unknown', 'dblp']), ['dblp']);
+});
+
 test('导出 Markdown：包含矩阵、簇、空白点与缺失标注', () => {
   const result = rulesResult({ mode: 'idea', input: IDEA, queries: fixture.queries, papers: fixture.papers, counts: fixture.stats, dedupedTotal: 24, seconds: 18.6 });
   const md = toMarkdown(result);
@@ -517,7 +632,16 @@ test('URL 构造：select/fields 完整、n 夹在 1..25、代理地址不含邮
   assert.ok(p.startsWith('/functions/v1/app/openalex?'));
   assert.ok(p.includes('q=a+b%26c') && p.includes('n=20'), p);
   assert.ok(!proxyUrl('arxiv', 'q').includes('n='), 'arXiv 代理只透传 q');
-  for (const u of [oa, s2, arxivUrl('q'), p, proxyUrl('s2', 'q', '/f', 5)]) assert.ok(!u.includes('@'), u);
+  assert.ok(europePmcUrl('a b', 10).includes('europepmc/webservices/rest/search?query=a%20b'));
+  assert.ok(europePmcUrl('q', 99).includes('pageSize=25'), 'n 夹在 1..25');
+  assert.ok(crossrefProxyUrl('q', '/f', 10).startsWith('/f/crossref?'));
+  assert.ok(crossrefProxyUrl('q', '/f', 10).includes('n=10'));
+  assert.ok(dblpProxyUrl('q', '/f', 10).startsWith('/f/dblp?'));
+  assert.ok(unpaywallProxyUrl(['10.1/a', '10.1/b'], '/f').includes('dois=10.1%2Fa%2C10.1%2Fb'));
+  for (const u of [
+    oa, s2, arxivUrl('q'), p, proxyUrl('s2', 'q', '/f', 5),
+    europePmcUrl('q'), crossrefProxyUrl('q', '/f', 5), dblpProxyUrl('q', '/f', 5), unpaywallProxyUrl(['10.1/a'], '/f')
+  ]) assert.ok(!u.includes('@'), u);
 });
 
 test('attempt：代理缺失回落到 index.html 时判为 html_response', async () => {
@@ -593,6 +717,7 @@ test('searchAll：OpenAlex/S2 直连可用，arXiv 无代理时跳过而非失�
     'api.semanticscholar.org': { body: S2_HIT }
   });
   const out = await searchAll(['q one', 'q two'], {
+    sources: ['openalex', 's2', 'arxiv'],
     allowProxy: false,
     onSource: (name, st) => events.push([name, st.state, st.count, st.note])
   });
@@ -614,7 +739,7 @@ test('searchAll：直连全 429 时三源都经代理取回', async () => {
     '/functions/v1/app/s2': { body: S2_HIT },
     '/functions/v1/app/arxiv': { body: ATOM_HIT, type: 'application/atom+xml' }
   });
-  const out = await searchAll(['q one'], {});
+  const out = await searchAll(['q one'], { sources: ['openalex', 's2', 'arxiv'] });
   globalThis.fetch = realFetch;
   assert.deepEqual(out.counts, { openalex: 1, arxiv: 1, s2: 1 });
   assert.equal(out.status.openalex.via, 'proxy');
@@ -622,4 +747,43 @@ test('searchAll：直连全 429 时三源都经代理取回', async () => {
   assert.equal(out.status.s2.state, 'done');
   const ax = out.raw.find((p) => p.sources.includes('arxiv'));
   assert.equal(ax.arxiv, '2401.00001', '版本号被剥掉');
+});
+
+test('searchAll：默认四源含 Crossref，arXiv 走代理', async () => {
+  const CROSSREF_HIT = JSON.stringify({ message: { items: [{
+    DOI: '10.9/c', title: ['CR hit'], issued: { 'date-parts': [[2022]] },
+    'container-title': ['V'], abstract: '<jats:p>Abs</jats:p>', 'is-referenced-by-count': 1,
+    URL: 'https://doi.org/10.9/c'
+  }] } });
+  stubFetch({
+    'api.openalex.org': { body: OALEX_HIT },
+    'api.semanticscholar.org': { body: S2_HIT },
+    '/functions/v1/app/crossref': { body: CROSSREF_HIT },
+    '/functions/v1/app/arxiv': { body: ATOM_HIT, type: 'application/atom+xml' }
+  });
+  const out = await searchAll(['q one'], {});
+  globalThis.fetch = realFetch;
+  assert.deepEqual(out.sources, ['openalex', 's2', 'crossref', 'arxiv']);
+  assert.deepEqual(out.counts, { openalex: 1, s2: 1, crossref: 1, arxiv: 1 });
+  assert.ok(out.raw.some((p) => p.sources.includes('crossref')));
+  assert.ok(out.raw.filter((p) => p.sources.includes('crossref')).every((p) => p.abstract === 'Abs'));
+});
+
+test('enrichOpenAccess：按 DOI 补全 oaUrl，未启用代理时跳过', async () => {
+  stubFetch({
+    '/functions/v1/app/unpaywall': {
+      body: JSON.stringify({ ok: true, results: [{ doi: '10.5/A', oaUrl: 'https://oa/a.pdf', oa: true }] })
+    }
+  });
+  const input = [{ n: 1, doi: '10.5/A' }, { n: 2, doi: '' }];
+  const out = await enrichOpenAccess(input, {});
+  globalThis.fetch = realFetch;
+  assert.equal(out.status.state, 'done');
+  assert.equal(out.status.count, 1);
+  assert.equal(out.papers[0].oaUrl, 'https://oa/a.pdf');
+  assert.equal(out.papers[1].oaUrl, undefined);
+  assert.equal(input[0].oaUrl, undefined, '不应修改原对象');
+  const skip = await enrichOpenAccess([{ n: 1, doi: '10.5/a' }], { allowProxy: false });
+  assert.equal(skip.status.state, 'skipped');
+  assert.equal(skip.status.note, 'proxy_required');
 });

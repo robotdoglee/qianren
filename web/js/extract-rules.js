@@ -532,9 +532,14 @@ export function rulesResult({ id, mode, input, queries, papers, counts, dedupedT
     generatedAt: new Date().toISOString().slice(0, 10),
     queries: queries || [],
     stats: {
-      openalex: (counts || {}).openalex ?? 0,
-      arxiv: (counts || {}).arxiv ?? 0,
-      s2: (counts || {}).s2 ?? 0,
+      openalex: 0,
+      arxiv: 0,
+      s2: 0,
+      ...Object.fromEntries(
+        ['openalex', 'arxiv', 's2', 'crossref', 'europepmc', 'dblp']
+          .filter((key) => counts && key in counts)
+          .map((key) => [key, Number(counts[key]) || 0])
+      ),
       deduped: dedupedTotal ?? withFields.length,
       kept: withFields.length,
       seconds: Number(seconds) || 0

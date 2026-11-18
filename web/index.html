@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>问渠 · 不求字字有答，但求一念豁达</title>
-<meta name="description" content="问渠：为研究者打造的智能学术探索工具。输入一句话想法或一个具体问题，并行检索 OpenAlex、arXiv、Semantic Scholar，输出对比矩阵、方法簇与研究空白点。">
+<meta name="description" content="问渠：为研究者打造的智能学术探索工具。输入一句话想法或一个具体问题，并行检索 OpenAlex、Semantic Scholar、Crossref、Europe PMC、DBLP、arXiv，输出对比矩阵、方法簇与研究空白点。">
 <link rel="stylesheet" href="app.css">
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/wenkai-ui.woff2" as="font" type="font/woff2" crossorigin>
@@ -45,7 +45,7 @@
       placeholder="例如：用检索增强生成减少大模型在医学问答中的幻觉"></textarea>
 
     <div class="run-row">
-      <span class="muted tiny">OpenAlex · arXiv · Semantic Scholar 并行检索 · 免 key · ⌘/Ctrl + Enter</span>
+      <span class="muted tiny">OpenAlex · Semantic Scholar · Crossref · arXiv 并行检索 · 免 key · ⌘/Ctrl + Enter</span>
       <button id="run-btn" class="btn primary" type="button">开始检索</button>
     </div>
     </div>
@@ -62,7 +62,7 @@
       <h2>怎么用</h2>
       <ol class="plain">
         <li>选模式，写一句话（想法或问题）。</li>
-        <li>看进度：三源并行检索 → 去重排序 → 逐篇抽取 7 个字段。</li>
+        <li>看进度：多源并行检索 → 去重排序 → 逐篇抽取 7 个字段；医学检索自动加 Europe PMC，计算机检索自动加 DBLP。</li>
         <li>读结果：方法簇、空白点、可排序对比矩阵，导出 Markdown / CSV / BibTeX 带去组会。</li>
       </ol>
     </div>
@@ -70,7 +70,7 @@
       <h2>三种运行方式</h2>
       <ul class="plain">
         <li><strong>一键演示</strong>：预计算结果即时渲染，不需要任何 key。</li>
-        <li><strong>免 key 实时模式</strong>（默认）：浏览器直连三个开放 API，用规则抽取字段。</li>
+        <li><strong>免 key 实时模式</strong>（默认）：浏览器直连开放 API，用规则抽取字段；Crossref、DBLP 等无 CORS 的来源经同源函数代理。</li>
         <li><strong>Qwen 增强模式</strong>：同源函数已配置密钥时自动使用；否则在设置里填你自己的 DashScope key，它只保存在你的浏览器本地，可随时清除。</li>
       </ul>
       <p class="muted tiny">抽取只依据标题与摘要，找不到依据的字段一律写「摘要未提及」，不做任何补全。</p>
@@ -80,13 +80,17 @@
 
 <footer class="site-foot">
   <p class="credit">文献数据来自
-    <a href="https://openalex.org" target="_blank" rel="noopener noreferrer">OpenAlex</a>、
-    <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv</a>、
-    <a href="https://www.semanticscholar.org" target="_blank" rel="noopener noreferrer">Semantic Scholar</a>（免费开放 API）。
-    Thank you to arXiv for use of its open access interoperability.
+    <a href="https://openalex.org" target="_blank" rel="noopener noreferrer">OpenAlex</a>（CC0）、
+    <a href="https://www.semanticscholar.org" target="_blank" rel="noopener noreferrer">Semantic Scholar</a>（S2 API License，需署名）、
+    <a href="https://www.crossref.org" target="_blank" rel="noopener noreferrer">Crossref</a>（元数据基本公有领域）、
+    <a href="https://europepmc.org" target="_blank" rel="noopener noreferrer">Europe PMC</a>（元数据开放，需署名）、
+    <a href="https://dblp.org" target="_blank" rel="noopener noreferrer">DBLP</a>（CC0）、
+    <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv</a>，
+    开放获取链接来自 <a href="https://unpaywall.org" target="_blank" rel="noopener noreferrer">Unpaywall</a>（CC0）。
   </p>
+  <p>Thank you to arXiv for use of its open access interoperability. 各来源仅通过官方公开 API 访问，遵守其条款与限流。</p>
   <p>使用 <a href="https://qoder.com" target="_blank" rel="noopener noreferrer">Qoder</a> 构建，部署于 Qoder Sites。</p>
-  <p class="muted tiny">免责声明：字段抽取基于论文标题与摘要，可能不完整或有偏差，请以原文为准；检索结果受各 API 覆盖范围与限流影响。</p>
+  <p class="muted tiny">免责声明：字段抽取基于论文标题与摘要，可能不完整或有偏差，请以原文为准；检索结果受各 API 覆盖范围与限流影响。联系邮箱只配置在边缘函数环境变量中，不出现在前端或仓库。</p>
 </footer>
 
 <dialog id="settings-dialog" class="dialog" aria-labelledby="settings-title">
@@ -102,6 +106,19 @@
   <div class="field">
     <label for="model-select">Qwen 模型</label>
     <select id="model-select" class="input"></select>
+  </div>
+  <div class="field">
+    <span class="field-label">检索来源</span>
+    <label class="check"><input id="auto-sources" type="checkbox" checked> 按领域自动选择（医学/生物加 Europe PMC，计算机/AI 加 DBLP）</label>
+    <div class="source-grid">
+      <label class="check"><input class="source-pref" type="checkbox" value="openalex"> OpenAlex</label>
+      <label class="check"><input class="source-pref" type="checkbox" value="s2"> Semantic Scholar</label>
+      <label class="check"><input class="source-pref" type="checkbox" value="crossref"> Crossref</label>
+      <label class="check"><input class="source-pref" type="checkbox" value="europepmc"> Europe PMC</label>
+      <label class="check"><input class="source-pref" type="checkbox" value="dblp"> DBLP</label>
+      <label class="check"><input class="source-pref" type="checkbox" value="arxiv"> arXiv</label>
+    </div>
+    <p id="source-hint" class="muted tiny">自动模式只检索默认四源，并按领域追加；手动勾选后固定使用所选来源。</p>
   </div>
   <div class="field">
     <label for="key-input">DashScope API Key（可选）</label>

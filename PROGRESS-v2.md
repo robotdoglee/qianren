@@ -18,3 +18,13 @@
 - 对比度：次要灰字、chip、按钮、标签等关键配对均 ≥4.5:1（灰色 5.4–6.3，白字/陶土按钮 4.91，warning 5.30）。
 - 测试：`node dev/test-rules.mjs` 38/38、`node dev/test-v2.mjs` 7/7 通过。
 - 截图：dev/shot-v2.py 生成 1280×800 / 390×844 的 home/result/full/detail；另存 v2-live-overview/cards/detail 与筛选面板截图。
+
+## 2026-11-18 v2.1 多源检索结果
+- 数据源：OpenAlex / Semantic Scholar / Crossref / Europe PMC / DBLP / arXiv 六源并行；默认四源，医学/生物自动加 Europe PMC，计算机/AI 自动加 DBLP，可在设置里改为手动勾选。Unpaywall 按 DOI 批量补全开放获取全文链接。
+- 合并去重：DOI（小写）> arXiv ID > PMID > 规范化标题同年 ±1 年（并查集）；字段取最长摘要、最大引用数、较权威 venue（Crossref/DBLP > Europe PMC > OpenAlex/S2 > arXiv），保留 `oaUrl` 与来源并集。JATS/HTML 标签与实体统一清洗。
+- 边缘函数：新增 `/crossref`、`/dblp`、`/unpaywall`；OpenAlex 追加 `mailto`、S2 支持 `S2_API_KEY`；10 分钟内存缓存、每路由 60 次/分钟、arXiv ≤1 次/3 秒。`CONTACT_EMAIL` 只在函数环境变量读取，前端与仓库无字面量。
+- 前端：进度面板按实际来源动态生成，卡片与详情显示来源徽标及「开放获取全文 ↗」；sessionStorage 缓存 30 分钟；所有错误文案中文，不泄漏 `Failed to fetch`。
+- 手机进度修复：`.step` 改为 22px + minmax(0,1fr) 两列、检索式/详情固定落在第二列并允许 `overflow-wrap: anywhere`；Playwright 实测 label 底边 316.6、main 顶边 318.6，不再挤到右侧。
+- 测试：`node dev/test-rules.mjs` 45/45、`node dev/test-v2.mjs` 7/7 通过；新增 JATS 去标签、Crossref/Europe PMC/DBLP 适配、跨源字段合并、PMID 去重、来源选择、OA 补全测试。
+- 截图与模拟：dev/shot-v2.py 无 pageerror；本地 Playwright 模拟六源 + Unpaywall 响应，手机端进度六行全部完成、合并来源 chip（如 OpenAlex + Semantic Scholar / OpenAlex + Crossref）、OA 按钮均正常，console 无错误。
+- 文档：README 更新检索与回退策略表、来源致谢与许可、函数环境变量、目录结构与 v2.1 更新记录。

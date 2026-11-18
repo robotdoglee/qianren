@@ -67,15 +67,23 @@ function refsInline(text, onLocate) {
 
 /* ---------------- 进度面板 ---------------- */
 
-const STEP_DEFS = [
+const HEAD_STEPS = [
   ['understand', '理解输入 · 生成检索式'],
-  ['search:openalex', `检索 ${SOURCE_LABELS.openalex}`],
-  ['search:arxiv', `检索 ${SOURCE_LABELS.arxiv}`],
-  ['search:s2', `检索 ${SOURCE_LABELS.s2}`],
   ['dedupe', '去重与排序'],
   ['extract', '逐篇抽取 7 字段'],
   ['cluster', '聚类与空白点分析']
 ];
+
+const DEFAULT_PROGRESS_SOURCES = ['openalex', 'arxiv', 's2'];
+
+function stepDefs(sources) {
+  const list = Array.isArray(sources) && sources.length ? sources : DEFAULT_PROGRESS_SOURCES;
+  return [
+    HEAD_STEPS[0],
+    ...list.map((name) => [`search:${name}`, `检索 ${SOURCE_LABELS[name] || name}`]),
+    ...HEAD_STEPS.slice(1)
+  ];
+}
 
 const STATE_ICON = { running: '◐', done: '●', failed: '✕', skipped: '–', pending: '○' };
 
@@ -95,11 +103,11 @@ export function createProgress(panelEl, { onFinish } = {}) {
   };
 
   return {
-    start(note) {
+    start(note, opts = {}) {
       panelEl.hidden = false;
       list.replaceChildren();
       rows.clear();
-      for (const [key, label] of STEP_DEFS) {
+      for (const [key, label] of stepDefs(opts.sources)) {
         const detail = EL('span', { class: 'step-detail' });
         const hint = EL('span', { class: 'step-hint', style: 'display:block;margin-top:2px;color:var(--warn)', hidden: true });
         const main = EL('span', { class: 'step-main', style: 'display:block' }, [detail, hint]);
@@ -199,9 +207,10 @@ export function renderMatrix(result) {
   const textFilter = EL('input', { class: 'input', type: 'search', placeholder: '筛选标题 / 摘要 / 字段内容', 'aria-label': '文本筛选' });
   const yearFrom = EL('input', { class: 'input year', type: 'number', placeholder: '起', 'aria-label': '起始年份' });
   const yearTo = EL('input', { class: 'input year', type: 'number', placeholder: '止', 'aria-label': '结束年份' });
+  const usedSources = new Set(papers.flatMap((p) => p.sources || []));
   const sourceSel = EL('select', { class: 'input', 'aria-label': '来源筛选' }, [
     EL('option', { value: 'all', text: '全部来源' }),
-    ...Object.entries(SOURCE_LABELS).map(([k, v]) => EL('option', { value: k, text: v }))
+    ...Object.entries(SOURCE_LABELS).filter(([k]) => usedSources.has(k)).map(([k, v]) => EL('option', { value: k, text: v }))
   ]);
   const onlyData = EL('label', { class: 'check' }, [
     EL('input', { type: 'checkbox', onchange: (e) => { state.onlyDataset = e.target.checked; refresh(); } }),
@@ -407,6 +416,7 @@ function createDrawer(result, opts) {
       ])
       : EL('p', { class: 'muted', text: '摘要未获取，仅显示元数据。' });
     const links = [];
+    if (p.oaUrl) links.push(EL('a', { class: 'chip oa-chip', href: p.oaUrl, target: '_blank', rel: 'noopener noreferrer', text: '开放获取全文 ↗' }));
     if (p.doi) links.push(EL('a', { class: 'chip', href: `https://doi.org/${encodeURIComponent(p.doi)}`, target: '_blank', rel: 'noopener noreferrer', text: `DOI ${p.doi}` }));
     if (p.arxiv) links.push(EL('a', { class: 'chip', href: `https://arxiv.org/abs/${encodeURIComponent(p.arxiv)}`, target: '_blank', rel: 'noopener noreferrer', text: `arXiv ${p.arxiv}` }));
     if (p.url) links.push(EL('a', { class: 'chip', href: p.url, target: '_blank', rel: 'noopener noreferrer', text: '原文链接 ↗' }));
@@ -425,7 +435,8 @@ function createDrawer(result, opts) {
           relevanceChip(p),
           EL('span', { class: 'chip', text: p.year ? String(p.year) : '年份未知' }),
           p.venue ? EL('span', { class: 'chip venue-chip', title: p.venue }, [EL('span', { class: 'venue-text', text: p.venue })]) : null,
-          EL('span', { class: 'chip', text: `引用 ${p.citations ?? '—'}` })
+          EL('span', { class: 'chip', text: `引用 ${p.citations ?? '—'}` }),
+          EL('span', { class: 'chip src-chip', title: '检索来源', text: sourcesOf(p).join(' + ') || '—' })
         ]),
         EL('h2', { class: 'drawer-title', text: p.title || '(无标题)' }),
         p.authors && p.authors.length ? EL('p', { class: 'drawer-authors muted', text: p.authors.join(', ') }) : null
@@ -799,10 +810,11 @@ export function renderResult(container, rawResult, { onExport } = {}) {
         EL('p', { text: rel.text || MISSING }),
         (rel.supplementary || result.engine === 'rules') ? EL('span', { class: 'rule-tag', text: '规则抽取' }) : null
       ]),
-      (cluster || dk) ? EL('footer', { class: 'card-chips' }, [
+      EL('footer', { class: 'card-chips' }, [
+        EL('span', { class: 'chip small src-chip', title: '检索来源', text: sourcesOf(p).join(' + ') || '—' }),
         cluster ? EL('span', { class: 'chip small', text: cluster.name }) : null,
         dk ? EL('span', { class: 'chip small', text: dk.length > 22 ? dk.slice(0, 21) + '…' : dk }) : null
-      ]) : null
+      ])
     ]);
   }
   function renderCards() {
