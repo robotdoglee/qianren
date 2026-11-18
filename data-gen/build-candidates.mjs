@@ -21,7 +21,7 @@ for (const [id, d] of Object.entries(demos)) {
   const raw = all.length;
   const dd = dedupe(all);
   const withAbs = dd.filter(p => p.abstract && p.abstract.length > 300);
-  const ranked = rank(withAbs, queryTermsFor(d.input), { keep: 15, minKeep: 10 });
+  const ranked = rank(withAbs, queryTermsFor(d.input), { keep: 15 });
   const res = rulesResult({ id, mode: d.mode, input: d.input, queries: ids[id].queries, papers: ranked, counts: { openalex: raw, arxiv: 0, s2: 0 }, dedupedTotal: dd.length, seconds: 0, engine: 'demo' });
   fs.writeFileSync(`data-gen/cand-${id}.json`, JSON.stringify(res, null, 1));
   console.log(id, 'raw', raw, 'dedup', dd.length, 'withAbs', withAbs.length, 'kept', ranked.length);

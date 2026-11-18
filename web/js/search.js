@@ -334,6 +334,8 @@ function phraseCount(haystack, phrase) {
 }
 
 // BM25 风格相关度 + 引用小幅加成 + 多源加成；无摘要降权
+// 过滤：得分低于最高分 relFloor 倍的丢弃；命中 <2 个检索词且没有命中任何多词短语的丢弃
+// 保留数量上限 keep（尽量 10–15），不足不硬凑
 export function rank(papers, terms, opts = {}) {
   const k1 = 1.5;
   const b = 0.75;
@@ -368,9 +370,13 @@ export function rank(papers, terms, opts = {}) {
   }
   const sorted = docs.map((d) => d.paper).sort((a, b2) => b2.score - a.score);
   const kept = Number(opts.keep || 15);
-  const minKeep = Number(opts.minKeep || 10);
-  const cut = Math.max(minKeep, Math.min(kept, sorted.length));
-  return sorted.slice(0, cut).map((p, i) => ({ ...p, n: i + 1 }));
+  const floor = (opts.relFloor ?? 0.35) * (sorted[0] ? sorted[0].score : 0);
+  const eligible = sorted.filter((p) => {
+    if (p.score < floor) return false;
+    const hits = p.matchedTerms || [];
+    return hits.length >= 2 || hits.some((t) => t.includes(' '));
+  });
+  return eligible.slice(0, kept).map((p, i) => ({ ...p, n: i + 1 }));
 }
 
 export function queryTermsFor(input) {

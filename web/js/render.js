@@ -322,6 +322,7 @@ export function renderResult(container, result, { onExport } = {}) {
   container.replaceChildren();
   const papers = result.papers || [];
 
+  const isDemo = (result.engine || '') === 'demo';
   const statChips = [
     EL('span', { class: 'chip', text: `引擎：${ENGINE_LABELS[result.engine] || result.engine || 'rules'}` }),
     EL('span', { class: 'chip', text: `模式：${result.mode === 'problem' ? '我遇到个问题' : '我有个想法'}` }),
@@ -330,7 +331,10 @@ export function renderResult(container, result, { onExport } = {}) {
     EL('span', { class: 'chip', text: `Semantic Scholar ${result.stats?.s2 ?? '—'} 条` }),
     EL('span', { class: 'chip', text: `去重后 ${result.stats?.deduped ?? papers.length} 篇` }),
     EL('span', { class: 'chip strong', text: `保留 ${result.stats?.kept ?? papers.length} 篇` }),
-    result.stats?.seconds != null ? EL('span', { class: 'chip', text: `用时 ${result.stats.seconds}s` }) : null
+    // 一键演示是预计算数据，显示「用时 0s」没有意义
+    isDemo
+      ? EL('span', { class: 'chip', text: '预计算结果' })
+      : (result.stats?.seconds != null ? EL('span', { class: 'chip', text: `用时 ${result.stats.seconds}s` }) : null)
   ].filter(Boolean);
 
   const statsNote = result.stats?.note
@@ -358,7 +362,7 @@ export function renderResult(container, result, { onExport } = {}) {
       EL('h2', { text: '按解决思路分组' }),
       ...result.approaches.map((a) => EL('article', { class: 'approach' }, [
         EL('h3', { text: a.name }),
-        EL('p', { text: a.summary }),
+        EL('p', {}, [refsInline(a.summary, locateRefs.locate)]),
         EL('p', { class: 'kv' }, [EL('strong', { text: '报告的效果：' }), refsInline(a.effect || MISSING, locateRefs.locate)]),
         EL('p', { class: 'kv' }, [EL('strong', { text: '局限：' }), refsInline(a.limits || MISSING, locateRefs.locate)]),
         EL('p', { class: 'refs' }, [
@@ -374,7 +378,7 @@ export function renderResult(container, result, { onExport } = {}) {
       EL('h2', { text: '方法簇' }),
       EL('div', { class: 'cluster-grid' }, result.clusters.map((c) => EL('article', { class: 'cluster-card' }, [
         EL('h3', { text: c.name }),
-        EL('p', { text: c.summary }),
+        EL('p', {}, [refsInline(c.summary, locateRefs.locate)]),
         EL('div', { class: 'refs' }, (c.papers || []).map((n) => paperRefButton(n, locateRefs.locate)))
       ])))
     ])

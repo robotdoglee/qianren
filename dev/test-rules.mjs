@@ -6,12 +6,15 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { buildQueries, keywords, segmentChinese, STOPWORDS } from '../web/js/terms.js';
+import { buildQueries, keywords, segmentChinese, STOPWORDS, METHOD_LABELS, matchMethodLabels } from '../web/js/terms.js';
 import {
   dedupe, rank, restoreAbstract, titleKey, parseAtom, fromOpenAlex, fromS2, fromArxivEntry,
   openalexUrl, s2Url, arxivUrl, proxyUrl, attempt, fetchSource, searchAll, MAX_N
 } from '../web/js/search.js';
-import { extractFields, clusterPapers, findGaps, buildApproaches, rulesResult, MISSING } from '../web/js/extract-rules.js';
+import {
+  extractFields, clusterPapers, findGaps, buildApproaches, rulesResult, MISSING,
+  splitSentences, pickOwnResult, pickOwnLimitation, ownAcronyms
+} from '../web/js/extract-rules.js';
 import { toMarkdown, toCSV, toBibTeX, bibKey, fileName } from '../web/js/export.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -207,7 +210,7 @@ test('无摘要的论文不回显标题，除关系外全部「摘要未提及�
   assert.match(f.relation, /高相关|中相关|低相关/);
 });
 
-test('聚类 3–5 簇 + 空白点引用论文编号', () => {
+test('聚类结果覆盖全部论文 + 空白点引用编号（fixture）', () => {
   const result = rulesResult({ mode: 'idea', input: IDEA, papers: fixture.papers, counts: { openalex: 1, arxiv: 1, s2: 1 }, dedupedTotal: 4, seconds: 1 });
   assert.ok(result.clusters.length >= 1 && result.clusters.length <= 5);
   assert.ok(result.gaps.length >= 1 && result.gaps.length <= 4, `空白点 ${result.gaps.length} 条`);
@@ -216,17 +219,156 @@ test('聚类 3–5 簇 + 空白点引用论文编号', () => {
     assert.match(g.detail, /\[\d/, 'detail 需引用论文编号');
     assert.ok(g.papers.every((n) => numbers.has(n)), '空白点引用的编号必须存在于论文列表');
   }
-  for (const c of result.clusters) assert.ok(c.papers.every((n) => numbers.has(n)));
+  const covered = new Set(result.clusters.flatMap((c) => c.papers));
+  for (const n of numbers) assert.ok(covered.has(n), `[${n}] 未归入任何簇`);
 
   const problem = rulesResult({ mode: 'problem', input: '类别不平衡导致少数类召回率低', papers: fixture.papers, counts: {}, seconds: 1 });
   assert.equal(problem.mode, 'problem');
-  assert.equal(problem.gaps.length, 0);
+  assert.ok(problem.gaps.length <= 2, `模式 B 最多 2 条空白点，实际 ${problem.gaps.length}`);
   assert.ok(problem.approaches.length >= 1);
   for (const a of problem.approaches) {
     assert.ok(typeof a.effect === 'string' && a.effect.length);
     assert.ok(typeof a.limits === 'string' && a.limits.length);
   }
 });
+
+test('聚类命名用中文方法标签 + 簇概述走固定模板', () => {  const mk = (n, over) => ({ n, sources: ['openalex'], citations: 1, score: 10 - n, ...over });
+  const papers = [
+    mk(1, { title: 'Focal loss and re-weighting for imbalanced medical imaging', abstract: 'We propose a re-weighting scheme with focal loss and cost-sensitive training. Experiments show recall improves by 4.2 points.' }),
+    mk(2, { title: 'Cost-aware weighted loss for minority classes', abstract: 'Our weighted loss handles class imbalance. Results show a 3.1 point gain in F1.' }),
+    mk(3, { title: 'Oversampling and SMOTE for rare classes in images', abstract: 'We use oversampling and resampling to balance the training set. Our method improves recall by 5.0 points.' }),
+    mk(4, { title: 'Synthetic data and augmentation with diffusion models', abstract: 'Data augmentation with synthetic samples from a diffusion model helps rare classes. Our results improve F1 by 2.4.' }),
+    mk(5, { title: 'Federated learning across hospital sites for classification', abstract: 'We study federated training with class-imbalanced clients. Our method outperforms baselines by 1.8 points.' }),
+    mk(6, { title: 'Prototypical networks for few-shot diagnosis', abstract: 'A prototype-based classifier is proposed. Experiments show 6.5 points improvement.' })
+  ];
+  const clusters = clusterPapers(papers);
+  assert.ok(clusters.length >= 2 && clusters.length <= 5, `簇数 ${clusters.length}`);
+  const all = clusters.flatMap((c) => c.papers.sort());
+  assert.deepEqual(all.slice().sort((a, b) => a - b), [1, 2, 3, 4, 5, 6], '每篇都要归入某个簇');
+  for (const c of clusters) {
+    assert.match(c.name, /^[\u4e00-\u9fa5、·（）A-Za-z0-9/ ]+$/, `簇名应中文为主：${c.name}`);
+    assert.doesNotMatch(c.name, /Rag \+|等 \d+ 类关键词/, `簇名不该是旧格式：${c.name}`);
+    assert.match(c.name, /[\u4e00-\u9fff]/, `簇名需含中文标签：${c.name}`);
+    assert.match(c.summary, /^\d+ 篇，主要做法：.+；代表 \[\d+\](\[\d+\])?$/, `簇概述模板不符：${c.summary}`);
+    for (const n of c.papers) assert.ok(papers.some((p) => p.n === n), `簇引用越界 ${n}`);
+  }
+  const reweight = clusters.find((c) => c.papers.includes(1));
+  assert.match(reweight.name, /损失重加权|代价敏感/, reweight.name);
+  const resample = clusters.find((c) => c.papers.includes(3));
+  assert.match(resample.name, /重采样|数据增强与合成/, resample.name);
+});
+
+test('方法词表不误伤：小写 rag 不算检索增强，大写 RAG 才算', () => {
+  assert.equal(METHOD_LABELS.length >= 40, true, `词表分组 ${METHOD_LABELS.length} 条`);
+  const labels = (text) => matchMethodLabels(text).map((x) => x.label);
+  assert.ok(!labels('Aggregating fragments of paragraphs in an storage rag system').includes('检索增强'));
+  assert.ok(labels('Retrieval-Augmented Generation (RAG) with a RAG pipeline').includes('检索增强'));
+  assert.ok(labels('we apply reweighting and cost-sensitive focal loss').includes('损失重加权与代价敏感'));
+  assert.ok(labels('random oversampling with SMOTE and resampling').includes('重采样'));
+  assert.ok(labels('data augmentation via synthetic diffusion and GAN samples and mixup').includes('数据增强与合成'));
+  assert.ok(labels('knowledge distillation from a teacher model').includes('知识蒸馏'));
+  assert.ok(labels('confidence calibration via temperature scaling').includes('置信度校准'));
+  assert.ok(labels('a survey and benchmark of methods').includes('综述与基准'));
+  assert.ok(labels('retrieval-augmented generation and knowledge graph reasoning').includes('知识图谱'));
+  assert.equal(labels('Gnn GAN models in a LoRA setup').includes('图神经网络'), false, '缩写需区分大小写');
+});
+
+test('效果句只取本文自身结论，不取背景句', () => {
+  const sents = splitSentences(
+    'Having achieved record-breaking performance results in several complex domains, investigating the use of deep neural networks is of great interest. ' +
+    'Previous studies have shown that focal loss helps imbalance. ' +
+    'We propose a re-weighting method. ' +
+    'Experiments on CheXpert show our recall improves by 8.2 points. ' +
+    'However, the gain disappears on rare pathologies.'
+  );
+  const picked = pickOwnResult(sents, ownAcronyms(sents.join(' ')));
+  assert.match(picked, /8\.2 points/, `应优先带数字的本文结论：${picked}`);
+  assert.doesNotMatch(picked, /^Having achieved|^Previous studies/);
+  // 只有背景句时不硬编造
+  const only = splitSentences('Many prior works have achieved large improvements on standard benchmarks.');
+  assert.equal(pickOwnResult(only, []), '');
+  // 让步句在没有别的选择时仍可作效果
+  const onlyConcession = splitSentences('However, our measured accuracy improves by 1.2 points.');
+  assert.match(pickOwnResult(onlyConcession, []), /1\.2 points/);
+});
+
+test('局限句优先本文自陈不足，否则留空', () => {
+  const sents = splitSentences(
+    'However, manual labeling is costly and may not even be feasible for medical domain. ' +
+    'However, the minority class usually cannot be thoroughly learned by the existing methods. ' +
+    'We propose a calibration method. ' +
+    'Our results improve ECE by 0.03. ' +
+    'However, a limitation of our approach is that it fails when data are extremely sparse.'
+  );
+  const picked = pickOwnLimitation(sents, pickOwnResult(sents, []), []);
+  assert.match(picked, /limitation of our approach/, `应取本文自身局限：${picked}`);
+  assert.doesNotMatch(picked, /manual labeling is costly/);
+  assert.doesNotMatch(picked, /existing methods/, `「现有方法不行」是立题动机，不是本文局限：${picked}`);
+  const none = splitSentences('We propose a method. Our results improve accuracy by 2 points.');
+  assert.equal(pickOwnLimitation(none, '', []), '');
+});
+
+test('相关性过滤：低分与零散命中丢弃，不足不硬凑', () => {
+  const mk = (over) => ({ sources: ['openalex'], citations: 0, ...over });
+  const strong = mk({
+    title: 'Retrieval-augmented generation for medical question answering',
+    abstract: 'We propose a retrieval-augmented generation framework for medical question answering that lowers hallucination rates on MedQA.'
+  });
+  const phraseOnly = mk({ title: 'Hallucination rate in question answering', abstract: 'We measure hallucination rate; question answering benefits from careful evaluation.' });
+  const singleWord = mk({ title: 'Hallucination survey', abstract: 'A short note on hallucination.' });
+  const farOff = mk({ title: 'Solid state batteries', abstract: 'We study cathode materials for solid state batteries at low temperature.' });
+  const terms = ['retrieval-augmented generation', 'hallucination', 'medical question answering', 'question answering'];
+  const out = rank([farOff, singleWord, phraseOnly, strong], terms, { keep: 15 });
+  assert.ok(out.length <= 3, `过滤后不应硬凑：${out.length}`);
+  assert.ok(out.some((p) => p.title === strong.title));
+  assert.ok(out.some((p) => p.title === phraseOnly.title), '命中多词短语应保留');
+  assert.ok(!out.some((p) => p.title === farOff.title), '无关论文应丢弃');
+  assert.ok(!out.some((p) => p.title === singleWord.title), '只命中 1 个非短语词应丢弃');
+  // 得分门槛：低于最高分 35% 的直接丢弃（即使命中足够）
+  const many = [strong, strong, strong, mk({ title: 'Medical question answering with hallucination checks', abstract: 'retrieval-augmented generation medical question answering hallucination hallucination' })];
+  const scored = rank(many, terms, { keep: 15 });
+  const max = Math.max(...scored.map((p) => p.score));
+  assert.ok(scored.every((p) => p.score >= 0.35 * max - 1e-9), scored.map((p) => p.score).join(','));
+  assert.ok(rank([], terms, { keep: 15 }).length === 0);
+});
+
+test('空白点：模式 B 也给 1–2 条，且不重复查询里已写明的做法', () => {
+  const mk = (n, over) => ({ n, sources: ['openalex'], citations: 1, score: 10 - n, ...over });
+  const papers = [
+    mk(1, { title: 'Few-shot GNN with graph sampling', abstract: 'We propose a graph neural network with sampling. Our results improve accuracy by 3 points. A limitation is the lack of interpretability.' }),
+    mk(2, { title: 'Meta-learning GNN for molecular property prediction', abstract: 'Our meta-learning framework uses a graph neural network. Experiments show a 2.5 point gain. However, the model fails on rare scaffolds.' }),
+    mk(3, { title: 'Prompt tuning with graph neural networks', abstract: 'A prompt-based graph neural network is proposed. Results improve F1 by 1.4 points.' }),
+    mk(4, { title: 'Contrastive graph learning for molecules', abstract: 'We use contrastive learning with a graph neural network. Our accuracy rises by 4.1 points. A limitation remains the small benchmark.' })
+  ];
+  const res = rulesResult({ mode: 'problem', input: '用图神经网络在小样本数据上预测分子性质', papers, counts: {}, seconds: 1 });
+  assert.ok(res.gaps.length >= 1 && res.gaps.length <= 2, `模式 B 空白点 ${res.gaps.length} 条`);
+  for (const g of res.gaps) {
+    assert.match(g.detail, /\[\d/, '空白点需引用论文编号');
+    assert.doesNotMatch(g.title, /小样本与零样本设定|图神经网络|分子与药物建模/, `查询里已写明的做法不该算空白点：${g.title}`);
+  }
+  const idea = rulesResult({ mode: 'idea', input: '用图神经网络在小样本数据上预测分子性质', papers, counts: {}, seconds: 1 });
+  assert.ok(idea.gaps.length <= 4);
+});
+
+test('模式 B 的思路分组：概述走簇模板，效果/局限缺失写「摘要未提及」', () => {
+  const mk = (n, over) => ({ n, sources: ['openalex'], citations: 1, score: 10 - n, ...over });
+  const papers = [
+    mk(1, { title: 'Oversampling plus focal loss for minority classes', abstract: 'We combine oversampling with a focal loss. Our recall improves by 7 points. However, it fails on very rare classes.' }),
+    mk(2, { title: 'Resampling and cost-sensitive training', abstract: 'A cost-sensitive resampling method is proposed. Experiments show 4 points improvement.' }),
+    mk(3, { title: 'Federated learning with balanced aggregation', abstract: 'We propose a federated approach. The method remains challenging to deploy.' }),
+    mk(4, { title: 'Knowledge distillation under imbalance', abstract: 'A distillation framework is proposed.' })
+  ];
+  const res = rulesResult({ mode: 'problem', input: '类别不平衡导致少数类召回率低', papers, counts: {}, seconds: 1 });
+  assert.ok(res.approaches.length >= 1);
+  for (const a of res.approaches) {
+    assert.match(a.name, /[\u4e00-\u9fff]/, `思路名应中文：${a.name}`);
+    assert.match(a.summary, /^\d+ 篇，主要做法：.+；代表 \[\d+\]/, a.summary);
+    assert.ok(a.effect && a.limits, 'effect/limits 需为字符串');
+  }
+  const withMissing = res.approaches.find((a) => a.papers.includes(3) || a.papers.includes(4));
+  assert.ok([MISSING, withMissing.effect, withMissing.limits].includes(MISSING), '没有本文结论句时应写「摘要未提及」');
+});
+
 
 test('独立聚类/空白点/思路分组函数', () => {
   const withFields = fixture.papers.map((p) => ({ ...p, fields: p.fields }));

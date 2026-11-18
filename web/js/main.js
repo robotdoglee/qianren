@@ -165,13 +165,13 @@ async function runLive() {
 
     progress.set('dedupe', 'running');
     const deduped = dedupe(raw);
-    const ranked = rank(deduped, terms.length ? terms : buildQueries(input), { keep: 15, minKeep: 10 });
-    progress.set('dedupe', 'done', `${raw.length} 条 → 去重 ${deduped.length} 篇 → 取前 ${ranked.length} 篇`);
+    const ranked = rank(deduped, terms.length ? terms : buildQueries(input), { keep: 15 });
+    progress.set('dedupe', 'done', `${raw.length} 条 → 去重 ${deduped.length} 篇 → 相关性过滤后保留 ${ranked.length} 篇`);
 
     if (!ranked.length) {
       progress.stop();
       progress.setNote('');
-      showError('三个数据源都没有返回可用结果（可能被限流或检索式过窄）。稍后重试，或先看一键演示。', 'warn');
+      showError('检索到了结果，但没有一篇同时满足相关性门槛（得分 ≥ 最高分的 35%，且命中 2 个以上检索词或多词短语）。可换个更具体的说法重试，或先看一键演示。', 'warn');
       els.result.hidden = true;
       return;
     }

@@ -985,41 +985,151 @@ export const CLUES = {
     /\b(?:based on|via|through|by) (?:a|an|our|the)?\s?\w*(?:network|transformer|model|module|mechanism|strategy|scheme)\b/i,
     /\bwe (?:leverage|exploit|utilize|employ|use)\b/i
   ],
+  // 结论句线索：需与「本文自身」线索同现才算论文报告的效果（单独命中只可能是背景句）
   result: [
-    /\b(?:outperform[s|ed]?|surpass|beat[s]?|exceed)\b/i,
-    /\b(?:improve|boost|increase|enhance|reduce|achiev\w*|obtain\w*|yield\w*)\b/i,
+    /\b(?:outperform[s|ed]?|surpass\w*|beat[s]?|exceed\w*)\b/i,
+    /\b(?:improv\w*|boost\w*|increase[sd]?|enhanc\w*|gain\w*|reduc\w*|decreas\w*|achiev\w*|obtain\w*|yield\w*)\b/i,
+    /\b(?:show|shows|showed|demonstrat\w*|reveal\w*|confirm\w*|validat\w*|verif\w*)\b/i,
+    /\b(?:experiments?\b|experimentally|evaluat\w*|benchmarked?)\b/i,
     /\bstate[- ]of[- ]the[- ]art\b/i,
-    /\b\d+(?:\.\d+)?\s?(?:%|percent)\b/i,
-    /\b\d+(?:\.\d+)?\s?(?:x|times|points|percentage points)\b/i,
-    /\bexperimental results?\b/i
+    /\bresults?\s+(?:show|demonstrate|indicate|suggest|reveal)\b/i,
+    /\b\d+(?:\.\d+)?\s?(?:%|percent|points?|p\.p\.|x|times)\b/i
   ],
+  // 局限线索：同样要求描述本文自身
   limitation: [
-    /\blimitation/i,
+    /\blimitation\w*/i,
+    /\bfail\w*|\bfailure/i,
+    /\bcannot\b|\bcan not\b/i,
+    /\bremains?\b|\bstill\b/i,
     /\bhowever\b/i,
-    /\b(?:still|yet)\s+(?:fails|remains|struggles|suffers)/i,
-    /\b(?:difficult|hard|challenging|ineffective|fails|suffers|struggle)\b/i,
-    /\bfuture (?:work|research|direction)/i,
-    /\b(?:drawback|trade-?off|caveat|shortcoming)/i,
-    /\bmay not\b/i,
-    /\bgeneraliz\w* (?:to|across)\b.*\b(?:remain|limited)/i
+    /\bonly\b/i,
+    /\b(?:struggl\w*|suffer\w*|drawback\w*|shortcoming\w*|caveat\w*|trade-?off|insufficient|limited|restricted|hard to|difficult to|may not|generaliz\w* (?:to|across))\b/i,
+    /\bfuture (?:work|research|direction)/i
   ],
   datasetPrep: /\b(?:dataset|datasets|benchmark|benchmarks|corpus|corpora|train(?:ing)? set|test set|validation set|clinical notes|cohort)\b/i
 };
 
-export const METHOD_WORDS = [
-  'retrieval-augmented', 'retrieval augmented', 'rag', 'prompting', 'prompt', 'chain-of-thought',
-  'fine-tuning', 'fine-tune', 'instruction tuning', 'low-rank adaptation', 'lora', 'distillation',
-  'reinforcement learning', 'rlhf', 'preference optimization', 'contrastive', 'self-supervised',
-  'semi-supervised', 'few-shot', 'zero-shot', 'meta-learning', 'multi-task', 'curriculum',
-  'active learning', 'graph neural network', 'gnn', 'transformer', 'attention', 'diffusion',
-  'generative adversarial', 'autoencoder', 'variational', 'bayesian', 'causal', 'counterfactual',
-  'ensemble', 'booster', 'resampling', 'oversampling', 're-weighting', 'reweighting',
-  'focal loss', 'cost-sensitive', 'data augmentation', 'synthetic data', 'denoising',
-  'knowledge graph', 'knowledge distillation', 'embedding', 'representation learning',
-  'multi-agent', 'agent', 'planning', 'tool use', 'verification', 'self-consistency',
-  'uncertainty', 'calibration', 'interpretability', 'explanation', 'saliency', 'probing',
-  'segmentation', 'detection', 'classification', 'regression', 'forecasting', 'clustering',
-  'ranking', 'reranking', 'federated', 'privacy', 'adversarial', 'robustness', 'quantization',
-  'pruning', 'efficient', 'hierarchical', 'multimodal', 'vision-language', 'pretraining',
-  'continual learning', 'domain adaptation', 'transfer learning', 'sampling', 'thresholding'
+// 「本文自身」线索：效果/局限句必须落在这些表述上，否则多半是背景句或他人工作
+export const OWN_VOICE = new RegExp([
+  '\\b(?:we|our|ours)\\b',
+  '\\bthis (?:paper|study|work|project|thesis|article|report)\\b',
+  '\\b(?:this|these|such)\\s+(?:gain|gains|improvement|improvements|result|results|idea|strategy|scheme|pipeline|loss|method|approach|model|finding|findings|observation|solution)\\b',
+  '\\bthe (?:proposed|method|approach|framework|model|system|technique|pipeline|network|algorithm)\\b',
+  '\\bour (?:method|approach|framework|model|system|technique|pipeline|result|results|finding|findings)\\b',
+  '\\b(?:proposed|presented|introduced|developed|designed) (?:method|approach|framework|model|technique|pipeline|system)\\b',
+  '\\b(?:is|are|was|were) (?:proposed|presented|introduced|developed|designed)\\b'
+].join('|'), 'i');
+
+// 句首背景标记：以这些词开头的句子通常在讲领域现状而非本文结果
+export const BACKGROUND_VOICE = /^(?:having|prior|previous|earlier|recent|recently|although|while|despite|numerous|many|several|over the (?:past|last)|in the past|nowadays)\b/i;
+
+// 结构性自身句：以「实验/结果/本文方法」开头的句子即使没有 we/our 也属于本文
+export const OWN_STRUCTURAL_VOICE = new RegExp([
+  '^(?:experimental\\w*|experiments?)\\s+(?:results?|evaluation|evaluations|study|analysis|comparison|validation|conducted|on\\b|and\\b|show\\b|were\\b|are\\b)',
+  '^results?\\s+(?:of\\s+our|show|demonstrate|indicate|suggest|reveal|confirm)',
+  '^findings?\\s+(?:show|suggest|indicate)',
+  '^(?:the|our|this)\\s+(?:proposed|proposed\\s+)?(?:method|loss|approach|framework|model|algorithm|solution|implementation|pipeline|system|evaluation)',
+  '^we\\b'
+].join('|'), 'i');
+
+// 方法关键词 → 中文标签词表：聚类命名与簇概述都靠它（words 忽略大小写、按词边界匹配；
+// caps 只在原文里区分大小写匹配，避免 rag 命中 aggregate/paragraph、gan 命中 Gan 之类）
+export const METHOD_LABELS = [
+  { label: '损失重加权与代价敏感', words: ['reweighting', 're-weighting', 're-weight', 'weighted loss', 'class weight', 'class weights', 'class-weighted', 'cost-sensitive', 'cost sensitive', 'focal loss', 'class-balanced loss', 'balanced softmax', 'balanced cross entropy', 'weighted cross entropy', 'label smoothing', 'asymmetric loss', 'rebalanced loss', 'class-aware loss'] },
+  { label: '重采样', words: ['oversampling', 'over-sampling', 'undersampling', 'under-sampling', 'resampling', 'smote', 'adasyn', 'random oversampling', 'minority oversampling', 'replacement learning'] },
+  { label: '采样与批次策略', words: ['negative sampling', 'graph sampling', 'importance sampling', 'sub-sampling', 'subsampling', 'stratified sampling', 'episode sampling', 'batch construction', 'class-balanced batch', 'balanced sampling', 'sampling strategy'] },
+  { label: '数据增强与合成', words: ['data augmentation', 'augmentation', 'augmenting', 'augment', 'synthetic data', 'synthetic sample', 'synthetic image', 'synthetic text', 'data synthesis', 'image synthesis', 'generative adversarial', 'generative model', 'diffusion', 'mixup', 'cutmix', 'cutpaste', 'back-translation', 'style transfer augmentation'], caps: ['GAN', 'GANs'] },
+  { label: '阈值与决策调整', words: ['threshold', 'thresholding', 'post-processing', 'decision threshold', 'cutoff', 'rejection option', 'prediction rule'] },
+  { label: '置信度校准', words: ['calibration', 'calibrated', 'calibrate', 'temperature scaling', 'expected calibration error', 'probability calibration', 'overconfidence', 'confidence estimation'] },
+  { label: '不确定性建模', words: ['uncertainty', 'evidential', 'bayesian', 'probabilistic model', 'variance estimation', 'prediction interval', 'aleatoric', 'epistemic'] },
+  { label: '对比学习', words: ['contrastive', 'supervised contrastive', 'simclr', 'momentum contrast', 'contrastive loss', 'instance discrimination'] },
+  { label: '原型与类中心学习', words: ['prototype', 'prototypical', 'class center', 'class prototype', 'centroid', 'prototype network', 'anchor'] },
+  { label: '度量学习', words: ['metric learning', 'siamese', 'triplet loss', 'relation network', 'embedding similarity', 'pairwise distance'] },
+  { label: '元学习', words: ['meta-learning', 'meta learning', 'meta-optimization', 'maml', 'episode-based', 'support set', 'query set', 'meta network', 'meta-loss'], caps: ['MAML'] },
+  { label: '小样本与零样本设定', words: ['few-shot', 'zero-shot', 'one-shot', 'n-shot', 'k-shot', 'low-data', 'low resource', 'low-resource', 'limited labeled data', 'small sample', 'data-scarce', 'label scarcity'] },
+  { label: '迁移与预训练', words: ['transfer learning', 'pretraining', 'pre-training', 'pretrained', 'pre-trained', 'fine-tuning', 'fine-tune', 'fine-tuned', 'foundation model', 'domain transfer', 'backbone pretraining'] },
+  { label: '参数高效微调', words: ['parameter-efficient', 'low-rank adaptation', 'adapter', 'adapters', 'prefix tuning', 'spatial adapter', 'lightweight tuning'], caps: ['LoRA'] },
+  { label: '域适应与域泛化', words: ['domain adaptation', 'domain generalization', 'distribution shift', 'out-of-distribution', 'covariate shift', 'domain gap'] },
+  { label: '检索增强', words: ['retrieval-augmented', 'retrieval augmented', 'retrieval-augmented generation', 'retrieval-grounded'], caps: ['RAG'] },
+  { label: '检索与重排序', words: ['retriever', 'dense retrieval', 'document retrieval', 'passage retrieval', 'reranking', 're-ranking', 'candidate ranking', 'bm25', 'vector search', 'top-k retrieval'] },
+  { label: '提示与指令', words: ['prompt', 'prompts', 'prompting', 'prompt-based', 'prompt engineering', 'prompt tuning', 'prompt learning', 'instruction tuning', 'in-context learning', 'soft prompt'] },
+  { label: '推理链与自我改进', words: ['chain-of-thought', 'chain of thought', 'reasoning', 'rationale', 'step-by-step', 'self-consistency', 'reflection', 'critique', 'self-verification', 'verification'], caps: ['CoT'] },
+  { label: '知识图谱', words: ['knowledge graph', 'knowledge graphs', 'knowledge base', 'ontology', 'knowledge-enhanced', 'triples'] },
+  { label: '知识蒸馏', words: ['knowledge distillation', 'distillation', 'teacher-student', 'teacher student', 'student network', 'soft labels'] },
+  { label: '联邦学习', words: ['federated learning', 'federated', 'secure aggregation', 'split learning', 'client updates'] },
+  { label: '隐私保护', words: ['differential privacy', 'privacy-preserving', 'privacy', 'encryption', 'federated aggregation'] },
+  { label: '对抗与鲁棒性', words: ['adversarial', 'attack', 'poisoning', 'jailbreak', 'robustness', 'perturbation', 'backdoor', 'defense'] },
+  { label: '主动学习与标注', words: ['active learning', 'query strategy', 'annotation budget', 'human-in-the-loop', 'expert annotation', 'labeling cost'] },
+  { label: '弱监督与标签噪声', words: ['noisy label', 'noisy labels', 'label noise', 'weakly supervised', 'multi-instance', 'partial labels', 'pseudo-label', 'pseudo label', 'co-training'] },
+  { label: '半监督学习', words: ['semi-supervised', 'unlabeled data', 'without labels', 'label-efficient'] },
+  { label: '自监督学习', words: ['self-supervised', 'self-supervision', 'pretext task', 'masked image modeling', 'masked autoencoder'], caps: ['MAE'] },
+  { label: '注意力与Transformer', words: ['attention', 'transformer', 'self-attention', 'multi-head', 'vision transformer', 'attention mechanism', 'attention map', 'encoder-decoder'] },
+  { label: '图神经网络', words: ['graph neural network', 'graph neural networks', 'graph convolution', 'graph attention', 'message passing', 'graph network', 'graph encoder', 'gcn', 'graph embedding'], caps: ['GNN', 'GNNs', 'GCN'] },
+  { label: '卷积网络', words: ['convolutional', 'cnn', 'resnet', 'densenet', 'vgg', 'unet', 'convnet', 'convolution'] },
+  { label: '循环与时序网络', words: ['lstm', 'bilstm', 'gru', 'recurrent neural', 'temporal convolution', 'seq2seq'] },
+  { label: '集成与多专家', words: ['ensemble', 'boosting', 'xgboost', 'random forest', 'bagging', 'voting', 'multi-expert', 'mixture of experts'] },
+  { label: '多任务学习', words: ['multi-task', 'multitask', 'joint training', 'jointly learned', 'task-sharing'] },
+  { label: '强化学习与偏好优化', words: ['reinforcement learning', 'reward model', 'policy optimization', 'preference optimization', 'direct preference', 'human feedback', 'q-learning'], caps: ['RLHF', 'DPO'] },
+  { label: '多模态与视觉语言', words: ['multimodal', 'multi-modal', 'vision-language', 'cross-modal', 'image-text', 'visual question answering', 'clip'], caps: ['CLIP'] },
+  { label: '大模型问答与应用', words: ['large language model', 'language model', 'chatbot', 'question answering', 'clinical decision support', 'gpt', 'conversational'], caps: ['LLM', 'LLMs', 'GPT'] },
+  { label: '长上下文与记忆', words: ['long context', 'long-context', 'context window', 'memory bank', 'retrieval memory', 'context compression'] },
+  { label: '幻觉与事实性', words: ['hallucination', 'hallucinations', 'factuality', 'faithfulness', 'grounded generation', 'fabricat'] },
+  { label: '可解释与归因', words: ['interpretability', 'explainability', 'explainable', 'saliency', 'feature importance', 'probing', 'interpretability analysis', 'shap', 'attribution', 'visualization of attention'] },
+  { label: '效率与压缩', words: ['quantization', 'pruning', 'model compression', 'lightweight', 'efficient inference', 'latency', 'memory footprint', 'edge deployment', 'on-device', 'gpu memory'] },
+  { label: '增量与持续学习', words: ['continual learning', 'class-incremental', 'class incremental', 'incremental learning', 'catastrophic forgetting', 'lifelong learning'] },
+  { label: '层次与多阶段建模', words: ['hierarchical', 'multi-stage', 'two-stage', 'coarse-to-fine', 'cascade', 'multi-level'] },
+  { label: '因果与结构建模', words: ['causal', 'counterfactual', 'structural equation', 'causal graph', 'intervention'] },
+  { label: '分割任务', words: ['segmentation', 'instance segmentation', 'panoptic', 'mask prediction'] },
+  { label: '检测任务', words: ['object detection', 'anomaly detection', 'lesion detection', 'node detection', 'detection task'] },
+  { label: '分类器与判别建模', words: ['classifier', 'logit adjustment', 'support vector', 'svm', 'decision tree', 'discriminative model'] },
+  { label: '表示学习与嵌入', words: ['representation learning', 'embedding', 'embeddings', 'latent space', 'feature extraction', 'feature representation', 'encoder'] },
+  { label: '去噪与预处理', words: ['denoising', 'denoise', 'preprocessing', 'pre-processing', 'data cleaning', 'normalization', 'noise reduction'] },
+  { label: '综述与基准', words: ['survey', 'systematic review', 'literature review', 'review of', 'benchmark', 'benchmarking', 'evaluation study', 'comparative study', 'taxonomy', 'dataset and evaluation'] },
+  { label: '医学影像与临床', words: ['medical imaging', 'medical image', 'clinical', 'radiology', 'lesion', 'diagnosis', 'pathology', 'x-ray', 'ct image', 'mri', 'histopathology'] },
+  { label: '分子与药物建模', words: ['molecular', 'molecule', 'drug discovery', 'drug', 'protein', 'chemical', 'smiles', 'molecular graph', 'compound'] },
+  { label: '遥感与地理', words: ['remote sensing', 'land cover', 'satellite', 'geospatial', 'gis'] },
+  { label: '语音与音频', words: ['speech recognition', 'speech', 'audio', 'speaker', 'asr'] },
+  { label: '文本分类与情感', words: ['text classification', 'sentiment', 'topic model', 'document classification', 'dialect', 'language identification'] },
+  { label: '推荐与用户建模', words: ['recommendation', 'recommender', 'user behavior', 'click-through'] },
+  { label: '时序与预测任务', words: ['time series', 'time-series', 'forecasting', 'spatio-temporal', 'prediction horizon'] },
+  { label: '教育与测评', words: ['essay scoring', 'automated grading', 'student performance', 'education', 'learning analytics'] },
+  { label: '机器翻译与生成摘要', words: ['machine translation', 'translation', 'summarization', 'text generation', 'abstractive'] }
 ];
+
+function escapeRe(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// 词边界计数：多词短语按子串、单词按 \b 边界；caseSensitive 用于 RAG/GAN/LoRA 这类缩写
+function countWord(haystack, needle, caseSensitive) {
+  if (!needle) return 0;
+  const pre = /[\w-]/.test(needle[0]) ? '\\b' : '';
+  const post = /[\w-]/.test(needle[needle.length - 1]) ? '\\b' : '';
+  const re = new RegExp(`${pre}${escapeRe(needle)}${post}`, caseSensitive ? 'g' : 'gi');
+  let n = 0;
+  while (re.exec(haystack)) {
+    n += 1;
+    if (re.lastIndex === re.index) re.lastIndex += 1;
+  }
+  return n;
+}
+
+// 文本 → 命中的方法标签（按命中次数降序），附带最多 3 个命中的原始关键词便于展示
+export function matchMethodLabels(text) {
+  const s = String(text || '');
+  const out = [];
+  for (const e of METHOD_LABELS) {
+    let hits = 0;
+    const matched = [];
+    for (const w of e.words) {
+      const c = countWord(s, w, false);
+      if (c) { hits += c; matched.push(w); }
+    }
+    for (const a of e.caps || []) {
+      const c = countWord(s, a, true);
+      if (c) { hits += c; matched.push(a); }
+    }
+    if (hits) out.push({ label: e.label, hits, matched });
+  }
+  return out.sort((a, b) => b.hits - a.hits || a.label.localeCompare(b.label, 'zh-Hans'));
+}
