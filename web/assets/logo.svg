@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="前人做过吗">
+  <!-- 三级台阶：站在前人的肩膀上 -->
+  <rect x="1" y="1" width="30" height="30" rx="8" fill="#c96442"/>
+  <path d="M7 24h18M7 24v-4h6v-4h6v-4h6v12" fill="none" stroke="#faf9f5" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="22" cy="8.5" r="2" fill="#faf9f5"/>
+</svg>
