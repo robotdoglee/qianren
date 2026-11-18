@@ -17,6 +17,8 @@ const ERROR_LABELS = {
   unreachable: '不可达（浏览器限制且无可用代理）',
   parse_error: '返回内容解析失败',
   cors_blocked: '浏览器跨域限制（未启用同源代理）',
+  html_response: '同源代理未部署（返回了页面而非数据）',
+  proxy_required: '需服务器代理，已跳过（OpenAlex 已收录 arXiv 预印本）',
   empty_queries: '检索式为空',
   failed: '请求失败'
 };
@@ -147,15 +149,17 @@ async function runLive() {
     const { raw, counts, status } = await searchAll(queries, {
       allowProxy: serverInfo().ok,
       onSource: (name, st) => {
-        progress.set(
-          `search:${name}`,
-          st.state === 'failed' ? 'failed' : st.state === 'done' ? 'done' : 'running',
-          st.state === 'done' ? `命中 ${st.count} 条` : st.state === 'failed' ? labelError(st.note) : ''
-        );
+        const stepKey = `search:${name}`;
+        const detail = st.state === 'done'
+          ? `命中 ${st.count} 条`
+          : st.state === 'skipped'
+            ? '需代理，已跳过'
+            : st.state === 'failed' ? labelError(st.note) : '';
+        progress.set(stepKey, st.state === 'running' ? 'running' : st.state, detail);
       }
     });
     const sourceNotes = Object.entries(status)
-      .filter(([, st]) => st.state === 'failed')
+      .filter(([, st]) => st.state === 'failed' || st.state === 'skipped')
       .map(([name, st]) => `${SOURCE_LABELS[name]} ${labelError(st.note)}`);
     if (sourceNotes.length) progress.setNote(`部分数据源缺失：${sourceNotes.join('；')}`);
 

@@ -1,0 +1,1451 @@
+{
+ "W4402670290": {
+  "openalex": "https://openalex.org/W4402670290",
+  "doi": "10.18653/v1/2024.findings-acl.372",
+  "title": "Benchmarking Retrieval-Augmented Generation for Medicine",
+  "year": 2024,
+  "citations": 881,
+  "abstract": "While large language models (LLMs) have achieved state-of-the-art performance on a wide range of medical question answering (QA) tasks, they still face challenges with hallucinations and outdated knowledge.Retrievalaugmented generation (RAG) is a promising solution and has been widely adopted.However, a RAG system can involve multiple flexible components, and there is a lack of best practices regarding the optimal RAG setting for various medical purposes.To systematically evaluate such systems, we propose the Medical Information Retrieval-Augmented Generation Evaluation (MIRAGE), a first-of-its-kind benchmark including 7,663 questions from five medical QA datasets.Using MIRAGE, we conducted large-scale experiments with over 1.8 trillion prompt tokens on 41 combinations of different corpora, retrievers, and backbone LLMs through the MEDRAG toolkit introduced in this work.Overall, MEDRAG improves the accuracy of six different LLMs by up to 18% over chain-of-thought prompting, elevating the performance of GPT-3.5 and Mixtral to GPT-4level.Our results show that the combination of various medical corpora and retrievers achieves the best performance.In addition, we discovered a log-linear scaling property and the \"lostin-the-middle\" effects in medical RAG.We believe our comprehensive evaluations can serve as practical guidelines for implementing RAG systems for medicine 1 .",
+  "authors": [
+   "Guangzhi Xiong",
+   "Qiao Jin",
+   "Zhiyong Lu",
+   "Aidong Zhang"
+  ],
+  "venue": "Findings of the Association for Computational Linguistics: ACL (Findings of ACL)",
+  "landing": "https://doi.org/10.18653/v1/2024.findings-acl.372",
+  "type": "conference-paper"
+ },
+ "W4410030662": {
+  "openalex": "https://openalex.org/W4410030662",
+  "doi": "10.1038/s41746-025-01651-w",
+  "title": "Leveraging long context in retrieval augmented language models for medical question answering",
+  "year": 2025,
+  "citations": 127,
+  "abstract": "While holding great promise for improving and facilitating healthcare through applications of medical literature summarization, large language models (LLMs) struggle to produce up-to-date responses on evolving topics due to outdated knowledge or hallucination. Retrieval-augmented generation (RAG) is a pivotal innovation that improves the accuracy and relevance of LLM responses by integrating LLMs with a search engine and external sources of knowledge. However, the quality of RAG responses can be largely impacted by the rank and density of key information in the retrieval results, such as the \"lost-in-the-middle\" problem. In this work, we aim to improve the robustness and reliability of the RAG workflow in the medical domain. Specifically, we propose a map-reduce strategy, BriefContext, to combat the \"lost-in-the-middle\" issue without modifying the model weights. We demonstrated the advantage of the workflow with various LLM backbones and on multiple QA datasets. This method promises to improve the safety and reliability of LLMs deployed in healthcare domains by reducing the risk of misinformation, ensuring critical clinical content is retained in generated responses, and enabling more trustworthy use of LLMs in critical tasks such as medical question answering, clinical decision support, and patient-facing applications.",
+  "authors": [
+   "Gongbo Zhang",
+   "Zihan Xu",
+   "Qiao Jin",
+   "Fangyi Chen",
+   "Yilu Fang",
+   "Yi Liu",
+   "Justin F. Rousseau",
+   "Ziyang Xu",
+   "Zhiyong Lu",
+   "Chunhua Weng",
+   "Yifan Peng"
+  ],
+  "venue": "npj Digital Medicine",
+  "landing": "https://doi.org/10.1038/s41746-025-01651-w",
+  "type": "article"
+ },
+ "W4411120331": {
+  "openalex": "https://openalex.org/W4411120331",
+  "doi": "10.18653/v1/2025.naacl-long.635",
+  "title": "Rationale-Guided Retrieval Augmented Generation for Medical Question Answering",
+  "year": 2025,
+  "citations": 112,
+  "abstract": "Jiwoong Sohn, Yein Park, Chanwoong Yoon, Sihyeon Park, Hyeon Hwang, Mujeen Sung, Hyunjae Kim, Jaewoo Kang. Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers). 2025.",
+  "authors": [
+   "Jiwoong Sohn",
+   "Yein Park",
+   "Chanwoong Yoon",
+   "Sihyeon Park",
+   "Hyeon Hwang",
+   "Mujeen Sung",
+   "Hyunjae Kim",
+   "Jaewoo Kang"
+  ],
+  "venue": "Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)",
+  "landing": "https://doi.org/10.18653/v1/2025.naacl-long.635",
+  "type": "conference-paper"
+ },
+ "W7154139350": {
+  "openalex": "https://openalex.org/W7154139350",
+  "doi": "10.1051/itmconf/20268401001/pdf",
+  "title": "Medical Question Answering System Based on Retrieval-augmented Generation",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "This study investigates the feasibility and reliability of Retrieval-Augmented Generation (RAG) in medical question-answering tasks. To address issues such as hallucination and lack of traceability in large language models (LLMs) in medical contexts, a medical knowledge base was constructed using the cancer-related subset of a Kaggle healthcare dataset. Experiments were conducted with the Qwen-Plus and Qwen-Flash models. Evaluation was carried out across three dimensions: answer accuracy, source traceability, and refusal capability, with additional analysis on the impact of different retrieval quantities (top-k) on performance. The results show that RAG significantly improves the semantic consistency of model responses, outperforming the baseline model on the BERTScore F1 metric. It also demonstrates strong performance in terms of refusal rate and attribution accuracy, highlighting its advantages in mitigating hallucinations and enhancing interpretability. Furthermore, the findings indicate that a retrieval quantity of k=5 yields the best overall performance. This study validates the potential of RAG in medical question answering and provides empirical support for building trustworthy medical AI systems.",
+  "authors": [
+   "Chengwei Cao"
+  ],
+  "venue": "Springer Link (Chiba Institute of Technology)",
+  "landing": "https://www.itm-conferences.org/10.1051/itmconf/20268401001/pdf",
+  "type": "article"
+ },
+ "W7150940275": {
+  "openalex": "https://openalex.org/W7150940275",
+  "doi": "10.1051/itmconf/20268401001",
+  "title": "Medical Question Answering System Based on Retrieval-augmented Generation",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "This study investigates the feasibility and reliability of Retrieval-Augmented Generation (RAG) in medical question-answering tasks. To address issues such as hallucination and lack of traceability in large language models (LLMs) in medical contexts, a medical knowledge base was constructed using the cancer-related subset of a Kaggle healthcare dataset. Experiments were conducted with the Qwen-Plus and Qwen-Flash models. Evaluation was carried out across three dimensions: answer accuracy, source traceability, and refusal capability, with additional analysis on the impact of different retrieval quantities (top-k) on performance. The results show that RAG significantly improves the semantic consistency of model responses, outperforming the baseline model on the BERTScore F1 metric. It also demonstrates strong performance in terms of refusal rate and attribution accuracy, highlighting its advantages in mitigating hallucinations and enhancing interpretability. Furthermore, the findings indicate that a retrieval quantity of k=5 yields the best overall performance. This study validates the potential of RAG in medical question answering and provides empirical support for building trustworthy medical AI systems.",
+  "authors": [
+   "Chengwei Cao"
+  ],
+  "venue": "ITM Web of Conferences",
+  "landing": "https://doi.org/10.1051/itmconf/20268401001",
+  "type": "conference-paper"
+ },
+ "W7225888661": {
+  "openalex": "https://openalex.org/W7225888661",
+  "doi": "10.3778/j.issn.1673-9418.2601010",
+  "title": "Survey of Retrieval-Augmented Generation Methods for Medical Question Answering",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "To address the problems of factual hallucinations, delayed knowledge updating, and insufficient evidence traceability of large language models (LLMs) in medical question answering, this paper reviews studies on medical retrieval-augmented generation (RAG). Focusing on the key components of medical RAG, existing methods are summarized from three perspectives: knowledge source enhancement, system workflow, and application scenarios. In terms of knowledge sources, this paper summarizes major enhancement pathways, including knowledge graphs, authoritative medical literature, electronic health records, and multimodal medical data, and analyzes the characteristics of different knowledge carriers in terms of evidence sources, application scope, and construction cost. In terms of workflow, representative strategies for key stages, including intent recognition, knowledge retrieval, knowledge integration, and generation control, are summarized, and their roles in mitigating hallucinations and strengthening evidence constraints in medical question answering are discussed. In terms of application scenarios, the applications of medical RAG in evidence-based question answering, personalized diagnosis and treatment recommendation, etiological and pathological reasoning, multimodal evidence-assisted question answering, and patient question interpretation are reviewed. On this basis, the main characteristics, application scope, and limitations of existing methods are summarized, and future research directions for medical RAG are discussed from the perspectives of knowledge collaboration, retrieval optimization, evidence integration, and clinical application.",
+  "authors": [
+   "LI Yanpeng, SI Qintu, WANG Siriguleng",
+   "Qintu Si",
+   "Siriguleng Wang"
+  ],
+  "venue": "DOAJ (DOAJ: Directory of Open Access Journals)",
+  "landing": "https://doaj.org/article/0d5373934661452a8903304f8613b27e",
+  "type": "article"
+ },
+ "W4414128336": {
+  "openalex": "https://openalex.org/W4414128336",
+  "doi": "10.3390/ai6090226",
+  "title": "Retrieval-Augmented Generation (RAG) in Healthcare: A Comprehensive Review",
+  "year": 2025,
+  "citations": 203,
+  "abstract": "Retrieval-Augmented Generation (RAG) enhances large language models (LLMs) by integrating external knowledge retrieval to improve factual consistency and reduce hallucinations. Despite growing interest, its use in healthcare remains fragmented. This paper presents a Systematic Literature Review (SLR) following PRISMA guidelines, synthesizing 30 peer-reviewed studies on RAG in clinical domains, focusing on three of its most prevalent and promising applications in diagnostic support, electronic health record (EHR) summarization, and medical question answering. We synthesize the existing architectural variants (naïve, advanced, and modular) and examine their deployment across these applications. Persistent challenges are identified, including retrieval noise (irrelevant or low-quality retrieved information), domain shift (performance degradation when models are applied to data distributions different from their training set), generation latency, and limited explainability. Evaluation strategies are compared using both standard metrics and clinical-specific metrics, FactScore, RadGraph-F1, and MED-F1, which are particularly critical for ensuring factual accuracy, medical validity, and clinical relevance. This synthesis offers a domain-focused perspective to guide researchers, healthcare providers, and policymakers in developing reliable, interpretable, and clinically aligned AI systems, laying the groundwork for future innovation in RAG-based healthcare solutions.",
+  "authors": [
+   "Fnu Neha",
+   "Deepshikha Bhati",
+   "Deepak Kumar Shukla"
+  ],
+  "venue": "AI",
+  "landing": "https://doi.org/10.3390/ai6090226",
+  "type": "article"
+ },
+ "W7215128030": {
+  "openalex": "https://openalex.org/W7215128030",
+  "doi": "10.1109/icscst70031.2026.11709521",
+  "title": "Reducing Hallucinations in Oncology Question Answering Using Confidence-Gated Retrieval-Augmented Generation",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "Hallucinations in LLMs are a major issue in developing medical question-answering systems, as the creation of false information can lead to serious safety risks. The Retrieval-Augmented Generation (RAG) model reduces this issue by relying on external knowledge sources. However, in traditional RAG, it is still possible to generate responses even when there is weak or irrelevant evidence.This paper aims to present a novel RAG model that uses cross-encoder re-ranking in conjunction with confidence-gated abstention to ensure that responses are only generated when there is enough evidence. The model was tested using 62 oncology-related questions obtained from a dataset of cancer information in Japanese. The experiment was conducted using closed-domain retrieval of Cancer Information Service (CIS) database information and open-domain retrieval of Google search results. The generative model used in this experiment was GPT-3.5 and GPT-4.The experiment was conducted, and the results show that the proposed model significantly reduces hallucinations compared to traditional RAG. The experiment using open-domain retrieval showed a reduction in conditional hallucinations from 28.0% to 8.82% for GPT-3.5 and from 26.7% to 2.17% for GPT-4. The experiment conducted in this paper proved that combining semantic re-ranking with confidence-gated abstention improves the reliability of AI-based medical information systems.",
+  "authors": [
+   "Jasmin T J",
+   "Niranjana Rajagopalan",
+   "Savitha Gopal"
+  ],
+  "venue": "International Conference on Smart Communication and Sustainable Technologies (ICSCST)",
+  "landing": "https://doi.org/10.1109/icscst70031.2026.11709521",
+  "type": "conference-paper"
+ },
+ "W4413791993": {
+  "openalex": "https://openalex.org/W4413791993",
+  "doi": "10.54097/4xqm5c93",
+  "title": "Design and Implementation of a Medical Question Answering System Based on Retrieval-Augmented Generation",
+  "year": 2025,
+  "citations": 1,
+  "abstract": "With the rapid growth of medical information demand, providing accurate and reliable medical question-answering services has become a pressing challenge. Traditional generative Q&A models are prone to hallucinations, frequently generating inaccurate medical advice, while simple retrieval systems lack natural fluency. To address this, we propose a Retrieval-Augmented Generation (RAG)-based medical QA system with a five-layer architecture. The data processing layer cleans and formats data from the MedChatZH dataset. The knowledge storage layer encodes documents into 768-dimensional vectors using the BGE-small-zh-v1.5 embedding model and builds an index. The retrieval layer selects relevant documents via cosine similarity. The answer generation layer employs the ChatGLM3-6B language model for context-aware responses. Finally, a user-friendly web interface is implemented using Gradio, offering high-quality medical Q&A services.",
+  "authors": [
+   "Jiacong Nie",
+   "Xianxin Liu",
+   "Yixiong Tu",
+   "Geng Zhao",
+   "Dongrui Wu",
+   "Yuhao Tang"
+  ],
+  "venue": "International Journal of Biology and Life Sciences",
+  "landing": "https://doi.org/10.54097/4xqm5c93",
+  "type": "article"
+ },
+ "W4415623941": {
+  "openalex": "https://openalex.org/W4415623941",
+  "doi": "10.21203/rs.3.rs-7752202/v1",
+  "title": "Towards Multimodal Retrieval-Augmented Generation for Medical Visual Question Answering",
+  "year": 2025,
+  "citations": 5,
+  "abstract": "Abstract Medical visual question answering (MedVQA) is a critical AI healthcare task that combines medical image analysis with natural language understanding to assist clinicians in decision-making. While medical vision-language models have shown promise in this domain, they struggle with factual inaccuracies and hallucinations. Retrieval-augmented generation (RAG) improves the factual accuracy by grounding responses in external knowledge, yet text-only or image-only retrieval systems struggle with the inherently multimodal nature of medical data, leading to information loss. This paper proposes a novel multimodal RAG framework tailored for MedVQA, which leverages multimodal data, including medical images, reports, and generated captions, to provide more accurate clinical answers. We introduce a training paradigm that uses captions as auxiliary supervision, enhancing cross-modal alignment via contrastive learning. Comprehensive evaluations on MedVQA benchmarks demonstrate the framework’s effectiveness, achieving a 7% average accuracy improvement over unimodal RAG baselines. Our study has the potential to better support clinicians in delivering accurate, timely, and trustworthy patient care by improving the reliability of MedVQA systems. The code is publicly available at https://github.com/AiMl-hub/MM-RAG-MedVQA.",
+  "authors": [
+   "Mai A. Shaaban",
+   "Mohammad Reza Zarei",
+   "Adnan Khan",
+   "Abbas Akkasi",
+   "Mohammad K. Yaqub",
+   "Majid Komeili"
+  ],
+  "venue": "Research Square",
+  "landing": "https://doi.org/10.21203/rs.3.rs-7752202/v1",
+  "type": "preprint"
+ },
+ "W7172381002": {
+  "openalex": "https://openalex.org/W7172381002",
+  "doi": "10.7717/peerj-cs.4053",
+  "title": "Retrieval-augmented generation for medical question answering: a multi-metric performance evaluation",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "The integration of large language models (LLMs) into healthcare is hindered by their tendency to generate hallucinations, a critical issue in medical question answering (MedQA). Retrieval-Augmented Generation (RAG) frameworks address this limitation by grounding LLM outputs in external, verifiable knowledge sources. In this study, RAG pipeline implemented without fine-tuning the base model is evaluated to enhance factual fidelity in MedQA. GPT-4 is integrated with a dense passage retrieval module based on Facebook AI Similarity Search (FAISS) and the BAAI/bge-small-en embedding model, and compared against a non-retrieval GPT-4 baseline.Evaluation is conducted on a held-out set of 1,000 questions from the MedQuAD dataset using widely adopted computational evaluation metrics, including BLEU-1 to BLEU-4, ROUGE-L, METEOR, text-level F1, Exact Match (EM), and embedding-based semantic similarity metrics such as BERTScore and SBERT. The RAG-enhanced configuration consistently outperforms the baseline across all evaluation metrics, with notable improvements including an increase in BLEU-4 from 0.3015 to 0.4224 and BERTScore from 0.8487 to 0.8691, indicating improved contextual coherence and semantic alignment. Qualitative analysis further indicates fewer omissions and more accurate use of domain-specific terminology. To assess generalization, cross-dataset experiments were conducted using the PubMedQA benchmark. The results reveal that while RAG significantly improves performance in in-domain settings, its effectiveness decreases under domain shift when the retrieval corpus is not well aligned with the target question distribution. Additional experiments with varying retrieval depths (k = 1, 3, and 5) demonstrate that increasing the number of retrieved passages can improve semantic similarity by providing richer contextual evidence. These findings provide empirical evidence that retrieval augmentation enhances both the factual reliability and semantic quality of LLM-generated answers in MedQA. The proposed framework offers a practical and scalable approach to mitigating hallucinations without requiring task-specific fine-tuning, highlighting the potential of retrieval-augmented approaches for trustworthy artificial intelligence (AI)-assisted healthcare applications.",
+  "authors": [
+   "Yunus Kökver"
+  ],
+  "venue": "PeerJ Computer Science",
+  "landing": "https://doi.org/10.7717/peerj-cs.4053",
+  "type": "article"
+ },
+ "W4399251778": {
+  "openalex": "https://openalex.org/W4399251778",
+  "doi": "10.2196/66220",
+  "title": "Two-Layer Retrieval-Augmented Generation Framework for Low-Resource Medical Question Answering Using Reddit Data: Proof-of-Concept Study",
+  "year": 2024,
+  "citations": 46,
+  "abstract": "Background The increasing use of social media to share lived and living experiences of substance use presents a unique opportunity to obtain information on side effects, use patterns, and opinions on novel psychoactive substances. However, due to the large volume of data, obtaining useful insights through natural language processing technologies such as large language models is challenging. Objective This paper aims to develop a retrieval-augmented generation (RAG) architecture for medical question answering pertaining to clinicians’ queries on emerging issues associated with health-related topics, using user-generated medical information on social media. Methods We proposed a two-layer RAG framework for query-focused answer generation and evaluated a proof of concept for the framework in the context of query-focused summary generation from social media forums, focusing on emerging drug-related information. Our modular framework generates individual summaries followed by an aggregated summary to answer medical queries from large amounts of user-generated social media data in an efficient manner. We compared the performance of a quantized large language model (Nous-Hermes-2-7B-DPO), deployable in low-resource settings, with GPT-4. For this proof-of-concept study, we used user-generated data from Reddit to answer clinicians’ questions on the use of xylazine and ketamine. Results Our framework achieves comparable median scores in terms of relevance, length, hallucination, coverage, and coherence when evaluated using GPT-4 and Nous-Hermes-2-7B-DPO, evaluated for 20 queries with 76 samples. There was no statistically significant difference between GPT-4 and Nous-Hermes-2-7B-DPO for coverage (Mann-Whitney U=733.0; n1=37; n2=39; P=.89 two-tailed), coherence (U=670.0; n1=37; n2=39; P=.49 two-tailed), relevance (U=662.0; n1=37; n2=39; P=.15 two-tailed), length (U=672.0; n1=37; n2=39; P=.55 two-tailed), and hallucination (U=859.0; n1=37; n2=39; P=.01 two-tailed). A statistically significant difference was noted for the Coleman-Liau Index (U=307.5; n1=20; n2=16; P<.001 two-tailed). Conclusions Our RAG framework can effectively answer medical questions about targeted topics and can be deployed in resource-constrained settings.",
+  "authors": [
+   "Sudeshna Das",
+   "Yao Ge",
+   "Yuting Guo",
+   "Swati Rajwal",
+   "JaMor Hairston",
+   "Jeanne M. Powell",
+   "Andrew L. Walker",
+   "Snigdha R. Peddireddy",
+   "Sahithi Lakamana",
+   "Selen Bozkurt",
+   "Matthew A. Reyna",
+   "Reza Sameni",
+   "Yunyu Xiao",
+   "Sangmi Kim",
+   "Rasheeta D. Chandler",
+   "Natalie Hernandez",
+   "Danielle L. Mowery",
+   "Rachel Wightman",
+   "Jennifer S. Love",
+   "Anthony Spadaro",
+   "Jeanmarie Perrone",
+   "Abeed Sarker"
+  ],
+  "venue": "Journal of Medical Internet Research",
+  "landing": "https://doi.org/10.2196/66220",
+  "type": "article"
+ },
+ "W7161641822": {
+  "openalex": "https://openalex.org/W7161641822",
+  "doi": "10.21203/rs.3.rs-9741159/v1",
+  "title": "Retrieval-Augmented Large Language Models for Clinical Decision Support: A Systematic Review of Hallucination Mitigation and Evidence Grounding",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "Abstract Background: Large language models (LLMs) are increasingly explored for clini­cal decision support systems (CDSS), yet hallucinations—plausible but factually unsupported outputs—pose direct patient safety risks. Retrieval-augmented gen­eration (RAG), which conditions LLM outputs on external evidence at inference time, has emerged as a proposed mitigation strategy. However, the extent to which RAG improves clinical safety and rigor in evaluation remains unclear. Objective: To systematically examine architectural patterns of RAG in clini­cal CDSS, evaluate empirical evidence for hallucination mitigation, and assess whether current evaluation practices align with clinically meaningful safety standards. Methods: Following PRISMA guidelines, we reviewed studies published between January 2023 and December 2025 evaluating retrieval-augmented LLM systems in clinical contexts. Inclusion required inference-time retrieval, empirical evalua­tion, and assessment of correctness, grounding, or safety. Data were extracted on architectural design, knowledge sources, evaluation methodology, and validation practices. Owing to heterogeneity in clinical tasks and reported metrics, findings were synthesized narratively. Results: Thirty studies met the inclusion criteria. Four architectural patterns were identified: single-step retrieval, iterative or agentic retrieval, graph-based retrieval, and hybrid symbolic–neural systems. Across comparative evaluations, RAG approaches were associated with improved factual grounding and reduced unsupported claims relative to non-retrieval LLMs, particularly in guideline- and protocol-based tasks. However, evaluation practices were predominantly retro­spective and metric-driven, with limited clinician involvement and noprospective clinical outcome studies. Recurrent failure modes included retrieval errors, incom­plete or selective integration of evidence, and residual hallucinations despite retrieved context. Conclusions: RAG architectures represent a substantive advance in improving evidentiary grounding of clinical language models under controlled conditions. Nevertheless, the current evidence base reflects architectural innovation without parallel maturation in clinical validation. Standardized safety-oriented evaluation frameworks, prospective validation, and regulatory-aligned governance mecha­nisms are necessary before RAG-based systems can be considered ready for high-stakes clinical deployment.",
+  "authors": [
+   "Sumit Barua",
+   "Charles Barnabas Rodgers"
+  ],
+  "venue": "Research Square",
+  "landing": "https://doi.org/10.21203/rs.3.rs-9741159/v1",
+  "type": "preprint"
+ },
+ "W7154728684": {
+  "openalex": "https://openalex.org/W7154728684",
+  "doi": "10.5281/zenodo.19631128",
+  "title": "Mitigating Large Language Model Hallucinations for Clinical Data Extraction: A Retrieval-Augmented Framework With Structured Output Enforcement",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "Clinical data extraction errors in regulatory submissions represent a nationally significant challengein the United States, where the FDA evaluates thousands of drug and device applicationsannually—each underpinned by clinical datasets that must conform precisely to CDISC standards—and where extraction failures can delay patient access to therapies, trigger costly resubmissions, orallow safety signals to go undetected. Large Language Models (LLMs) are increasingly explored forautomating this process, yet their propensity to generate plausible but factually incorrect outputs—termed hallucinations—poses severe risks; recent evaluations report hallucination rates varying fromlow single digits under optimized conditions to over 50% under adversarial prompting, depending onsystem design and mitigation strategy (Ji et al., 2023; Huang et al., 2025; Gao et al., 2024). Existingresearch has addressed individual mitigation techniques in isolation, but the published literature lacksa systematic architectural analysis of how these complementary methods should be composed forclinical data extraction tasks governed by regulatory data standards. This work addresses that gap:the author independently conceived and designed a conceptual reference architecture that integrateshybrid Retrieval-Augmented Generation with sparse–dense retrieval (Lewis et al., 2020; Karpukhinet al., 2020), constrained decoding for schema-valid structured outputs (Willard and Louf, 2023),NLI-based evidence grounding with provenance tracking, and calibrated abstention under uncertainty(Kadavath et al., 2022) into a defense-in-depth pipeline for SDTM mapping, adverse event coding, andlaboratory value normalization. The author critically evaluates each component against alternatives,documenting design rationale and trade-offs informed by specialized expertise at the intersection ofclinical data standards, regulatory requirements, and NLP system architecture. This work furthercontributes a consolidated evaluation protocol encompassing offline retrieval metrics, generationfactuality assessment via FActScore decomposition (Min et al., 2023), domain-specific clinical metrics,and a human evaluation rubric—designed to avoid data leakage and support regulatory audit.The author identifies and categorizes key failure modes from the clinical LLM evaluation literature—including entity conflation, temporal reasoning errors, and ontology boundary violations—and mapspublished mitigation strategies to each. The framework is situated within the FDA’s Good MachineLearning Practice (GMLP) principles and emerging transparency requirements. [LIMITATION] Theframework has not been empirically validated; this work contributes a literature-derived referencearchitecture and evaluation strategy to be tested in future implementation studies. The methodologyand findings are applicable across healthcare systems, research institutions, and clinical researchorganizations nationwide, contributing to the broader national effort to establish trustworthy AI inregulated healthcare environments.This work is intended for research purposes only and is not designed, validated, or approved forclinical use, diagnosis, or treatment of any medical condition.Keywords: large language models, hallucination mitigation, clinical data extraction, retrieval-augmentedgeneration, structured outputs, SDTM, regulatory compliance",
+  "authors": [
+   "Danielmartin Arogyasami"
+  ],
+  "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+  "landing": "https://doi.org/10.5281/zenodo.19631128",
+  "type": "preprint"
+ },
+ "W4391221150": {
+  "openalex": "https://openalex.org/W4391221150",
+  "doi": "10.1056/aioa2300068",
+  "title": "Almanac — Retrieval-Augmented Language Models for Clinical Medicine",
+  "year": 2024,
+  "citations": 663,
+  "abstract": "BACKGROUND: Large language models (LLMs) have recently shown impressive zero-shot capabilities, whereby they can use auxiliary data, without the availability of task-specific training examples, to complete a variety of natural language tasks, such as summarization, dialogue generation, and question answering. However, despite many promising applications of LLMs in clinical medicine, adoption of these models has been limited by their tendency to generate incorrect and sometimes even harmful statements. METHODS: We tasked a panel of eight board-certified clinicians and two health care practitioners with evaluating Almanac, an LLM framework augmented with retrieval capabilities from curated medical resources for medical guideline and treatment recommendations. The panel compared responses from Almanac and standard LLMs (ChatGPT-4, Bing, and Bard) versus a novel data set of 314 clinical questions spanning nine medical specialties. RESULTS: Almanac showed a significant improvement in performance compared with the standard LLMs across axes of factuality, completeness, user preference, and adversarial safety. CONCLUSIONS: Our results show the potential for LLMs with access to domain-specific corpora to be effective in clinical decision-making. The findings also underscore the importance of carefully testing LLMs before deployment to mitigate their shortcomings. (Funded by the National Institutes of Health, National Heart, Lung, and Blood Institute.).",
+  "authors": [
+   "Cyril Zakka",
+   "Rohan Shad",
+   "Akash Chaurasia",
+   "Alex R. Dalal",
+   "Jennifer Lynn Kim",
+   "Michael Moor",
+   "Robyn Fong",
+   "Curran Phillips",
+   "Kevin Michael Alexander",
+   "Euan Angus Ashley",
+   "Jack H. Boyd",
+   "Kathleen Boyd",
+   "Karen G. Hirsch",
+   "Curtis P. Langlotz",
+   "Rita Lee",
+   "Joanna Melia",
+   "Joanna K Nelson",
+   "Karim Sallam",
+   "Stacey Tullis",
+   "Melissa Ann Vogelsong",
+   "John Patrick Cunningham",
+   "William Hiesinger"
+  ],
+  "venue": "NEJM AI",
+  "landing": "https://doi.org/10.1056/aioa2300068",
+  "type": "article"
+ },
+ "W4409157497": {
+  "openalex": "https://openalex.org/W4409157497",
+  "doi": "10.1038/s41746-025-01519-z",
+  "title": "Retrieval augmented generation for 10 large language models and its generalizability in assessing medical fitness",
+  "year": 2025,
+  "citations": 241,
+  "abstract": "Large Language Models (LLMs) hold promise for medical applications but often lack domain-specific expertise. Retrieval Augmented Generation (RAG) enables customization by integrating specialized knowledge. This study assessed the accuracy, consistency, and safety of LLM-RAG models in determining surgical fitness and delivering preoperative instructions using 35 local and 23 international guidelines. Ten LLMs (e.g., GPT3.5, GPT4, GPT4o, Gemini, Llama2, and Llama3, Claude) were tested across 14 clinical scenarios. A total of 3234 responses were generated and compared to 448 human-generated answers. The GPT4 LLM-RAG model with international guidelines generated answers within 20 s and achieved the highest accuracy, which was significantly better than human-generated responses (96.4% vs. 86.6%, p = 0.016). Additionally, the model exhibited an absence of hallucinations and produced more consistent output than humans. This study underscores the potential of GPT-4-based LLM-RAG models to deliver highly accurate, efficient, and consistent preoperative assessments.",
+  "authors": [
+   "Yu He Ke",
+   "Liyuan Jin",
+   "Kabilan Elangovan",
+   "Hairil Rizal Abdullah",
+   "Nan Liu",
+   "Alex Tiong Heng Sia",
+   "Chai Rick Soh",
+   "Joshua Yi Min Tung",
+   "Jasmine Chiat Ling Ong",
+   "Chang‐Fu Kuo",
+   "Shaochun Wu",
+   "Vesela Kovacheva",
+   "Daniel Shu Wei Ting"
+  ],
+  "venue": "npj Digital Medicine",
+  "landing": "https://doi.org/10.1038/s41746-025-01519-z",
+  "type": "article"
+ },
+ "W4392597393": {
+  "openalex": "https://openalex.org/W4392597393",
+  "doi": "10.3390/medicina60030445",
+  "title": "Integrating Retrieval-Augmented Generation with Large Language Models in Nephrology: Advancing Practical Applications",
+  "year": 2024,
+  "citations": 249,
+  "abstract": "The integration of large language models (LLMs) into healthcare, particularly in nephrology, represents a significant advancement in applying advanced technology to patient care, medical research, and education. These advanced models have progressed from simple text processors to tools capable of deep language understanding, offering innovative ways to handle health-related data, thus improving medical practice efficiency and effectiveness. A significant challenge in medical applications of LLMs is their imperfect accuracy and/or tendency to produce hallucinations-outputs that are factually incorrect or irrelevant. This issue is particularly critical in healthcare, where precision is essential, as inaccuracies can undermine the reliability of these models in crucial decision-making processes. To overcome these challenges, various strategies have been developed. One such strategy is prompt engineering, like the chain-of-thought approach, which directs LLMs towards more accurate responses by breaking down the problem into intermediate steps or reasoning sequences. Another one is the retrieval-augmented generation (RAG) strategy, which helps address hallucinations by integrating external data, enhancing output accuracy and relevance. Hence, RAG is favored for tasks requiring up-to-date, comprehensive information, such as in clinical decision making or educational applications. In this article, we showcase the creation of a specialized ChatGPT model integrated with a RAG system, tailored to align with the KDIGO 2023 guidelines for chronic kidney disease. This example demonstrates its potential in providing specialized, accurate medical advice, marking a step towards more reliable and efficient nephrology practices.",
+  "authors": [
+   "Jing Miao",
+   "Charat Thongprayoon",
+   "Supawadee Suppadungsuk",
+   "Oscar A. Garcia Valencia",
+   "Wisit Cheungpasitporn"
+  ],
+  "venue": "Medicina",
+  "landing": "https://doi.org/10.3390/medicina60030445",
+  "type": "review"
+ },
+ "W4391801218": {
+  "openalex": "https://openalex.org/W4391801218",
+  "doi": "10.48550/arxiv.2402.07867",
+  "title": "PoisonedRAG: Knowledge Corruption Attacks to Retrieval-Augmented Generation of Large Language Models",
+  "year": 2024,
+  "citations": 638,
+  "abstract": "Large language models (LLMs) have achieved remarkable success due to their exceptional generative capabilities. Despite their success, they also have inherent limitations such as a lack of up-to-date knowledge and hallucination. Retrieval-Augmented Generation (RAG) is a state-of-the-art technique to mitigate these limitations. The key idea of RAG is to ground the answer generation of an LLM on external knowledge retrieved from a knowledge database. Existing studies mainly focus on improving the accuracy or efficiency of RAG, leaving its security largely unexplored. We aim to bridge the gap in this work. We find that the knowledge database in a RAG system introduces a new and practical attack surface. Based on this attack surface, we propose PoisonedRAG, the first knowledge corruption attack to RAG, where an attacker could inject a few malicious texts into the knowledge database of a RAG system to induce an LLM to generate an attacker-chosen target answer for an attacker-chosen target question. We formulate knowledge corruption attacks as an optimization problem, whose solution is a set of malicious texts. Depending on the background knowledge (e.g., black-box and white-box settings) of an attacker on a RAG system, we propose two solutions to solve the optimization problem, respectively. Our results show PoisonedRAG could achieve a 90% attack success rate when injecting five malicious texts for each target question into a knowledge database with millions of texts. We also evaluate several defenses and our results show they are insufficient to defend against PoisonedRAG, highlighting the need for new defenses.",
+  "authors": [
+   "Zou, Wei",
+   "Runpeng Geng",
+   "Binghui Wang",
+   "Jinyuan Jia"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2402.07867",
+  "type": "preprint"
+ },
+ "W7148355944": {
+  "openalex": "https://openalex.org/W7148355944",
+  "doi": "10.1016/j.cosrev.2026.100970",
+  "title": "Large language models hallucination: A comprehensive survey",
+  "year": 2026,
+  "citations": 254,
+  "abstract": null,
+  "authors": [
+   "Aisha Alansari",
+   "Hamzah Luqman"
+  ],
+  "venue": "Computer Science Review",
+  "landing": "https://doi.org/10.1016/j.cosrev.2026.100970",
+  "type": "article"
+ },
+ "W4401857375": {
+  "openalex": "https://openalex.org/W4401857375",
+  "doi": "10.1145/3637528.3671470",
+  "title": "A Survey on RAG Meeting LLMs: Towards Retrieval-Augmented Large Language Models",
+  "year": 2024,
+  "citations": 2028,
+  "abstract": "As one of the most advanced techniques in AI, Retrieval-Augmented Generation (RAG) can offer reliable and up-to-date external knowledge, providing huge convenience for numerous tasks. Particularly in the era of AI-Generated Content (AIGC), the powerful capacity of retrieval in providing additional knowledge enables RAG to assist existing generative AI in producing high-quality outputs. Recently, Large Language Models (LLMs) have demonstrated revolutionary abilities in language understanding and generation, while still facing inherent limitations such as hallucinations and out-of-date internal knowledge. Given the powerful abilities of RAG in providing the latest and helpful auxiliary information, Retrieval-Augmented Large Language Models (RA-LLMs) have emerged to harness external and authoritative knowledge bases, rather than solely relying on the model's internal knowledge, to augment the quality of the generated content of LLMs. In this survey, we comprehensively review existing research studies in RA-LLMs, covering three primary technical perspectives: Furthermore, to deliver deeper insights, we discuss current limitations and several promising directions for future research. Updated information about this survey can be found at: https://advanced-recommender-systems.github.io/RAG-Meets-LLMs/",
+  "authors": [
+   "Wenqi Fan",
+   "Yujuan Ding",
+   "Liangbo Ning",
+   "Shijie Wang",
+   "Hengyun Li",
+   "Dawei Yin",
+   "Tat‐Seng Chua",
+   "Qing Li"
+  ],
+  "venue": "ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD)",
+  "landing": "https://doi.org/10.1145/3637528.3671470",
+  "type": "conference-paper"
+ },
+ "W7127589252": {
+  "openalex": "https://openalex.org/W7127589252",
+  "doi": "10.1038/s41586-025-10072-4",
+  "title": "Synthesizing scientific literature with retrieval-augmented language models",
+  "year": 2026,
+  "citations": 325,
+  "abstract": "Scientific progress depends on the ability of researchers to synthesize the growing body of literature. Can large language models (LLMs) assist scientists in this task? Here we introduce OpenScholar, a specialized retrieval-augmented language model (LM)1 that answers scientific queries by identifying relevant passages from 45 million open-access papers and synthesizing citation-backed responses. To evaluate OpenScholar, we develop ScholarQABench, the first large-scale multi-domain benchmark for literature search, comprising 2,967 expert-written queries and 208 long-form answers across computer science, physics, neuroscience and biomedicine. Despite being a smaller open model, OpenScholar-8B outperforms GPT-4o by 6.1% and PaperQA2 by 5.5% in correctness on a challenging multi-paper synthesis task from the new ScholarQABench. Although GPT-4o hallucinates citations 78–90% of the time, OpenScholar achieves citation accuracy on par with human experts. OpenScholar’s data store, retriever and self-feedback inference loop improve off-the-shelf LMs: for instance, OpenScholar-GPT-4o improves the correctness of GPT-4o by 12%. In human evaluations, experts preferred OpenScholar-8B and OpenScholar-GPT-4o responses over expert-written ones 51% and 70% of the time, respectively, compared with 32% for GPT-4o. We open-source all artefacts, including our code, models, data store, datasets and a public demo. A specialized, open-source, retrieval-augmented language model is introduced for answering scientific queries and synthesizing literature, the responses of which are shown to be preferred by human evaluations over expert-written answers.",
+  "authors": [
+   "Akari Asai",
+   "Jacqueline He",
+   "Rulin Shao",
+   "Weijia Shi",
+   "Amanpreet Singh",
+   "Joseph Chee Chang",
+   "Kyle Lo",
+   "Luca Soldaini",
+   "Sergey Feldman",
+   "Mike D’Arcy",
+   "David Wadden",
+   "Matt Latzke",
+   "Jenna Sparks",
+   "Jena D. Hwang",
+   "Varsha Kishore",
+   "Minyang Tian",
+   "Pan Ji",
+   "Shengyan Liu",
+   "Hao Tong",
+   "Bohao Wu",
+   "Yanyu Xiong",
+   "Luke Zettlemoyer",
+   "Graham Neubig",
+   "Daniel S. Weld",
+   "Doug Downey",
+   "Wen-tau Yih",
+   "Pang Wei Koh",
+   "Hannaneh Hajishirzi"
+  ],
+  "venue": "Nature",
+  "landing": "https://doi.org/10.1038/s41586-025-10072-4",
+  "type": "article"
+ },
+ "W4392544551": {
+  "openalex": "https://openalex.org/W4392544551",
+  "doi": "10.1097/hep.0000000000000834",
+  "title": "Development of a liver disease–specific large language model chat interface using retrieval-augmented generation",
+  "year": 2024,
+  "citations": 229,
+  "abstract": "BACKGROUND AND AIMS: Large language models (LLMs) have significant capabilities in clinical information processing tasks. Commercially available LLMs, however, are not optimized for clinical uses and are prone to generating hallucinatory information. Retrieval-augmented generation (RAG) is an enterprise architecture that allows the embedding of customized data into LLMs. This approach \"specializes\" the LLMs and is thought to reduce hallucinations. APPROACH AND RESULTS: We developed \"LiVersa,\" a liver disease-specific LLM, by using our institution's protected health information-complaint text embedding and LLM platform, \"Versa.\" We conducted RAG on 30 publicly available American Association for the Study of Liver Diseases guidance documents to be incorporated into LiVersa. We evaluated LiVersa's performance by conducting 2 rounds of testing. First, we compared LiVersa's outputs versus those of trainees from a previously published knowledge assessment. LiVersa answered all 10 questions correctly. Second, we asked 15 hepatologists to evaluate the outputs of 10 hepatology topic questions generated by LiVersa, OpenAI's ChatGPT 4, and Meta's Large Language Model Meta AI 2. LiVersa's outputs were more accurate but were rated less comprehensive and safe compared to those of ChatGPT 4. RESULTS: We evaluated LiVersa's performance by conducting 2 rounds of testing. First, we compared LiVersa's outputs versus those of trainees from a previously published knowledge assessment. LiVersa answered all 10 questions correctly. Second, we asked 15 hepatologists to evaluate the outputs of 10 hepatology topic questions generated by LiVersa, OpenAI's ChatGPT 4, and Meta's Large Language Model Meta AI 2. LiVersa's outputs were more accurate but were rated less comprehensive and safe compared to those of ChatGPT 4. CONCLUSIONS: In this demonstration, we built disease-specific and protected health information-compliant LLMs using RAG. While LiVersa demonstrated higher accuracy in answering questions related to hepatology, there were some deficiencies due to limitations set by the number of documents used for RAG. LiVersa will likely require further refinement before potential live deployment. The LiVersa prototype, however, is a proof of concept for utilizing RAG to customize LLMs for clinical use cases.",
+  "authors": [
+   "Jin Ge",
+   "Steve Sun",
+   "Joseph Owens",
+   "Victor Galvez",
+   "Oksana Gologorskaya",
+   "Jennifer C. Lai",
+   "Mark J. Pletcher",
+   "Ki Lai"
+  ],
+  "venue": "Hepatology",
+  "landing": "https://doi.org/10.1097/hep.0000000000000834",
+  "type": "article"
+ },
+ "W4412875490": {
+  "openalex": "https://openalex.org/W4412875490",
+  "doi": "10.1145/3711896.3736557",
+  "title": "Retrieval And Structuring Augmented Generation with Large Language Models",
+  "year": 2025,
+  "citations": 53,
+  "abstract": "Large Language Models (LLMs) have revolutionized natural language processing with their remarkable capabilities in text generation and reasoning. However, these models face critical challenges when deployed in real-world applications, including hallucination generation, outdated knowledge, and limited domain expertise. Retrieval And Structuring (RAS) Augmented Generation addresses these limitations by integrating dynamic information retrieval with structured knowledge representations. This survey (1) examines retrieval mechanisms including sparse, dense, and hybrid approaches for accessing external knowledge; (2) explore text structuring techniques such as taxonomy construction, hierarchical classification, and information extraction that transform unstructured text into organized representations; and (3) investigate how these structured representations integrate with LLMs through prompt-based methods, reasoning frameworks, and knowledge embedding techniques. It also identifies technical challenges in retrieval efficiency, structure quality, and knowledge integration, while highlighting research opportunities in multimodal retrieval, cross-lingual structures, and interactive systems. This comprehensive overview provides researchers and practitioners with insights into RAS methods, applications, and future directions.",
+  "authors": [
+   "Pengcheng Jiang",
+   "Siru Ouyang",
+   "Yizhu Jiao",
+   "Ming Zhong",
+   "Runchu Tian",
+   "Jiawei Han"
+  ],
+  "venue": "ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD)",
+  "landing": "https://doi.org/10.1145/3711896.3736557",
+  "type": "conference-paper"
+ },
+ "W4387934986": {
+  "openalex": "https://openalex.org/W4387934986",
+  "doi": "10.1109/tcbb.2023.3327452",
+  "title": "Adaptive Transfer of Graph Neural Networks for Few-Shot Molecular Property Prediction",
+  "year": 2023,
+  "citations": 9,
+  "abstract": "Few-Shot Molecular Property Prediction (FSMPP) is an improtant task on drug discovery, which aims to learn transferable knowledge from base property prediction tasks with sufficient data for predicting novel properties with few labeled molecules. Its key challenge is how to alleviate the data scarcity issue of novel properties. Pretrained Graph Neural Network (GNN) based FSMPP methods effectively address the challenge by pre-training a GNN from large-scale self-supervised tasks and then finetuning it on base property prediction tasks to perform novel property prediction. However, in this paper, we find that the GNN finetuning step is not always effective, which even degrades the performance of pretrained GNN on some novel properties. This is because these molecule-property relationships among molecules change across different properties, which results in the finetuned GNN overfits to base properties and harms the transferability performance of pretrained GNN on novel properties. To address this issue, in this paper, we propose a novel Adaptive Transfer framework of GNN for FSMPP, called ATGNN, which transfers the knowledge of pretrained and finetuned GNNs in a task-adaptive manner to adapt novel properties. Specifically, we first regard the pretrained and finetuned GNNs as model priors of target-property GNN. Then, a task-adaptive weight prediction network is designed to leverage these priors to predict target GNN weights for novel properties. Finally, we combine our ATGNN framework with existing FSMPP methods for FSMPP. Extensive experiments on four real-world datasets, i.e., Tox21, SIDER, MUV, and ToxCast, show the effectiveness of our ATGNN framework.",
+  "authors": [
+   "Baoquan Zhang",
+   "Chuyao Luo",
+   "Hao Jiang",
+   "Shanshan Feng",
+   "Xutao Li",
+   "Bowen Zhang",
+   "Yunming Ye"
+  ],
+  "venue": "IEEE Transactions on Computational Biology and Bioinformatics",
+  "landing": "https://doi.org/10.1109/tcbb.2023.3327452",
+  "type": "article"
+ },
+ "W3130274530": {
+  "openalex": "https://openalex.org/W3130274530",
+  "doi": "10.1145/3442381.3450112",
+  "title": "Few-Shot Graph Learning for Molecular Property Prediction",
+  "year": 2021,
+  "citations": 242,
+  "abstract": "The recent success of graph neural networks has significantly boosted molecular property prediction, advancing activities such as drug discovery. The existing deep neural network methods usually require large training dataset for each property, impairing their performance in cases (especially for new molecular properties) with a limited amount of experimental data, which are common in real situations. To this end, we propose Meta-MGNN, a novel model for few-shot molecular property prediction. Meta-MGNN applies molecular graph neural network to learn molecular representations and builds a meta-learning framework for model optimization. To exploit unlabeled molecular information and address task heterogeneity of different molecular properties, Meta-MGNN further incorporates molecular structures, attribute based self-supervised modules and self-attentive task weights into the former framework, strengthening the whole learning model. Extensive experiments on two public multi-property datasets demonstrate that Meta-MGNN outperforms a variety of state-of-the-art methods.",
+  "authors": [
+   "Zhichun Guo",
+   "Chuxu Zhang",
+   "Wenhao Yu",
+   "John E. Herr",
+   "Olaf Wiest",
+   "Meng Jiang",
+   "Nitesh V. Chawla"
+  ],
+  "venue": "International World Wide Web Conference (WWW)",
+  "landing": "https://doi.org/10.1145/3442381.3450112",
+  "type": "conference-paper"
+ },
+ "W3110901318": {
+  "openalex": "https://openalex.org/W3110901318",
+  "doi": "10.1016/j.ddtec.2020.11.009",
+  "title": "A compact review of molecular property prediction with graph neural networks",
+  "year": 2020,
+  "citations": 689,
+  "abstract": "As graph neural networks are becoming more and more powerful and useful in the field of drug discovery, many pharmaceutical companies are getting interested in utilizing these methods for their own in-house frameworks. This is especially compelling for tasks such as the prediction of molecular properties which is often one of the most crucial tasks in computer-aided drug discovery workflows. The immense hype surrounding these kinds of algorithms has led to the development of many different types of promising architectures and in this review we try to structure this highly dynamic field of AI-research by collecting and classifying 80 GNNs that have been used to predict more than 20 molecular properties using 48 different datasets.",
+  "authors": [
+   "Oliver Wieder",
+   "Stefan M. Kohlbacher",
+   "Mélaine A. Kuenemann",
+   "Arthur Garon",
+   "Pierre Ducrot",
+   "Thomas Seidel",
+   "Thierry Langer"
+  ],
+  "venue": "Drug Discovery Today Technologies",
+  "landing": "https://doi.org/10.1016/j.ddtec.2020.11.009",
+  "type": "review"
+ },
+ "W4361247736": {
+  "openalex": "https://openalex.org/W4361247736",
+  "doi": "10.1016/j.neunet.2023.03.034",
+  "title": "Few-shot Molecular Property Prediction via Hierarchically Structured Learning on Relation Graphs",
+  "year": 2023,
+  "citations": 86,
+  "abstract": null,
+  "authors": [
+   "Wei Ju",
+   "Zequn Liu",
+   "Yifang Qin",
+   "Bin Feng",
+   "Chen Wang",
+   "Zhihui Guo",
+   "Xiao Luo",
+   "Ming Zhang"
+  ],
+  "venue": "Neural Networks",
+  "landing": "https://doi.org/10.1016/j.neunet.2023.03.034",
+  "type": "article"
+ },
+ "W2770468159": {
+  "openalex": "https://openalex.org/W2770468159",
+  "doi": "10.48550/arxiv.1711.04043",
+  "title": "Few-Shot Learning with Graph Neural Networks",
+  "year": 2017,
+  "citations": 1134,
+  "abstract": "We propose to study the problem of few-shot learning with the prism of inference on a partially observed graphical model, constructed from a collection of input images whose label can be either observed or not. By assimilating generic message-passing inference algorithms with their neural-network counterparts, we define a graph neural network architecture that generalizes several of the recently proposed few-shot learning models. Besides providing improved numerical performance, our framework is easily extended to variants of few-shot learning, such as semi-supervised or active learning, demonstrating the ability of graph-based models to operate well on 'relational' tasks.",
+  "authors": [
+   "Víctor García",
+   "Joan Bruna"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/1711.04043",
+  "type": "preprint"
+ },
+ "W4362468772": {
+  "openalex": "https://openalex.org/W4362468772",
+  "doi": "10.1016/j.eswa.2023.120005",
+  "title": "Few-shot learning with transformers via graph embeddings for molecular property prediction",
+  "year": 2023,
+  "citations": 36,
+  "abstract": "Molecular property prediction is an essential task in drug discovery. Recently, deep neural networks have accelerated the discovery of compounds with improved molecular profiles for effective drug development. In particular, graph neural networks (GNNs) have played a pivotal role in identifying promising drug candidates with desirable molecular properties. However, it is common for only a few molecules to share the same set of properties, which presents a low-data problem unanswered by regular machine learning (ML) approaches. Transformer networks have also emerged as a promising solution to model the long-range dependence in molecular embeddings and achieve encouraging results across a wide range of molecular property prediction tasks. Nonetheless, these methods still require a large number of data points per task to achieve acceptable performance. In this study, we propose a few-shot GNN-Transformer architecture, FS-GNNTR to face the challenge of low-data in molecular property prediction. The proposed model accepts molecules in the form of molecular graphs to model the local spatial context of molecular graph embeddings while preserving the global information of deep representations. Furthermore, we introduce a two-module meta-learning framework to iteratively update model parameters across few-shot tasks and predict new molecular properties with limited available data. Finally, we conduct multiple experiments on small-sized biological datasets for molecular property prediction, Tox21 and SIDER, and our results demonstrate the superior performance of FS-GNNTR compared to simpler graph-based baselines. The code and data underlying this article are available in the repository, https://github.com/ltorres97/FS-GNNTR.",
+  "authors": [
+   "Luis H.M. Torres",
+   "Bernardete Ribeiro",
+   "Joel Perdiz Arrais"
+  ],
+  "venue": "Expert Systems with Applications",
+  "landing": "https://doi.org/10.1016/j.eswa.2023.120005",
+  "type": "article"
+ },
+ "W4210313485": {
+  "openalex": "https://openalex.org/W4210313485",
+  "doi": "10.1093/bioinformatics/btac039",
+  "title": "Cross-dependent graph neural networks for molecular property prediction",
+  "year": 2022,
+  "citations": 155,
+  "abstract": "MOTIVATION: The crux of molecular property prediction is to generate meaningful representations of the molecules. One promising route is to exploit the molecular graph structure through graph neural networks (GNNs). Both atoms and bonds significantly affect the chemical properties of a molecule, so an expressive model ought to exploit both node (atom) and edge (bond) information simultaneously. Inspired by this observation, we explore the multi-view modeling with GNN (MVGNN) to form a novel paralleled framework, which considers both atoms and bonds equally important when learning molecular representations. In specific, one view is atom-central and the other view is bond-central, then the two views are circulated via specifically designed components to enable more accurate predictions. To further enhance the expressive power of MVGNN, we propose a cross-dependent message-passing scheme to enhance information communication of different views. The overall framework is termed as CD-MVGNN. RESULTS: We theoretically justify the expressiveness of the proposed model in terms of distinguishing non-isomorphism graphs. Extensive experiments demonstrate that CD-MVGNN achieves remarkably superior performance over the state-of-the-art models on various challenging benchmarks. Meanwhile, visualization results of the node importance are consistent with prior knowledge, which confirms the interpretability power of CD-MVGNN. AVAILABILITY AND IMPLEMENTATION: The code and data underlying this work are available in GitHub at https://github.com/uta-smile/CD-MVGNN. SUPPLEMENTARY INFORMATION: Supplementary data are available at Bioinformatics online.",
+  "authors": [
+   "Hehuan Ma",
+   "Yatao Bian",
+   "Yu Rong",
+   "Wenbing Huang",
+   "Tingyang Xu",
+   "Weiyang Xie",
+   "Geyan Ye",
+   "Junzhou Huang"
+  ],
+  "venue": "Bioinformatics",
+  "landing": "https://doi.org/10.1093/bioinformatics/btac039",
+  "type": "article"
+ },
+ "W4323833122": {
+  "openalex": "https://openalex.org/W4323833122",
+  "doi": "10.1007/s00521-023-08403-5",
+  "title": "Few-shot learning via graph embeddings with convolutional networks for low-data molecular property prediction",
+  "year": 2023,
+  "citations": 11,
+  "abstract": "Abstract Graph neural networks and convolutional architectures have proven to be pivotal in improving the prediction of molecular properties in drug discovery. However, this is fundamentally a low data problem that is incompatible with regular deep learning approaches. Contemporary deep networks require large amounts of training data, which severely limits the prediction of new molecular entities from limited available data. In this paper, we address the challenge of low data in molecular property prediction by: (1) defining a set of deep learning architectures that accept compound chemical structures in the form of molecular graphs, (2) creating a few-shot learning strategy across graph neural networks and convolutional neural networks to leverage the rich information of graph embeddings, and (3) proposing a two-module meta-learning framework to learn from task-transferable knowledge and predict molecular properties on few-shot data. Furthermore, we conduct multiple experiments on two benchmark multiproperty datasets to demonstrate a superior performance over conventional graph-based baselines. ROC-AUC results for 10-shot experiments show an average improvement of $$+11.37\\%$$ + 11.37 % on Tox21 and $$+0.53\\%$$ + 0.53 % on SIDER, which are representative small-sized biological datasets for molecular property prediction.",
+  "authors": [
+   "Luis H.M. Torres",
+   "Joel Perdiz Arrais",
+   "Bernardete Ribeiro"
+  ],
+  "venue": "Neural Computing and Applications",
+  "landing": "https://doi.org/10.1007/s00521-023-08403-5",
+  "type": "article"
+ },
+ "W3211477647": {
+  "openalex": "https://openalex.org/W3211477647",
+  "doi": "10.48550/arxiv.2107.07994",
+  "title": "Property-Aware Relation Networks for Few-Shot Molecular Property Prediction",
+  "year": 2021,
+  "citations": 102,
+  "abstract": "Molecular property prediction plays a fundamental role in drug discovery to identify candidate molecules with target properties. However, molecular property prediction is essentially a few-shot problem which makes it hard to use regular machine learning models. In this paper, we propose Property-Aware Relation networks (PAR) to handle this problem. In comparison to existing works, we leverage the fact that both relevant substructures and relationships among molecules change across different molecular properties. We first introduce a property-aware embedding function to transform the generic molecular embeddings to substructure-aware space relevant to the target property. Further, we design an adaptive relation graph learning module to jointly estimate molecular relation graph and refine molecular embeddings w.r.t. the target property, such that the limited labels can be effectively propagated among similar molecules. We adopt a meta-learning strategy where the parameters are selectively updated within tasks in order to model generic and property-aware knowledge separately. Extensive experiments on benchmark molecular property prediction datasets show that PAR consistently outperforms existing methods and can obtain property-aware molecular embeddings and model molecular relation graph properly.",
+  "authors": [
+   "Yaqing Wang",
+   "Abulikemu Abuduweili",
+   "Quanming Yao",
+   "Dejing Dou"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2107.07994",
+  "type": "preprint"
+ },
+ "W4399912177": {
+  "openalex": "https://openalex.org/W4399912177",
+  "doi": "10.48550/arxiv.2406.12950",
+  "title": "MolecularGPT: Open Large Language Model (LLM) for Few-Shot Molecular Property Prediction",
+  "year": 2024,
+  "citations": 94,
+  "abstract": "Molecular property prediction (MPP) is a fundamental and crucial task in drug discovery. However, prior methods are limited by the requirement for a large number of labeled molecules and their restricted ability to generalize for unseen and new tasks, both of which are essential for real-world applications. To address these challenges, we present MolecularGPT for few-shot MPP. From a perspective on instruction tuning, we fine-tune large language models (LLMs) based on curated molecular instructions spanning over 1000 property prediction tasks. This enables building a versatile and specialized LLM that can be adapted to novel MPP tasks without any fine-tuning through zero- and few-shot in-context learning (ICL). MolecularGPT exhibits competitive in-context reasoning capabilities across 10 downstream evaluation datasets, setting new benchmarks for few-shot molecular prediction tasks. More importantly, with just two-shot examples, MolecularGPT can outperform standard supervised graph neural network methods on 4 out of 7 datasets. It also excels state-of-the-art LLM baselines by up to 15.7% increase on classification accuracy and decrease of 17.9 on regression metrics (e.g., RMSE) under zero-shot. This study demonstrates the potential of LLMs as effective few-shot molecular property predictors. The code is available at https://github.com/NYUSHCS/MolecularGPT.",
+  "authors": [
+   "Yuyan Liu",
+   "Sirui Ding",
+   "Zhou Sheng",
+   "Wenqi Fan",
+   "Qiaoyu Tan"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2406.12950",
+  "type": "preprint"
+ },
+ "W4214868967": {
+  "openalex": "https://openalex.org/W4214868967",
+  "doi": "10.1038/s42256-022-00447-x",
+  "title": "Molecular contrastive learning of representations via graph neural networks",
+  "year": 2022,
+  "citations": 1225,
+  "abstract": null,
+  "authors": [
+   "Yuyang Wang",
+   "Jianren Wang",
+   "Zhonglin Cao",
+   "Amir Barati Farimani"
+  ],
+  "venue": "Nature Machine Intelligence",
+  "landing": "https://doi.org/10.1038/s42256-022-00447-x",
+  "type": "article"
+ },
+ "W4401024332": {
+  "openalex": "https://openalex.org/W4401024332",
+  "doi": "10.24963/ijcai.2024/576",
+  "title": "PACIA: Parameter-Efficient Adapter for Few-Shot Molecular Property Prediction",
+  "year": 2024,
+  "citations": 16,
+  "abstract": "Molecular property prediction (MPP) plays a crucial role in biomedical applications, but it often encounters challenges due to a scarcity of labeled data. Existing works commonly adopt gradient-based strategy to update a large amount of parameters for task-level adaptation. However, the increase of adaptive parameters can lead to overfitting and poor performance. Observing that graph neural network (GNN) performs well as both encoder and predictor, we propose PACIA, a parameter-efficient GNN adapter for few-shot MPP. We design a unified adapter to generate a few adaptive parameters to modulate the message passing process of GNN. We then adopt a hierarchical adaptation mechanism to adapt the encoder at task-level and the predictor at query-level by the unified GNN adapter. Extensive results show that PACIA obtains the state-of-the-art performance in few-shot MPP problems, and our proposed hierarchical adaptation mechanism is rational and effective.",
+  "authors": [
+   "Shiguang Wu",
+   "Yaqing Wang",
+   "Quanming Yao"
+  ],
+  "venue": "International Joint Conference on Artificial Intelligence",
+  "landing": "https://doi.org/10.24963/ijcai.2024/576",
+  "type": "conference-paper"
+ },
+ "W4323338513": {
+  "openalex": "https://openalex.org/W4323338513",
+  "doi": "10.1109/tnnls.2023.3250324",
+  "title": "Meta Learning With Graph Attention Networks for Low-Data Drug Discovery",
+  "year": 2023,
+  "citations": 132,
+  "abstract": "Finding candidate molecules with favorable pharmacological activity, low toxicity, and proper pharmacokinetic properties is an important task in drug discovery. Deep neural networks have made impressive progress in accelerating and improving drug discovery. However, these techniques rely on a large amount of label data to form accurate predictions of molecular properties. At each stage of the drug discovery pipeline, usually, only a few biological data of candidate molecules and derivatives are available, indicating that the application of deep neural networks for low-data drug discovery is still a formidable challenge. Here, we propose a meta learning architecture with graph attention network, Meta-GAT, to predict molecular properties in low-data drug discovery. The GAT captures the local effects of atomic groups at the atom level through the triple attentional mechanism and implicitly captures the interactions between different atomic groups at the molecular level. GAT is used to perceive molecular chemical environment and connectivity, thereby effectively reducing sample complexity. Meta-GAT further develops a meta learning strategy based on bilevel optimization, which transfers meta knowledge from other attribute prediction tasks to low-data target tasks. In summary, our work demonstrates how meta learning can reduce the amount of data required to make meaningful predictions of molecules in low-data scenarios. Meta learning is likely to become the new learning paradigm in low-data drug discovery. The source code is publicly available at: https://github.com/lol88/Meta-GAT.",
+  "authors": [
+   "Qiujie Lv",
+   "Guanxing Chen",
+   "Ziduo Yang",
+   "Weihe Zhong",
+   "Calvin Yu‐Chian Chen"
+  ],
+  "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+  "landing": "https://doi.org/10.1109/tnnls.2023.3250324",
+  "type": "article"
+ },
+ "W3042448193": {
+  "openalex": "https://openalex.org/W3042448193",
+  "doi": "10.48550/arxiv.2003.05996",
+  "title": "Meta-Learning GNN Initializations for Low-Resource Molecular Property Prediction",
+  "year": 2020,
+  "citations": 43,
+  "abstract": "Building in silico models to predict chemical properties and activities is a crucial step in drug discovery. However, limited labeled data often hinders the application of deep learning in this setting. Meanwhile advances in meta-learning have enabled state-of-the-art performances in few-shot learning benchmarks, naturally prompting the question: Can meta-learning improve deep learning performance in low-resource drug discovery projects? In this work, we assess the transferability of graph neural networks initializations learned by the Model-Agnostic Meta-Learning (MAML) algorithm - and its variants FO-MAML and ANIL - for chemical properties and activities tasks. Using the ChEMBL20 dataset to emulate low-resource settings, our benchmark shows that meta-initializations perform comparably to or outperform multi-task pre-training baselines on 16 out of 20 in-distribution tasks and on all out-of-distribution tasks, providing an average improvement in AUPRC of 11.2% and 26.9% respectively. Finally, we observe that meta-initializations consistently result in the best performing models across fine-tuning sets with $k \\in \\{16, 32, 64, 128, 256\\}$ instances.",
+  "authors": [
+   "Cuong Q. Nguyen",
+   "Constantine Kreatsoulas",
+   "Kim Branson"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2003.05996",
+  "type": "preprint"
+ },
+ "W4388852108": {
+  "openalex": "https://openalex.org/W4388852108",
+  "doi": "10.1002/qub2.23",
+  "title": "Advanced deep learning methods for molecular property prediction",
+  "year": 2023,
+  "citations": 31,
+  "abstract": "The prediction of molecular properties is a crucial task in the field of drug discovery. Computational methods that can accurately predict molecular properties can significantly accelerate the drug discovery process and reduce the cost of drug discovery. In recent years, iterative updates in computing hardware and the rise of deep learning have created a new and effective path for molecular property prediction. Deep learning methods can leverage the vast amount of data accumulated over the years in drug discovery and do not require complex feature engineering. In this review, we summarize molecular representations and commonly used datasets in molecular property prediction models and present advanced deep learning methods for molecular property prediction, including state-of-the-art deep learning networks such as graph neural networks and Transformer-based models, as well as state-of-the-art deep learning strategies such as 3D pre-train, contrastive learning, multi-task learning, transfer learning, and meta-learning. We also point out some critical issues such as lack of datasets, low information utilization, and lack of specificity for diseases.",
+  "authors": [
+   "Chao Pang",
+   "Henry H. Y. Tong",
+   "Leyi Wei"
+  ],
+  "venue": "Quantitative Biology",
+  "landing": "https://doi.org/10.1002/qub2.23",
+  "type": "review"
+ },
+ "W4398250535": {
+  "openalex": "https://openalex.org/W4398250535",
+  "doi": "10.1021/acsomega.4c02147",
+  "title": "Meta Learning with Attention Based FP-GNNs for Few-Shot Molecular Property Prediction",
+  "year": 2024,
+  "citations": 22,
+  "abstract": "Molecular property prediction holds significant importance in drug discovery, enabling the identification of biologically active compounds with favorable drug-like properties. However, the low data problem, arising from the scarcity of labeled data in drug discovery, poses a substantial obstacle for accurate predictions. To address this challenge, we introduce a novel architecture, AttFPGNN-MAML, for few-shot molecular property prediction. The proposed approach incorporates a hybrid feature representation to enrich molecular representations and model intermolecular relationships specific to the task. By leveraging ProtoMAML, a meta-learning strategy, our model is trained and adapted to new tasks. Evaluation on two few-shot data sets, MoleculeNet and FS-Mol, demonstrates our method's superior performance in three out of four tasks and across various support set sizes. These results convincingly validate the effectiveness of our method in the realm of few-shot molecular property prediction. The source code is publicly available at https://github.com/sanomics-lab/AttFPGNN-MAML.",
+  "authors": [
+   "Xiaoliang Qian",
+   "Bin Ju",
+   "Ping Shen",
+   "Keda Yang",
+   "Li Li",
+   "Qi Liu"
+  ],
+  "venue": "ACS Omega",
+  "landing": "https://doi.org/10.1021/acsomega.4c02147",
+  "type": "article"
+ },
+ "W4410875492": {
+  "openalex": "https://openalex.org/W4410875492",
+  "doi": "10.1093/bib/bbaf251",
+  "title": "Integrated multimodal hierarchical fusion and meta-learning for enhanced molecular property prediction",
+  "year": 2025,
+  "citations": 8,
+  "abstract": "Accurately predicting the pharmacological and toxicological properties of molecules is a critical step in the drug development process. Owing to the heterogeneity of molecular property prediction tasks, most of the current methods rely on building a base model and fine-tuning it to address specific properties. However, constructing a high-quality base model is a time-consuming procedure and requires a carefully designed network architecture; in addition, in certain rare molecular property prediction tasks, the base model often does not transfer well to new tasks. In this work, we adopt a meta-learning-based training framework that enables our model to adapt to diverse tasks with limited data, thereby preventing data scarcity from impacting certain molecular property predictions. Additionally, this framework leverages the correlations between different tasks, allowing the constructed model to quickly adapt to new prediction tasks. Moreover, we propose a multimodal fusion framework that combines two-dimensional molecular graphs with molecular images. In the molecular graphs, node-, motif-, and graph-level features are hierarchically guided from low to high levels, fully exploiting the molecular representation and more efficiently conducting hierarchical fusion. Experimental results indicate that our model outperforms the baseline models across various performance indicators, thereby validating the effectiveness of our approach.",
+  "authors": [
+   "Xianjun Han",
+   "Zhenglong Zhang",
+   "Can Bai",
+   "Zijian Wu"
+  ],
+  "venue": "Briefings in Bioinformatics",
+  "landing": "https://doi.org/10.1093/bib/bbaf251",
+  "type": "article"
+ },
+ "W4385767935": {
+  "openalex": "https://openalex.org/W4385767935",
+  "doi": "10.24963/ijcai.2023/526",
+  "title": "Graph Sampling-based Meta-Learning for Molecular Property Prediction",
+  "year": 2023,
+  "citations": 34,
+  "abstract": "Molecular property is usually observed with a limited number of samples, and researchers have considered property prediction as a few-shot problem. One important fact that has been ignored by prior works is that each molecule can be recorded with several different properties simultaneously. To effectively utilize many-to-many correlations of molecules and properties, we propose a Graph Sampling-based Meta-learning (GS-Meta) framework for few-shot molecular property prediction. First, we construct a Molecule-Property relation Graph (MPG): molecule and properties are nodes, while property labels decide edges. Then, to utilize the topological information of MPG, we reformulate an episode in meta-learning as a subgraph of the MPG, containing a target property node, molecule nodes, and auxiliary property nodes. Third, as episodes in the form of subgraphs are no longer independent of each other, we propose to schedule the subgraph sampling process with a contrastive loss function, which considers the consistency and discrimination of subgraphs. Extensive experiments on 5 commonly-used benchmarks show GS-Meta consistently outperforms state-of-the-art methods by 5.71%-6.93% in ROC-AUC and verify the effectiveness of each proposed module. Our code is available at https://github.com/HICAI-ZJU/GS-Meta.",
+  "authors": [
+   "Xiang Zhuang",
+   "Qiang Zhang",
+   "Bin Wu",
+   "Keyan Ding",
+   "Yin Fang",
+   "Huajun Chen"
+  ],
+  "venue": "International Joint Conference on Artificial Intelligence",
+  "landing": "https://doi.org/10.24963/ijcai.2023/526",
+  "type": "conference-paper"
+ },
+ "W4416259539": {
+  "openalex": "https://openalex.org/W4416259539",
+  "doi": "10.1039/d5dd00443h",
+  "title": "Meta-learning linear models for molecular property prediction",
+  "year": 2026,
+  "citations": 3,
+  "abstract": "A meta-learning linear approach exploits small, separate datasets to improve property predictions in the low-data regime.",
+  "authors": [
+   "Yulia A. Pimonova",
+   "Michael G. Taylor",
+   "Alice E. A. Allen",
+   "Ping Yang",
+   "Nicholas Lubbers"
+  ],
+  "venue": "Digital Discovery",
+  "landing": "https://doi.org/10.1039/d5dd00443h",
+  "type": "article"
+ },
+ "W4412150896": {
+  "openalex": "https://openalex.org/W4412150896",
+  "doi": "10.1038/s42004-025-01592-1",
+  "title": "Molecular property prediction in the ultra‐low data regime",
+  "year": 2025,
+  "citations": 32,
+  "abstract": "Data scarcity remains a major obstacle to effective machine learning in molecular property prediction and design, affecting diverse domains such as pharmaceuticals, solvents, polymers, and energy carriers. Although multi-task learning (MTL) can leverage correlations among properties to improve predictive performance, imbalanced training datasets often degrade its efficacy through negative transfer. Here, we present adaptive checkpointing with specialization (ACS), a training scheme for multi-task graph neural networks that mitigates detrimental inter-task interference while preserving the benefits of MTL. We validate ACS on multiple molecular property benchmarks, where it consistently surpasses or matches the performance of recent supervised methods. To illustrate its practical utility, we deploy ACS in a real-world scenario of predicting sustainable aviation fuel properties, showing that it can learn accurate models with as few as 29 labeled samples. By enabling reliable property prediction in low-data regimes, ACS broadens the scope and accelerates the pace of artificial intelligence-driven materials discovery and design. Multi-task learning has been shown to improve the predicting performance of machine learning models despite data scarcity, but imbalanced training datasets often degrade its efficacy through negative transfer. Here, the authors introduce adaptive checkpointing with specialization, a training scheme that mitigates detrimental inter-task interference, and demonstrate its practical utility by predicting sustainable aviation fuel properties.",
+  "authors": [
+   "Basem A. Eraqi",
+   "Dmitrii Khizbullin",
+   "Shashank S. Nagaraja",
+   "S. Mani Sarathy"
+  ],
+  "venue": "Communications Chemistry",
+  "landing": "https://doi.org/10.1038/s42004-025-01592-1",
+  "type": "article"
+ },
+ "W4387701207": {
+  "openalex": "https://openalex.org/W4387701207",
+  "doi": "10.1093/bioinformatics/btad604",
+  "title": "Evidential meta-model for molecular property prediction",
+  "year": 2023,
+  "citations": 7,
+  "abstract": "MOTIVATION: The usefulness of supervised molecular property prediction (MPP) is well-recognized in many applications. However, the insufficiency and the imbalance of labeled data make the learning problem difficult. Moreover, the reliability of the predictions is also a huddle in the deployment of MPP models in safety-critical fields. RESULTS: We propose the Evidential Meta-model for Molecular Property Prediction (EM3P2) method that returns uncertainty estimates along with its predictions. Our EM3P2 trains an evidential graph isomorphism network classifier using multi-task molecular property datasets under the model-agnostic meta-learning (MAML) framework while addressing the problem of data imbalance. Our results showed better prediction performances compared to existing meta-MPP models. Furthermore, we showed that the uncertainty estimates returned by our EM3P2 can be used to reject uncertain predictions for applications that require higher confidence. AVAILABILITY AND IMPLEMENTATION: Source code available for download at https://github.com/Ajou-DILab/EM3P2.",
+  "authors": [
+   "KyungPyo Ham",
+   "Lee Sael"
+  ],
+  "venue": "Bioinformatics",
+  "landing": "https://doi.org/10.1093/bioinformatics/btad604",
+  "type": "article"
+ },
+ "W3047926930": {
+  "openalex": "https://openalex.org/W3047926930",
+  "doi": "10.1016/j.artmed.2020.101935",
+  "title": "Handling imbalanced medical image data: A deep-learning-based one-class classification approach",
+  "year": 2020,
+  "citations": 195,
+  "abstract": null,
+  "authors": [
+   "Long Gao",
+   "Lei Zhang",
+   "Chang Liu",
+   "Shandong Wu"
+  ],
+  "venue": "Artificial Intelligence in Medicine",
+  "landing": "https://doi.org/10.1016/j.artmed.2020.101935",
+  "type": "article"
+ },
+ "W4210374324": {
+  "openalex": "https://openalex.org/W4210374324",
+  "doi": "10.1371/journal.pone.0262838",
+  "title": "Deep learning model calibration for improving performance in class-imbalanced medical image classification tasks",
+  "year": 2022,
+  "citations": 119,
+  "abstract": "In medical image classification tasks, it is common to find that the number of normal samples far exceeds the number of abnormal samples. In such class-imbalanced situations, reliable training of deep neural networks continues to be a major challenge, therefore biasing the predicted class probabilities toward the majority class. Calibration has been proposed to alleviate some of these effects. However, there is insufficient analysis explaining whether and when calibrating a model would be beneficial. In this study, we perform a systematic analysis of the effect of model calibration on its performance on two medical image modalities, namely, chest X-rays and fundus images, using various deep learning classifier backbones. For this, we study the following variations: (i) the degree of imbalances in the dataset used for training; (ii) calibration methods; and (iii) two classification thresholds, namely, default threshold of 0.5, and optimal threshold from precision-recall (PR) curves. Our results indicate that at the default classification threshold of 0.5, the performance achieved through calibration is significantly superior (p < 0.05) to using uncalibrated probabilities. However, at the PR-guided threshold, these gains are not significantly different (p > 0.05). This observation holds for both image modalities and at varying degrees of imbalance. The code is available at https://github.com/sivaramakrishnan-rajaraman/Model_calibration.",
+  "authors": [
+   "Sivaramakrishnan Rajaraman",
+   "Prasanth Ganesan",
+   "Sameer Antani"
+  ],
+  "venue": "PLoS ONE",
+  "landing": "https://doi.org/10.1371/journal.pone.0262838",
+  "type": "article"
+ },
+ "W4394932107": {
+  "openalex": "https://openalex.org/W4394932107",
+  "doi": "10.3390/app14083419",
+  "title": "Unraveling the Impact of Class Imbalance on Deep-Learning Models for Medical Image Classification",
+  "year": 2024,
+  "citations": 50,
+  "abstract": "The field of image analysis with artificial intelligence has grown exponentially thanks to the development of neural networks. One of its most promising areas is medical diagnosis through lung X-rays, which are crucial for diseases like pneumonia, which can be mistaken for other conditions. Despite medical expertise, precise diagnosis is challenging, and this is where well-trained algorithms can assist. However, working with medical images presents challenges, especially when datasets are limited and unbalanced. Strategies to balance these classes have been explored, but understanding their local impact and how they affect model evaluation is still lacking. This work aims to analyze how a class imbalance in a dataset can significantly influence the informativeness of metrics used to evaluate predictions. It demonstrates that class separation in a dataset impacts trained models and is a strategy deserving more attention in future research. To achieve these goals, classification models using artificial and deep neural networks implemented in the R environment are developed. These models are trained using a set of publicly available images related to lung pathologies. All results are validated using metrics obtained from the confusion matrix to verify the impact of data imbalance on the performance of medical diagnostic models. The results raise questions about the procedures used to group classes in many studies, aiming to achieve class balance in imbalanced data and open new avenues for future research to investigate the impact of class separation in datasets with clinical pathologies.",
+  "authors": [
+   "Carlos J. Hellín",
+   "Alvaro Olmedo",
+   "Adrián Valledor",
+   "Josefa Gómez",
+   "Miguel López‐Benítez",
+   "Abdelhamid Tayebi"
+  ],
+  "venue": "Applied Sciences",
+  "landing": "https://doi.org/10.3390/app14083419",
+  "type": "article"
+ },
+ "W7167704820": {
+  "openalex": "https://openalex.org/W7167704820",
+  "doi": "10.5526/err-00043533",
+  "title": "Mitigating class imbalance and promoting fairness in medical image classification with limited data using deep learning",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "Class imbalance, limited data, and demographic bias are significant challenges in medical image classification, particularly in skin lesion analysis, where heterogeneous populations and privacy constraints hinder the development of robust and fair models. This thesis proposes deep learning strategies that improve classification performance, robustness, and fairness in both centralised and federated settings. First, SIA-SMOTE is introduced as a Siamese network-based oversampling method for imbalanced image data. By exploiting feature similarity in high-dimensional spaces, it generates more representative synthetic samples than conventional SMOTE variants, leading to consistent performance gains across benchmark and medical imaging datasets. Second, a self-attention fusion strategy for Vision Transformers is proposed to enhance skin lesion classification under imbalanced conditions. By fusing complementary attention mechanisms at the final transformer stage while preserving pretrained representations, the method improves balanced accuracy and F1 performance on the ISIC 2017 dataset. Third, this thesis presents FedCIAL, a federated colour-invariant adversarial learning framework for mitigating demographic bias in decentralised skin lesion classification. Using Fitzpatrick skin type transformations and adversarial domain adaptation, FedCIAL improves both accuracy and fairness while preserving data privacy on the Fitzpatrick17k dataset. Finally, a fairness-aware federated learning framework combining domain adaptation and class imbalance mitigation is developed and evaluated on the Diverse Dermatology Images (DDI) dataset. Results show that jointly addressing imbalance and domain shift yields synergistic improvements in subgroup fairness and overall performance. Overall, this thesis advances oversampling, transformer-based representation learning, and fairness-aware federated learning for developing robust and equitable medical imaging systems.",
+  "authors": [
+   "Rahmat Izwan Heroza"
+  ],
+  "venue": "Open Access at Essex (University of Essex)",
+  "landing": "https://doi.org/10.5526/ERR-00043533",
+  "type": "dissertation"
+ },
+ "W3014785587": {
+  "openalex": "https://openalex.org/W3014785587",
+  "doi": "10.1016/j.compbiomed.2020.103735",
+  "title": "Addressing class imbalance in deep learning for small lesion detection on medical images",
+  "year": 2020,
+  "citations": 174,
+  "abstract": null,
+  "authors": [
+   "Alessandro Bria",
+   "Claudio Marrocco",
+   "Francesco Tortorella"
+  ],
+  "venue": "Computers in Biology and Medicine",
+  "landing": "https://doi.org/10.1016/j.compbiomed.2020.103735",
+  "type": "article"
+ },
+ "W4387211769": {
+  "openalex": "https://openalex.org/W4387211769",
+  "doi": "10.1007/978-3-031-43895-0_65",
+  "title": "FedIIC: Towards Robust Federated Learning for Class-Imbalanced Medical Image Classification",
+  "year": 2023,
+  "citations": 82,
+  "abstract": null,
+  "authors": [
+   "Nannan Wu",
+   "Li Yu",
+   "Xin Yan Yang",
+   "Kwang-Ting Tim Cheng",
+   "Zengqiang Yan"
+  ],
+  "venue": "Lecture notes in computer science",
+  "landing": "https://doi.org/10.1007/978-3-031-43895-0_65",
+  "type": "conference-paper"
+ },
+ "W2936503027": {
+  "openalex": "https://openalex.org/W2936503027",
+  "doi": "10.1186/s40537-019-0192-5",
+  "title": "Survey on deep learning with class imbalance",
+  "year": 2019,
+  "citations": 3823,
+  "abstract": "The purpose of this study is to examine existing deep learning techniques for addressing class imbalanced data. Effective classification with imbalanced data is an important area of research, as high class imbalance is naturally inherent in many real-world applications, e.g., fraud detection and cancer detection. Moreover, highly imbalanced data poses added difficulty, as most learners will exhibit bias towards the majority class, and in extreme cases, may ignore the minority class altogether. Class imbalance has been studied thoroughly over the last two decades using traditional machine learning models, i.e. non-deep learning. Despite recent advances in deep learning, along with its increasing popularity, very little empirical work in the area of deep learning with class imbalance exists. Having achieved record-breaking performance results in several complex domains, investigating the use of deep neural networks for problems containing high levels of class imbalance is of great interest. Available studies regarding class imbalance and deep learning are surveyed in order to better understand the efficacy of deep learning when applied to class imbalanced data. This survey discusses the implementation details and experimental results for each study, and offers additional insight into their strengths and weaknesses. Several areas of focus include: data complexity, architectures tested, performance interpretation, ease of use, big data application, and generalization to other domains. We have found that research in this area is very limited, that most existing work focuses on computer vision tasks with convolutional neural networks, and that the effects of big data are rarely considered. Several traditional methods for class imbalance, e.g. data sampling and cost-sensitive learning, prove to be applicable in deep learning, while more advanced methods that exploit neural network feature learning abilities show promising results. The survey concludes with a discussion that highlights various gaps in deep learning from class imbalanced data for the purpose of guiding future research.",
+  "authors": [
+   "Justin M. Johnson",
+   "Taghi M. Khoshgoftaar"
+  ],
+  "venue": "Journal Of Big Data",
+  "landing": "https://doi.org/10.1186/s40537-019-0192-5",
+  "type": "article"
+ },
+ "W4403791825": {
+  "openalex": "https://openalex.org/W4403791825",
+  "doi": "10.1145/3664647.3680719",
+  "title": "Addressing Imbalance for Class Incremental Learning in Medical Image Classification",
+  "year": 2024,
+  "citations": 12,
+  "abstract": "Deep convolutional neural networks have made significant breakthroughs in medical image classification, under the assumption that training samples from all classes are simultaneously available. However, in real-world medical scenarios, there's a common need to continuously learn about new diseases, leading to the emerging field of class incremental learning (CIL) in the medical domain. Typically, CIL suffers from catastrophic forgetting when trained on new classes. This phenomenon is mainly caused by the imbalance between old and new classes, and it becomes even more challenging with imbalanced medical datasets. In this work, we introduce two simple yet effective plug-in methods to mitigate the adverse effects of the imbalance. First, we propose a CIL-balanced classification loss to mitigate the classifier bias toward majority classes via logit adjustment. Second, we propose a distribution margin loss that not only alleviates the inter-class overlap in embedding space but also enforces the intra-class compactness. We evaluate the effectiveness of our method with extensive experiments on three benchmark datasets (CCH5000, HAM10000, and EyePACS). The results demonstrate that our approach outperforms state-of-the-art methods.",
+  "authors": [
+   "Xuze Hao",
+   "Wenqian Ni",
+   "Xuhao Jiang",
+   "Weimin Tan",
+   "Bo Yan"
+  ],
+  "venue": "ACM International Conference on Multimedia (ACM MM)",
+  "landing": "https://doi.org/10.1145/3664647.3680719",
+  "type": "conference-paper"
+ },
+ "W3120093105": {
+  "openalex": "https://openalex.org/W3120093105",
+  "doi": "10.1109/tnnls.2020.3047335",
+  "title": "Dynamically Weighted Balanced Loss: Class Imbalanced Learning and Confidence Calibration of Deep Neural Networks",
+  "year": 2021,
+  "citations": 426,
+  "abstract": "Imbalanced class distribution is an inherent problem in many real-world classification tasks where the minority class is the class of interest. Many conventional statistical and machine learning classification algorithms are subject to frequency bias, and learning discriminating boundaries between the minority and majority classes could be challenging. To address the class distribution imbalance in deep learning, we propose a class rebalancing strategy based on a class-balanced dynamically weighted loss function where weights are assigned based on the class frequency and predicted probability of ground-truth class. The ability of dynamic weighting scheme to self-adapt its weights depending on the prediction scores allows the model to adjust for instances with varying levels of difficulty resulting in gradient updates driven by hard minority class samples. We further show that the proposed loss function is classification calibrated. Experiments conducted on highly imbalanced data across different applications of cyber intrusion detection (CICIDS2017 data set) and medical imaging (ISIC2019 data set) show robust generalization. Theoretical results supported by superior empirical performance provide justification for the validity of the proposed dynamically weighted balanced (DWB) loss function.",
+  "authors": [
+   "K. Ruwani M. Fernando",
+   "Chris P. Tsokos"
+  ],
+  "venue": "IEEE Transactions on Neural Networks and Learning Systems",
+  "landing": "https://doi.org/10.1109/tnnls.2020.3047335",
+  "type": "article"
+ },
+ "W4313421210": {
+  "openalex": "https://openalex.org/W4313421210",
+  "doi": "10.1007/s10994-022-06268-8",
+  "title": "The class imbalance problem in deep learning",
+  "year": 2022,
+  "citations": 449,
+  "abstract": null,
+  "authors": [
+   "Kushankur Ghosh",
+   "Colin Bellinger",
+   "Roberto Corizzo",
+   "Paula Branco",
+   "Bartosz Krawczyk",
+   "Nathalie Japkowicz"
+  ],
+  "venue": "Machine Learning",
+  "landing": "https://doi.org/10.1007/s10994-022-06268-8",
+  "type": "article"
+ },
+ "W3217687501": {
+  "openalex": "https://openalex.org/W3217687501",
+  "doi": "10.48550/arxiv.2111.10620",
+  "title": "Medical Knowledge-Guided Deep Learning for Imbalanced Medical Image Classification",
+  "year": 2021,
+  "citations": 5,
+  "abstract": "Deep learning models have gained remarkable performance on a variety of image classification tasks. However, many models suffer from limited performance in clinical or medical settings when data are imbalanced. To address this challenge, we propose a medical-knowledge-guided one-class classification approach that leverages domain-specific knowledge of classification tasks to boost the model's performance. The rationale behind our approach is that some existing prior medical knowledge can be incorporated into data-driven deep learning to facilitate model learning. We design a deep learning-based one-class classification pipeline for imbalanced image classification, and demonstrate in three use cases how we take advantage of medical knowledge of each specific classification task by generating additional middle classes to achieve higher classification performances. We evaluate our approach on three different clinical image classification tasks (a total of 8459 images) and show superior model performance when compared to six state-of-the-art methods. All codes of this work will be publicly available upon acceptance of the paper.",
+  "authors": [
+   "Long Gao",
+   "Chang Liu",
+   "Dooman Arefan",
+   "Ashok Panigrahy",
+   "Margarita L. Zuley",
+   "Shandong Wu"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2111.10620",
+  "type": "preprint"
+ },
+ "W2907735963": {
+  "openalex": "https://openalex.org/W2907735963",
+  "doi": "10.1109/icdm.2018.00196",
+  "title": "Similarity-Based Active Learning for Image Classification Under Class Imbalance",
+  "year": 2018,
+  "citations": 33,
+  "abstract": "Many image classification tasks (e.g., medical image classification) have a severe class imbalance problem. Convolutional neural network (CNN) is currently a state-of-the-art method for image classification. CNN relies on a large training dataset to achieve high classification performance. However, manual labeling is costly and may not even be feasible for medical domain. In this paper, we propose a novel similarity-based active deep learning framework (SAL) that deals with class imbalance. SAL actively learns a similarity model to recommend unlabeled rare class samples for experts' manual labeling. Based on similarity ranking, SAL recommends high confidence unlabeled common class samples for automatic pseudo-labeling without experts' labeling effort. To the best of our knowledge, SAL is the first active deep learning framework that deals with a significant class imbalance. Our experiments show that SAL consistently outperforms two other recent active deep learning methods on two challenging datasets. What's more, SAL obtains nearly the upper bound classification performance (using all the images in the training dataset) while the domain experts labeled only 5.6% and 7.5% of all images in the Endoscopy dataset and the Caltech-256 dataset, respectively. SAL significantly reduces the experts' manual labeling efforts while achieving near optimal classification performance.",
+  "authors": [
+   "Chuanhai Zhang",
+   "Wallapak Tavanapong",
+   "Gavin Kijkul",
+   "Johnny Wong",
+   "Piet C. de Groen",
+   "Junghwan Oh"
+  ],
+  "venue": "Proceedings",
+  "landing": "https://doi.org/10.1109/icdm.2018.00196",
+  "type": "conference-paper"
+ },
+ "W3200286898": {
+  "openalex": "https://openalex.org/W3200286898",
+  "doi": "10.1007/978-3-030-87240-3_31",
+  "title": "Balanced-MixUp for Highly Imbalanced Medical Image Classification",
+  "year": 2021,
+  "citations": 176,
+  "abstract": null,
+  "authors": [
+   "Adrián Galdrán",
+   "Gustavo Carneiro",
+   "Miguel Á. González Ballester"
+  ],
+  "venue": "Lecture notes in computer science",
+  "landing": "https://doi.org/10.1007/978-3-030-87240-3_31",
+  "type": "conference-paper"
+ },
+ "W4296121252": {
+  "openalex": "https://openalex.org/W4296121252",
+  "doi": "10.1007/978-3-031-16452-1_17",
+  "title": "ProCo: Prototype-Aware Contrastive Learning for Long-Tailed Medical Image Classification",
+  "year": 2022,
+  "citations": 71,
+  "abstract": null,
+  "authors": [
+   "Zhixiong Yang",
+   "Junwen Pan",
+   "Yanzhan Yang",
+   "Xiaozhou Shi",
+   "Hong-Yu Zhou",
+   "Zhicheng Zhang",
+   "Cheng Bian"
+  ],
+  "venue": "Lecture notes in computer science",
+  "landing": "https://doi.org/10.1007/978-3-031-16452-1_17",
+  "type": "conference-paper"
+ },
+ "W7171524908": {
+  "openalex": "https://openalex.org/W7171524908",
+  "doi": "10.48550/arxiv.2607.23883",
+  "title": "Long-Tailed Medical Image Classification",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "In this paper, we examine the difficulties of using standard techniques for medical image classification due to long-tailed distributions (wherein rarer conditions have very few samples) resulting in bias towards diagnosing common diseases and away from rarer diseases. We then discuss and implement deep learning models with techniques such as augmentation to minimize error, especially from rarer diseases. We evaluate various different models with AP, F1 score, AUROC, and loss (all on the validation set). We conclude with the promising results from our best model, and potential applications in the healthcare space.",
+  "authors": [
+   "Nathanael Ren",
+   "Saagar Arya"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "https://arxiv.org/abs/2607.23883",
+  "type": "preprint"
+ },
+ "W4387640457": {
+  "openalex": "https://openalex.org/W4387640457",
+  "doi": "10.1007/978-3-031-45676-3_32",
+  "title": "MEDKD: Enhancing Medical Image Classification with Multiple Expert Decoupled Knowledge Distillation for Long-Tail Data",
+  "year": 2023,
+  "citations": 4,
+  "abstract": null,
+  "authors": [
+   "Fuheng Zhang",
+   "Sirui Li",
+   "Tianyunxi Wei",
+   "Li Lin",
+   "Yijin Huang",
+   "Pujin Cheng",
+   "Xiaoying Tang"
+  ],
+  "venue": "Lecture notes in computer science",
+  "landing": "https://doi.org/10.1007/978-3-031-45676-3_32",
+  "type": "conference-paper"
+ },
+ "W4403854194": {
+  "openalex": "https://openalex.org/W4403854194",
+  "doi": "10.48550/arxiv.2410.02010",
+  "title": "MONICA: Benchmarking on Long-tailed Medical Image Classification",
+  "year": 2024,
+  "citations": 13,
+  "abstract": "Long-tailed learning is considered to be an extremely challenging problem in data imbalance learning. It aims to train well-generalized models from a large number of images that follow a long-tailed class distribution. In the medical field, many diagnostic imaging exams such as dermoscopy and chest radiography yield a long-tailed distribution of complex clinical findings. Recently, long-tailed learning in medical image analysis has garnered significant attention. However, the field currently lacks a unified, strictly formulated, and comprehensive benchmark, which often leads to unfair comparisons and inconclusive results. To help the community improve the evaluation and advance, we build a unified, well-structured codebase called Medical OpeN-source Long-taIled ClassifiCAtion (MONICA), which implements over 30 methods developed in relevant fields and evaluated on 12 long-tailed medical datasets covering 6 medical domains. Our work provides valuable practical guidance and insights for the field, offering detailed analysis and discussion on the effectiveness of individual components within the inbuilt state-of-the-art methodologies. We hope this codebase serves as a comprehensive and reproducible benchmark, encouraging further advancements in long-tailed medical image learning. The codebase is publicly available on https://github.com/PyJulie/MONICA.",
+  "authors": [
+   "Lie Ju",
+   "Yan, Siyuan",
+   "Yukun Zhou",
+   "Nan Yang",
+   "Xiaodan Xing",
+   "Peibo Duan",
+   "Zongyuan Ge"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2410.02010",
+  "type": "preprint"
+ },
+ "W4410465626": {
+  "openalex": "https://openalex.org/W4410465626",
+  "doi": "10.1016/j.neucom.2025.130514",
+  "title": "PLTN: Noisy label learning in long-tailed medical images with adaptive prototypes",
+  "year": 2025,
+  "citations": 7,
+  "abstract": null,
+  "authors": [
+   "Zhiqing He",
+   "Jie Xu",
+   "Peng Fei Huang",
+   "Qin Wang",
+   "Yuanyuan Wang",
+   "Yi Guo"
+  ],
+  "venue": "Neurocomputing",
+  "landing": "https://doi.org/10.1016/j.neucom.2025.130514",
+  "type": "article"
+ },
+ "W4367701133": {
+  "openalex": "https://openalex.org/W4367701133",
+  "doi": "10.48550/arxiv.2305.00738",
+  "title": "FCA: Taming Long-tailed Federated Medical Image Classification by Classifier Anchoring",
+  "year": 2023,
+  "citations": 9,
+  "abstract": "Limited training data and severe class imbalance impose significant challenges to developing clinically robust deep learning models. Federated learning (FL) addresses the former by enabling different medical clients to collaboratively train a deep model without sharing data. However, the class imbalance problem persists due to inter-client class distribution variations. To overcome this, we propose federated classifier anchoring (FCA) by adding a personalized classifier at each client to guide and debias the federated model through consistency learning. Additionally, FCA debiases the federated classifier and each client's personalized classifier based on their respective class distributions, thus mitigating divergence. With FCA, the federated feature extractor effectively learns discriminative features suitably globally for federation as well as locally for all participants. In clinical practice, the federated model is expected to be both generalized, performing well across clients, and specialized, benefiting each individual client from collaboration. According to this, we propose a novel evaluation metric to assess models' generalization and specialization performance globally on an aggregated public test set and locally at each client. Through comprehensive comparison and evaluation, FCA outperforms the state-of-the-art methods with large margins for federated long-tailed skin lesion classification and intracranial hemorrhage classification, making it a more feasible solution in clinical settings.",
+  "authors": [
+   "Jeffry Wicaksana",
+   "Zengqiang Yan",
+   "Kwang-Ting Tim Cheng"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2305.00738",
+  "type": "preprint"
+ },
+ "W4401749553": {
+  "openalex": "https://openalex.org/W4401749553",
+  "doi": "10.1109/isbi56570.2024.10635462",
+  "title": "Text-Guided Foundation Model Adaptation for Long-Tailed Medical Image Classification",
+  "year": 2024,
+  "citations": 14,
+  "abstract": "In medical contexts, the imbalanced data distribution in long-tailed datasets, due to scarce labels for rare diseases, greatly impairs the diagnostic accuracy of deep learning models. Recent multimodal text-image supervised foundation models offer new solutions to data scarcity through effective representation learning. However, their limited medical-specific pretraining hinders their performance in medical image classification relative to natural images. To address this issue, we propose a novel Text-guided Foundation model Adaptation for Long-Tailed medical image classification (TFA-LT). We adopt a two-stage training strategy, integrating representations from the foundation model using just two linear adapters and a single ensembler for balanced outcomes. Experimental results on two long-tailed medical image datasets validate the simplicity, lightweight and efficiency of our approach: requiring only 6.1% GPU memory usage of the current best-performing algorithm, our method achieves an accuracy improvement of up to 27.1%, highlighting the substantial |potential of foundation model adaptation in this area.",
+  "authors": [
+   "Sirui Li",
+   "Li Lin",
+   "Yijin Huang",
+   "Pujin Cheng",
+   "Xiaoying Tang"
+  ],
+  "venue": "IEEE International Symposium on Biomedical Imaging (ISBI)",
+  "landing": "https://doi.org/10.1109/isbi56570.2024.10635462",
+  "type": "conference-paper"
+ },
+ "W4407727564": {
+  "openalex": "https://openalex.org/W4407727564",
+  "doi": "10.1016/j.compbiomed.2025.109772",
+  "title": "Long-tailed medical diagnosis with relation-aware representation learning and iterative classifier calibration",
+  "year": 2025,
+  "citations": 15,
+  "abstract": null,
+  "authors": [
+   "Pan Li",
+   "Yupei Zhang",
+   "Qiushi Yang",
+   "Tan Li",
+   "Zhen Chen"
+  ],
+  "venue": "Computers in Biology and Medicine",
+  "landing": "https://doi.org/10.1016/j.compbiomed.2025.109772",
+  "type": "article"
+ },
+ "W4403933486": {
+  "openalex": "https://openalex.org/W4403933486",
+  "doi": "10.48550/arxiv.2410.04084",
+  "title": "Taming the Tail: Leveraging Asymmetric Loss and Pade Approximation to Overcome Medical Image Long-Tailed Class Imbalance",
+  "year": 2024,
+  "citations": 3,
+  "abstract": "Long-tailed problems in healthcare emerge from data imbalance due to variability in the prevalence and representation of different medical conditions, warranting the requirement of precise and dependable classification methods. Traditional loss functions such as cross-entropy and binary cross-entropy are often inadequate due to their inability to address the imbalances between the classes with high representation and the classes with low representation found in medical image datasets. We introduce a novel polynomial loss function based on Pade approximation, designed specifically to overcome the challenges associated with long-tailed classification. This approach incorporates asymmetric sampling techniques to better classify under-represented classes. We conducted extensive evaluations on three publicly available medical datasets and a proprietary medical dataset. Our implementation of the proposed loss function is open-sourced in the public repository:https://github.com/ipankhi/ALPA.",
+  "authors": [
+   "Pankhi Kashyap",
+   "Tandon, Pavni",
+   "Sunny Gupta",
+   "Tiwari, Abhishek",
+   "Ritwik Kulkarni",
+   "Kshitij Sharad Jadhav"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2410.04084",
+  "type": "preprint"
+ },
+ "W7160384136": {
+  "openalex": "https://openalex.org/W7160384136",
+  "doi": "10.48550/arxiv.2605.03221",
+  "title": "Synthetic Data Generation for Long-Tail Medical Image Classification: A Case Study in Skin Lesions",
+  "year": 2026,
+  "citations": 2,
+  "abstract": "Long-tailed class distributions are pervasive in multi-class medical datasets and pose significant challenges for deep learning models which typically underperform on tail classes with limited samples. This limitation is particularly problematic in medical applications, where rare classes often correspond to severe or high-risk diseases and therefore require high diagnostic accuracy. Existing solutions-including specialized architectures, rebalanced loss functions, and handcrafted data augmentation-offer only marginal improvements and struggle to scale due to their limited and largely deterministic variability. To address these challenges, we introduce a diffusion-model-driven synthetic data augmentation pipeline tailored for medical long-tailed classification. Our approach features a novel inpainting diffusion model combined with an Out-of-Distribution (OOD) post-selection mechanism to ensure diverse, realistic, and clinically meaningful synthetic samples. Evaluated on the ISIC2019 skin lesion classification dataset, one of the largest and most imbalanced medical imaging benchmarks, our method yields substantial improvements in overall performance, with particularly pronounced gains on tail classes with more than $28\\%$ improvement on the class with the fewest samples. These results demonstrate the effectiveness of diffusion-based augmentation in mitigating long-tail imbalance and enhancing medical classification robustness.",
+  "authors": [
+   "Jiaxiang Jiang",
+   "Mahesh M. Subedar",
+   "Omesh Tickoo"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "https://arxiv.org/abs/2605.03221",
+  "type": "preprint"
+ },
+ "W4307534111": {
+  "openalex": "https://openalex.org/W4307534111",
+  "doi": "10.48550/arxiv.2210.12234",
+  "title": "Imbalanced Classification in Medical Imaging via Regrouping",
+  "year": 2022,
+  "citations": 6,
+  "abstract": "We propose performing imbalanced classification by regrouping majority classes into small classes so that we turn the problem into balanced multiclass classification. This new idea is dramatically different from popular loss reweighting and class resampling methods. Our preliminary result on imbalanced medical image classification shows that this natural idea can substantially boost the classification performance as measured by average precision (approximately area-under-the-precision-recall-curve, or AUPRC), which is more appropriate for evaluating imbalanced classification than other metrics such as balanced accuracy.",
+  "authors": [
+   "Le Peng",
+   "Yash Travadi",
+   "Rui Zhang",
+   "Ying Cui",
+   "Ju Sun"
+  ],
+  "venue": "arXiv (Cornell University)",
+  "landing": "http://arxiv.org/abs/2210.12234",
+  "type": "preprint"
+ },
+ "W4400097501": {
+  "openalex": "https://openalex.org/W4400097501",
+  "doi": "10.21203/rs.3.rs-4562263/v1",
+  "title": "Oversampling and imputation for imbalanced missing data",
+  "year": 2024,
+  "citations": 0,
+  "abstract": "Abstract Oversampling and imputation for imbalanced missing data Imbalanced data is a widespread issue that is naturally occurring. For instance, fraudulent banking transactions are less frequent than normal transactions, and the number of cancer cases is lower than that of patients. Furthermore, it is common for data to contain missing values. Dealing with imbalanced and missing data can present several challenges during analysis, potentially leading to biased models or skewed performance evaluation. Therefore, it is important to recognize these issues and address them in the data analysis process as needed. However, imbalance and missingness are usually handled separately, which can be inefficient and increase computational costs. We have developed a new imputation-based sampling method called OsImp, designed specifically for imbalanced datasets with high rates of missing data. This method, suitable for small and large multi-class datasets, can handle categorical, continuous, or mixed data as long as an appropriate imputation algorithm is used. It’s also worth noting that OsImp can be applied to datasets without missing data and still perform competitively compared to state-of-the-art methods for imbalanced data. Our initial experiments have shown that this method outperforms many current approaches across a variety of datasets.",
+  "authors": [
+   "Hoang Huy Le",
+   "Thi Thu Hien Nguyen",
+   "Nitesh V. Chawla",
+   "Michael Alexander Riegler",
+   "Pål Halvorsen",
+   "Binh Thanh Nguyen"
+  ],
+  "venue": "Research Square",
+  "landing": "http://dx.doi.org/10.21203/rs.3.rs-4562263/v1",
+  "type": "preprint"
+ },
+ "W4319999780": {
+  "openalex": "https://openalex.org/W4319999780",
+  "doi": "10.1109/jbhi.2023.3240136",
+  "title": "PCCT: Progressive Class-Center Triplet Loss for Imbalanced Medical Image Classification",
+  "year": 2023,
+  "citations": 46,
+  "abstract": "Imbalanced training data in medical image diagnosis is a significant challenge for diagnosing rare diseases. For this purpose, we propose a novel two-stage Progressive Class-Center Triplet (PCCT) framework to overcome the class imbalance issue. In the first stage, PCCT designs a class-balanced triplet loss to coarsely separate distributions of different classes. Triplets are sampled equally for each class at each training iteration, which alleviates the imbalanced data issue and lays solid foundation for the successive stage. In the second stage, PCCT further designs a class-center involved triplet strategy to enable a more compact distribution for each class. The positive and negative samples in each triplet are replaced by their corresponding class centers, which prompts compact class representations and benefits training stability. The idea of class-center involved loss can be extended to the pair-wise ranking loss and the quadruplet loss, which demonstrates the generalization of the proposed framework. Extensive experiments support that the PCCT framework works effectively for medical image classification with imbalanced training images. On four challenging class-imbalanced datasets (two skin datasets Skin7 and Skin 198, one chest X-ray dataset ChestXray-COVID, and one eye dataset Kaggle EyePACs), the proposed approach respectively obtains the mean F1 score 86.20, 65.20, 91.32, and 87.18 over all classes and 81.40, 63.87, 82.62, and 79.09 for rare classes, achieving state-of-the-art performance and outperforming the widely used methods for the class imbalance issue.",
+  "authors": [
+   "Kanghao Chen",
+   "Weixian Lei",
+   "Shen Zhao",
+   "Wei‐Shi Zheng",
+   "Ruixuan Wang"
+  ],
+  "venue": "IEEE Journal of Biomedical and Health Informatics",
+  "landing": "https://doi.org/10.1109/jbhi.2023.3240136",
+  "type": "article"
+ },
+ "W7169805179": {
+  "openalex": "https://openalex.org/W7169805179",
+  "doi": "10.11591/ijeecs.v43.i1.pp259-270",
+  "title": "Evaluating oversampling methods for imbalanced Arabic dialect identification",
+  "year": 2026,
+  "citations": 0,
+  "abstract": "This study investigates whether oversampling is a reliable solution for severe class imbalance in Arabic dialect identification. Using the Shami Corpus as a controlled testbed, we demonstrate that conventional oversampling often fails in high-dimensional sparse text spaces, but density based cluster filtering can effectively resolve this. We conduct a comparative evaluation of SMOTE, clustering-guided variants (ASTRA-SMOTE and SMOTE-RADIANT), and a cost-sensitive ClassWeight approach under an identical 5,644-dimensional feature-engineering pipeline using LightGBM and XGBoost. On the held-out test set, standard SMOTE and class weighting frequently distorted decision boundaries, yielding inconsistent gains across models. In contrast, SMOTE-RADIANT yields a statistically significant macro-F1 improvement for LightGBM (0.8539 vs. 0.8526 on the original data) with a large effect size (r = 0.511), successfully rescuing minority dialects without degrading the majority class. These findings suggest that while oversampling is not universally reliable in sparse text spaces, coupling it with density-based noise neutralization (RADIANT) provides a robust and interpretable alternative to deep learning models. This study provides methodological clarity and reproducible guidance for fair and inclusive Arabic NLP systems.",
+  "authors": [
+   "Maulana Ihsan Ahmad",
+   "Aina Musdholifah",
+   "Arif Nurwidyantoro"
+  ],
+  "venue": "Indonesian Journal of Electrical Engineering and Computer Science",
+  "landing": "https://doi.org/10.11591/ijeecs.v43.i1.pp259-270",
+  "type": "article"
+ },
+ "W87363711": {
+  "openalex": "https://openalex.org/W87363711",
+  "doi": "10.1007/978-3-319-11656-3_8",
+  "title": "Majority-Class Aware Support Vector Domain Oversampling for Imbalanced Classification Problems",
+  "year": 2014,
+  "citations": 5,
+  "abstract": null,
+  "authors": [
+   "Markus Kächele",
+   "Patrick Thiam",
+   "Günther Palm",
+   "Friedhelm Schwenker"
+  ],
+  "venue": "Lecture notes in computer science",
+  "landing": "https://doi.org/10.1007/978-3-319-11656-3_8",
+  "type": "conference-paper"
+ },
+ "W4385076661": {
+  "openalex": "https://openalex.org/W4385076661",
+  "doi": "10.1016/j.neucom.2023.126577",
+  "title": "Class attention to regions of lesion for imbalanced medical image recognition",
+  "year": 2023,
+  "citations": 45,
+  "abstract": null,
+  "authors": [
+   "Jiaxin Zhuang",
+   "Jiabin Cai",
+   "Jianguo Zhang",
+   "Wei‐Shi Zheng",
+   "Ruixuan Wang"
+  ],
+  "venue": "Neurocomputing",
+  "landing": "https://doi.org/10.1016/j.neucom.2023.126577",
+  "type": "article"
+ },
+ "W4390174538": {
+  "openalex": "https://openalex.org/W4390174538",
+  "doi": "10.3390/app14010164",
+  "title": "MLRNet: A Meta-Loss Reweighting Network for Biased Data on Text Classification",
+  "year": 2023,
+  "citations": 1,
+  "abstract": "Artificially generated datasets often exhibit biases, leading conventional deep neural networks to overfit. Typically, a weighted function adjusts sample impact during model updates using weighted loss. Meta-neural networks, trained with meta-learning principles, generalize well across tasks, acquiring generalized weights. This enables the self-generation of tailored weighted functions for data biases. However, datasets may simultaneously exhibit imbalanced classes and corrupted labels, posing a challenge for current meta-models. To address this, this paper presents Meta-Loss Reweighting Network (MLRNet) with fusion attention features. MLRNet continually evolves sample loss values, integrating them with sample features from self-attention layers in a semantic space. This enhances discriminative power for biased samples. By employing minimal unbiased meta-data for guidance, mutual optimization between the classifier and the meta-model is conducted, endowing biased samples with more reasonable weights. Experiments on English and Chinese benchmark datasets including artificial and real-world biased data show MLRNet’s superior performance under biased data conditions.",
+  "authors": [
+   "Hao Yu",
+   "Xinfu Li"
+  ],
+  "venue": "Applied Sciences",
+  "landing": "https://doi.org/10.3390/app14010164",
+  "type": "article"
+ },
+ "W3189075232": {
+  "openalex": "https://openalex.org/W3189075232",
+  "doi": "10.1016/j.patrec.2021.07.017",
+  "title": "Imbalanced image classification with complement cross entropy",
+  "year": 2021,
+  "citations": 99,
+  "abstract": null,
+  "authors": [
+   "Yechan Kim",
+   "Younkwan Lee",
+   "Moongu Jeon"
+  ],
+  "venue": "Pattern Recognition Letters",
+  "landing": "https://doi.org/10.1016/j.patrec.2021.07.017",
+  "type": "article"
+ },
+ "W4392356648": {
+  "openalex": "https://openalex.org/W4392356648",
+  "doi": "10.1007/s10462-023-10652-8",
+  "title": "Cost-sensitive learning for imbalanced medical data: a review",
+  "year": 2024,
+  "citations": 315,
+  "abstract": "Abstract Integrating Machine Learning (ML) in medicine has unlocked many opportunities to harness complex medical data, enhancing patient outcomes and advancing the field. However, the inherent imbalanced distribution of medical data poses a significant challenge, resulting in biased ML models that perform poorly on minority classes. Mitigating the impact of class imbalance has prompted researchers to explore various strategies, wherein Cost-Sensitive Learning (CSL) arises as a promising approach to improve the accuracy and reliability of ML models. This paper presents the first review of CSL for imbalanced medical data. A comprehensive exploration of the existing literature encompassed papers published from January 2010 to December 2022 and sourced from five major digital libraries. A total of 173 papers were selected, analysed, and classified based on key criteria, including publication years, channels and sources, research types, empirical types, medical sub-fields, medical tasks, CSL approaches, strengths and weaknesses of CSL, frequently used datasets and data types, evaluation metrics, and development tools. The results indicate a noteworthy publication rise, particularly since 2020, and a strong preference for CSL direct approaches. Data type analysis unveiled diverse modalities, with medical images prevailing. The underutilisation of cost-related metrics and the prevalence of Python as the primary programming tool are highlighted. The strengths and weaknesses analysis covered three aspects: CSL strategy, CSL approaches, and relevant works. This study serves as a valuable resource for researchers seeking to explore the current state of research, identify strengths and gaps in the existing literature and advance CSL’s application for imbalanced medical data.",
+  "authors": [
+   "Imane Araf",
+   "Ali Idri",
+   "Ikram Chairi"
+  ],
+  "venue": "Artificial Intelligence Review",
+  "landing": "https://doi.org/10.1007/s10462-023-10652-8",
+  "type": "article"
+ },
+ "W4402128718": {
+  "openalex": "https://openalex.org/W4402128718",
+  "doi": "10.1007/s10462-024-10884-2",
+  "title": "Handling imbalanced medical datasets: review of a decade of research",
+  "year": 2024,
+  "citations": 441,
+  "abstract": "Abstract Machine learning and medical diagnostic studies often struggle with the issue of class imbalance in medical datasets, complicating accurate disease prediction and undermining diagnostic tools. Despite ongoing research efforts, specific characteristics of medical data frequently remain overlooked. This article comprehensively reviews advances in addressing imbalanced medical datasets over the past decade, offering a novel classification of approaches into preprocessing, learning levels, and combined techniques. We present a detailed evaluation of the medical datasets and metrics used, synthesizing the outcomes of previous research to reflect on the effectiveness of the methodologies despite methodological constraints. Our review identifies key research trends and offers speculative insights and research trajectories to enhance diagnostic performance. Additionally, we establish a consensus on best practices to mitigate persistent methodological issues, assisting the development of generalizable, reliable, and consistent results in medical diagnostics.",
+  "authors": [
+   "Mabrouka Salmi",
+   "Dalia Atif",
+   "Diego A. Oliva",
+   "Ajith Abraham",
+   "Sebastián Ventura"
+  ],
+  "venue": "Artificial Intelligence Review",
+  "landing": "https://doi.org/10.1007/s10462-024-10884-2",
+  "type": "article"
+ },
+ "W4386292515": {
+  "openalex": "https://openalex.org/W4386292515",
+  "doi": "10.25126/jtiik.2024106831",
+  "title": "Peningkatan Performa Ensemble Learning pada Segmentasi Semantik Gambar dengan Teknik Oversampling untuk Class Imbalance",
+  "year": 2023,
+  "citations": 5,
+  "abstract": "Perkembangan teknologi dan gaya hidup manusia yang semakin tinggi menghasilkan data-data yang berlimpah. Data-data tersebut dapat berbentuk data yang terstruktur dan tidak terstruktur. Data gambar termasuk dalam data yang tidak terstruktur. Aktifitas dan objek yang terekam dalam suatu gambar beraneka ragam. Secara normal, mata manusia dapat dengan mudah membedakan antara foreground dan background dari suatu gambar, tetapi komputer membutuhkan pembelajaran dalam membedakan keduanya. Segmentasi gambar adalah salah satu bidang dalam computer vision yang membahas bagaimana cara komputer mempelajari dan mengenali segmen dari suatu gambar sesuai label yang ditentukan. Dalam kenyataannya banyak data yang mempunyai class atau label yang tidak seimbang, tentunya akan mempengaruhi tingkat akurasi dari suatu prediksi. Dalam riset ini membahas bagaimana meningkatkan akurasi segmentasi semantik gambar pada metode ensemble learning untuk menangani masalah data yang tidak seimbang dalam segmentasi gambar. Teknik yang digunakan adalah sintetis oversampling sehingga menghasilkan data yang seimbang dan akurasi yang tinggi. Metode ensemble learning yang digunakan adalah Random Forest dan Light Gradien Boosting Machine (LGBM). Dengan menggunakan dataset Penn-Fudan Database for Pedestrian yang mengandung imbalanced class. Penggunaan teknik sintetis oversampling dapat memperbaikki tingkat akurasi pada class minoritas. Pada algoritma random forest mengalami peningkatan akurasi sebesar 37 % sedangkan pada algoritma LGBM meningkat sebesar 41 %. AbstractThe development of technology and the increasingly high lifestyle of humans produce abundant data. These data can be in the form of structured and unstructured data. Image data is included in unstructured data. The activities and objects recorded in a picture are varied. Normally, the human eye can easily distinguish between the foreground and background of an image, but computers need learning to distinguish between the two. Image segmentation is one of the fields in computer vision that discusses how computers learn and recognize segments of an image according to specified labels. In reality, a lot of data has unbalanced classes or labels, of course, it will affect the accuracy of a prediction. This research discusses how to improve the accuracy of image semantic segmentation in the ensemble learning method to deal with the problem of unbalanced data in image segmentation. The technique used is synthetic oversampling so as to produce balanced data and high accuracy. The ensemble learning methods used are Random Forest and Light Gradient Boosting Machine (LGBM). By using the Penn-Fudan Database for Pedestrian dataset which contains a imbalanced class. The use of synthetic oversampling techniques can improve the level of accuracy in minority classes. The random forest algorithm experienced an increase in accuracy by 37% while the LGBM algorithm increased by 41%.",
+  "authors": [
+   "Arie Nugroho",
+   "Moch Arief Soeleman",
+   "Ricardus Anggi Pramunendar",
+   "Affandy Affandy",
+   "Aris Nurhindarto"
+  ],
+  "venue": "Jurnal Teknologi Informasi dan Ilmu Komputer",
+  "landing": "https://doi.org/10.25126/jtiik.2024106831",
+  "type": "article"
+ },
+ "W7160696016": {
+  "openalex": "https://openalex.org/W7160696016",
+  "doi": "10.1038/s41598-026-52071-z",
+  "title": "Enhancing minority class recovery in high resolution land cover mapping with dynamic imbalance aware oversampling",
+  "year": 2026,
+  "citations": 1,
+  "abstract": "Semantic segmentation in remote sensing is frequently hindered by severe class imbalance, where over-represented land-cover categories overshadow critical minority ones. Conventional mitigation techniques, including cost-sensitive loss functions and stochastic data augmentation, often fail to generate sufficient diversity or preserve the structural and contextual integrity required for high-resolution imagery. On the other hand, generative approaches may be very data demanding, or become prone to creating semantic contradictions, thereby introducing significant noise into the training signal. To address this problem, we present dynamic imbalance-aware oversampling (DIAO) and its refined variant, DIAO-CP, specifically designed to overcome these challenges in pixel-level classification, specific to semantic segmentation tasks. DIAO replaces random sampling with an iterative density-driven scoring function that identifies images to be resampled based on their potential to minimize global distribution entropy. DIAO-CP extends this logic by integrating an object-centric synthesis loop that ensures context-sensitive placement, preventing semantic collisions by utilizing a background selection filter. These mechanisms ensure that synthesized samples maintain both statistical equilibrium and geographic plausibility. The proposed methods were evaluated on relevant semantic segmentation benchmarks, specifically the Chesapeake Conservancy and OpenEarthMap (OEM). Results indicate that DIAO-CP successfully optimized the information structure of the datasets, reducing the Kullback-Leibler divergence from an initial 0.3380 to 0.1924 in the OEM benchmark. In terms of predictive performance, our solutions yielded an average improvement of 10.5 and 11.8 percentage points (p.p.), respectively, in Macro F1 and mIoU compared to baseline model without using DIAO for all regions. As such, the DIAO strategies demonstrated a superior ability to recover rare semantic entities for minority classes. These findings confirm the effectiveness of our approach in enhancing the discriminative power for imbalanced classes in diverse geographic scales within semantic segmentation workflows.",
+  "authors": [
+   "Gabriel Amarante",
+   "Matheus T. P. Souza",
+   "Gabriel Lima",
+   "Willian Barreiros",
+   "Renato Ferreira",
+   "George Teodoro"
+  ],
+  "venue": "Scientific Reports",
+  "landing": "https://doi.org/10.1038/s41598-026-52071-z",
+  "type": "article"
+ }
+}

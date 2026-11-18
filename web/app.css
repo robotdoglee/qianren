@@ -150,6 +150,8 @@ button.chip { cursor: pointer; font-family: inherit; }
 .step[data-state="running"] .step-icon { color: var(--accent); animation: spin 1.4s linear infinite; display: inline-block; }
 .step[data-state="done"] .step-icon { color: var(--ok); }
 .step[data-state="failed"] .step-icon { color: var(--err); }
+.step[data-state="skipped"] { color: var(--ink-soft); }
+.step[data-state="skipped"] .step-icon { color: var(--ink-soft); }
 .step-detail { font-size: 13px; color: var(--ink-soft); word-break: break-word; }
 .progress-note { margin: 10px 0 0; font-size: 13px; color: var(--warn); min-height: 1em; }
 @keyframes spin { to { transform: rotate(360deg); } }

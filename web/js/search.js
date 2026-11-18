@@ -8,43 +8,84 @@ export const SOURCE_LABELS = {
 };
 
 export const SELECT = 'id,doi,title,publication_year,authorships,primary_location,abstract_inverted_index,cited_by_count,relevance_score';
+export const S2_FIELDS = 'title,abstract,year,authors,venue,externalIds,url,citationCount';
+export const FN_BASE = '/functions/v1/app';
+export const MAX_N = 25;
 
-export function openalexUrl(q) {
-  return `https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=15&select=${SELECT}`;
+const clampN = (n) => Math.max(1, Math.min(MAX_N, Number(n) || 0) || 15);
+
+export function openalexUrl(q, n = 15) {
+  return `https://api.openalex.org/works?search=${encodeURIComponent(q)}&per-page=${clampN(n)}&select=${SELECT}`;
 }
 
-export function s2Url(q) {
-  return `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=15&fields=title,abstract,year,authors,venue,externalIds,url,citationCount`;
+export function s2Url(q, n = 15) {
+  return `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(q)}&limit=${clampN(n)}&fields=${S2_FIELDS}`;
 }
 
 export function arxivUrl(q) {
   return `https://export.arxiv.org/api/query?search_query=all:${encodeURIComponent(q)}&max_results=10`;
 }
 
-export function arxivProxyUrl(q, base = '/functions/v1/app') {
-  return `${base}/arxiv?q=${encodeURIComponent(q)}`;
+// 同源函数代理地址；arXiv 无 CORS，只能走代理
+export function proxyUrl(source, q, base = FN_BASE, n = null) {
+  const params = new URLSearchParams({ q });
+  if (source !== 'arxiv' && n) params.set('n', String(clampN(n)));
+  return `${base}/${source}?${params.toString()}`;
 }
 
-export async function fetchJson(url, ms = 12000) {
+export function describeError(err) {
+  if (!err) return 'failed';
+  if (err.rateLimited || err.status === 429) return 'rate_limited';
+  if (err.name === 'AbortError') return 'timeout';
+  if (err.status) return `http_${err.status}`;
+  return String(err.message || err).slice(0, 60);
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// 单次请求：不抛异常，统一返回 {ok, data|text, error}
+export async function attempt(url, timeout = 12000, kind = 'json') {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), ms);
+  const timer = setTimeout(() => ctrl.abort(), timeout);
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json' } });
-    if (res.status === 429) {
-      const err = new Error('rate_limited');
-      err.rateLimited = true;
-      err.status = 429;
-      throw err;
-    }
-    if (!res.ok) {
-      const err = new Error(`http_${res.status}`);
-      err.status = res.status;
-      throw err;
-    }
-    return await res.json();
+    const res = await fetch(url, { signal: ctrl.signal, headers: kind === 'json' ? { Accept: 'application/json' } : {} });
+    if (res.status === 429) return { ok: false, error: 'rate_limited', retryable: true };
+    if (!res.ok) return { ok: false, error: `http_${res.status}` };
+    if (kind === 'json') return { ok: true, data: await res.json() };
+    const text = await res.text();
+    // 代理不存在时静态托管常回落到 index.html
+    if (/^\s*(<!doctype html|<html)/i.test(text)) return { ok: false, error: 'html_response' };
+    return { ok: true, text };
+  } catch (err) {
+    return { ok: false, error: describeError(err) };
   } finally {
     clearTimeout(timer);
   }
+}
+
+export function directUrlFor(name, q, n) {
+  if (name === 'openalex') return openalexUrl(q, n);
+  if (name === 's2') return s2Url(q, n);
+  return arxivUrl(q);
+}
+
+// 取数顺序：直连 → 同源代理 → 直连退避重试一次；proxyOnly（arXiv）只走代理
+export async function fetchSource(name, q, opts = {}) {
+  const { timeout = 12000, proxyBase = FN_BASE, allowProxy = true, proxyOnly = false, n = null, retryDelay = 1600 } = opts;
+  const kind = name === 'arxiv' ? 'text' : 'json';
+  const steps = [];
+  if (!proxyOnly) steps.push({ url: directUrlFor(name, q, n), via: 'direct' });
+  if (allowProxy) steps.push({ url: proxyUrl(name, q, proxyBase, n), via: 'proxy' });
+  if (!proxyOnly) steps.push({ url: directUrlFor(name, q, n), via: 'direct', delay: retryDelay });
+
+  let last = { ok: false, error: 'proxy_required', via: 'none' };
+  for (const step of steps) {
+    if (step.delay) await sleep(step.delay);
+    const r = await attempt(step.url, timeout, kind);
+    if (r.ok) return { ...r, via: step.via };
+    last = { ...r, via: step.via };
+  }
+  return last;
 }
 
 // OpenAlex 的 abstract_inverted_index → 正常语序摘要
@@ -326,118 +367,49 @@ export function queryTermsFor(input) {
   return keywords(input).terms;
 }
 
-async function safeSourceJson(name, url, { timeout = 12000, retryDelay = 1600 } = {}) {
-  try {
-    return { name, ok: true, data: await fetchJson(url, timeout) };
-  } catch (err) {
-    if (err && (err.rateLimited || err.status === 429 || err.status === 503) && retryDelay > 0) {
-      await new Promise((r) => setTimeout(r, retryDelay));
-      try {
-        return { name, ok: true, data: await fetchJson(url, timeout) };
-      } catch (err2) {
-        return { name, ok: false, error: describeError(err2) };
-      }
-    }
-    return { name, ok: false, error: describeError(err) };
-  }
-}
-
-export function describeError(err) {
-  if (!err) return 'failed';
-  if (err.rateLimited || err.status === 429) return 'rate_limited';
-  if (err.name === 'AbortError') return 'timeout';
-  if (err.status) return `http_${err.status}`;
-  return String(err.message || err).slice(0, 60);
-}
-
-// queries: 3–5 条检索式；每个源取前两条以控制请求量
+// queries: 3–5 条检索式；每个源取前两条以控制请求量。arXiv 无 CORS，只走同源代理。
 export async function searchAll(queries, opts = {}) {
-  const { timeout = 12000, proxyBase = '/functions/v1/app', allowProxy = true, onSource = () => {} } = opts;
+  const { timeout = 12000, proxyBase = FN_BASE, allowProxy = true, onSource = () => {} } = opts;
   const qs = (queries || []).filter(Boolean);
   const perSource = qs.slice(0, 2);
   const buckets = { openalex: [], arxiv: [], s2: [] };
   const status = {
-    openalex: { state: 'running', count: 0, note: '' },
-    arxiv: { state: 'running', count: 0, note: '' },
-    s2: { state: 'running', count: 0, note: '' }
+    openalex: { state: 'running', count: 0, note: '', via: '' },
+    arxiv: { state: 'running', count: 0, note: '', via: '' },
+    s2: { state: 'running', count: 0, note: '', via: '' }
   };
   const report = (name) => onSource(name, status[name]);
 
+  const runOne = async (name, q, extra) => {
+    const r = await fetchSource(name, q, { timeout, proxyBase, allowProxy, ...extra });
+    let ok = false;
+    if (r.ok) {
+      try {
+        if (name === 'openalex') for (const w of (r.data && r.data.results) || []) buckets.openalex.push(fromOpenAlex(w));
+        else if (name === 's2') for (const p of (r.data && r.data.data) || []) buckets.s2.push(fromS2(p));
+        else for (const e of parseAtom(r.text)) buckets.arxiv.push(fromArxivEntry(e));
+        ok = true;
+      } catch {
+        r.error = 'parse_error';
+      }
+    }
+    const count = buckets[name].length;
+    // arXiv 只能经同源代理：代理缺失/404/HTML/网络错一律按「需代理，已跳过」呈现
+    const needProxy = r.error === 'proxy_required' || (name === 'arxiv' && r.error !== 'rate_limited');
+    if (ok) status[name] = { state: 'done', count, note: '', via: r.via || '' };
+    else if (count > 0) status[name] = { state: 'done', count, note: '', via: status[name].via || '' };
+    else if (needProxy) status[name] = { state: 'skipped', count: 0, note: 'proxy_required', via: r.via || 'none' };
+    else status[name] = { state: 'failed', count: 0, note: r.error || 'failed', via: r.via || '' };
+    report(name);
+  };
+
   const tasks = [];
   for (const q of perSource) {
-    tasks.push(
-      (async () => {
-        const r = await safeSourceJson('openalex', openalexUrl(q), { timeout });
-        if (r.ok) {
-          for (const w of (r.data && r.data.results) || []) buckets.openalex.push(fromOpenAlex(w));
-        } else if (status.openalex.state !== 'done') {
-          status.openalex = { state: 'failed', count: buckets.openalex.length, note: r.error };
-          report('openalex');
-          return;
-        }
-        status.openalex = { state: 'done', count: buckets.openalex.length, note: '' };
-        report('openalex');
-      })()
-    );
-    tasks.push(
-      (async () => {
-        const r = await safeSourceJson('s2', s2Url(q), { timeout });
-        if (r.ok) {
-          for (const p of (r.data && r.data.data) || []) buckets.s2.push(fromS2(p));
-        } else if (status.s2.state !== 'done') {
-          status.s2 = { state: 'failed', count: buckets.s2.length, note: r.error };
-          report('s2');
-          return;
-        }
-        status.s2 = { state: 'done', count: buckets.s2.length, note: '' };
-        report('s2');
-      })()
-    );
+    tasks.push(runOne('openalex', q, { n: 15 }));
+    tasks.push(runOne('s2', q, { n: 15 }));
   }
-
   const aq = perSource[perSource.length - 1] || qs[0] || '';
-  tasks.push(
-    (async () => {
-      let raw = null;
-      try {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), timeout);
-        const res = await fetch(arxivUrl(aq), { signal: ctrl.signal });
-        clearTimeout(timer);
-        if (res.status === 429) {
-          status.arxiv = { state: 'failed', count: 0, note: 'rate_limited' };
-          report('arxiv');
-          return;
-        }
-        if (res.ok) raw = await res.text();
-      } catch {
-        raw = null;
-      }
-      if (raw === null && allowProxy) {
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), timeout);
-          const res = await fetch(arxivProxyUrl(aq, proxyBase), { signal: ctrl.signal });
-          clearTimeout(timer);
-          if (res.ok) raw = await res.text();
-        } catch {
-          raw = null;
-        }
-      }
-      if (raw === null) {
-        status.arxiv = { state: 'failed', count: 0, note: allowProxy ? 'unreachable' : 'cors_blocked' };
-        report('arxiv');
-        return;
-      }
-      try {
-        for (const e of parseAtom(raw)) buckets.arxiv.push(fromArxivEntry(e));
-        status.arxiv = { state: 'done', count: buckets.arxiv.length, note: '' };
-      } catch {
-        status.arxiv = { state: 'failed', count: 0, note: 'parse_error' };
-      }
-      report('arxiv');
-    })()
-  );
+  tasks.push(runOne('arxiv', aq, { proxyOnly: true }));
 
   await Promise.all(tasks);
   const raw = [...buckets.openalex, ...buckets.arxiv, ...buckets.s2];

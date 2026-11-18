@@ -7,7 +7,10 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { buildQueries, keywords, segmentChinese } from '../web/js/terms.js';
-import { dedupe, rank, restoreAbstract, titleKey, parseAtom, fromOpenAlex, fromS2, fromArxivEntry } from '../web/js/search.js';
+import {
+  dedupe, rank, restoreAbstract, titleKey, parseAtom, fromOpenAlex, fromS2, fromArxivEntry,
+  openalexUrl, s2Url, arxivUrl, proxyUrl, attempt, fetchSource, searchAll, MAX_N
+} from '../web/js/search.js';
 import { extractFields, clusterPapers, findGaps, buildApproaches, rulesResult, MISSING } from '../web/js/extract-rules.js';
 import { toMarkdown, toCSV, toBibTeX, bibKey, fileName } from '../web/js/export.js';
 
@@ -256,4 +259,146 @@ test('演示目录只列 3 个条目且不落论文数据', () => {
   assert.equal(index.demos.length, 3);
   assert.deepEqual(index.demos.map((d) => d.id), ['demo-rag-med', 'demo-gnn-fewshot', 'demo-imbalance']);
   assert.deepEqual(index.demos.map((d) => d.mode), ['idea', 'idea', 'problem']);
+});
+
+/* ---------------- 检索回退（离线桩 fetch，不访问网络） ---------------- */
+
+const realFetch = globalThis.fetch;
+
+function stubFetch(routes) {
+  const seen = [];
+  globalThis.fetch = async (url) => {
+    const u = String(url);
+    seen.push(u);
+    const hit = Object.keys(routes).find((k) => u.includes(k));
+    if (!hit) return new Response('{"detail":"nope"}', { status: 404 });
+    const r = routes[hit];
+    if (typeof r === 'function') return r(u);
+    return new Response(r.body, { status: r.status ?? 200, headers: { 'content-type': r.type ?? 'application/json' } });
+  };
+  return seen;
+}
+
+const OALEX_HIT = '{"results":[{"id":"https://openalex.org/W1","doi":"https://doi.org/10.1/a","title":"Direct hit","publication_year":2024,"cited_by_count":3}]}';
+const S2_HIT = '{"data":[{"paperId":"x1","title":"S2 hit","year":2023,"citationCount":2}]}';
+const ATOM_HIT = '<feed xmlns="http://www.w3.org/2005/Atom"><entry><id>http://arxiv.org/abs/2401.00001v2</id><title>AX hit</title><summary>abs</summary><published>2024-01-01T00:00:00Z</published><author><name>Zhang</name></author></entry></feed>';
+
+test('URL 构造：select/fields 完整、n 夹在 1..25、代理地址不含邮箱', () => {
+  const oa = openalexUrl('graph neural network', 15);
+  assert.ok(oa.startsWith('https://api.openalex.org/works?search=graph%20neural%20network&per-page=15&select='));
+  for (const f of ['abstract_inverted_index', 'cited_by_count', 'relevance_score', 'primary_location']) assert.ok(oa.includes(f), f);
+  assert.ok(openalexUrl('q', 999).includes(`per-page=${MAX_N}`));
+  assert.ok(openalexUrl('q', 0).includes('per-page=15'));
+  const s2 = s2Url('few shot', 7);
+  assert.ok(s2.includes('limit=7') && s2.includes('fields=') && s2.includes('externalIds'));
+  assert.ok(arxivUrl('a b').includes('export.arxiv.org/api/query?search_query=all:a%20b&max_results=10'));
+  const p = proxyUrl('openalex', 'a b&c', '/functions/v1/app', 20);
+  assert.ok(p.startsWith('/functions/v1/app/openalex?'));
+  assert.ok(p.includes('q=a+b%26c') && p.includes('n=20'), p);
+  assert.ok(!proxyUrl('arxiv', 'q').includes('n='), 'arXiv 代理只透传 q');
+  for (const u of [oa, s2, arxivUrl('q'), p, proxyUrl('s2', 'q', '/f', 5)]) assert.ok(!u.includes('@'), u);
+});
+
+test('attempt：代理缺失回落到 index.html 时判为 html_response', async () => {
+  stubFetch({ '/functions/v1/app': { body: '<!doctype html><html><head></head><body>app</body></html>', status: 200, type: 'text/html' } });
+  const r = await attempt('/functions/v1/app/arxiv?q=x', 4000, 'text');
+  assert.equal(r.ok, false);
+  assert.equal(r.error, 'html_response');
+  globalThis.fetch = realFetch;
+});
+
+test('fetchSource：OpenAlex 直连 429 → 同源代理成功', async () => {
+  const seen = stubFetch({
+    'api.openalex.org': { body: '{}', status: 429 },
+    '/functions/v1/app/openalex': { body: OALEX_HIT }
+  });
+  const r = await fetchSource('openalex', 'q a', { retryDelay: 1 });
+  assert.equal(r.ok, true);
+  assert.equal(r.via, 'proxy');
+  assert.equal(r.data.results.length, 1);
+  assert.ok(seen[0].includes('api.openalex.org'), '先直连');
+  assert.ok(seen[1].includes('/functions/v1/app/openalex'), '再代理');
+  assert.equal(seen.length, 2);
+  globalThis.fetch = realFetch;
+});
+
+test('fetchSource：直连→代理→直连退避重试一次', async () => {
+  const seen = stubFetch({
+    'api.semanticscholar.org': (u) => (seen.filter((x) => x.includes('semanticscholar')).length > 1
+      ? new Response(S2_HIT, { status: 200, headers: { 'content-type': 'application/json' } })
+      : new Response('slow down', { status: 429 })),
+    '/functions/v1/app/s2': { body: '{"detail":"gone"}', status: 404 }
+  });
+  const r = await fetchSource('s2', 'q', { retryDelay: 1 });
+  assert.equal(r.ok, true, '第三次直连恢复');
+  assert.equal(r.via, 'direct');
+  assert.equal(seen.length, 3, seen.join(' | '));
+  assert.ok(seen[2].includes('semanticscholar'));
+  globalThis.fetch = realFetch;
+});
+
+test('fetchSource：全部失败时返回最后错误，不抛异常', async () => {
+  stubFetch({ 'api.openalex.org': { body: 'boom', status: 500 }, '/functions/v1/app/openalex': { body: 'gone', status: 404 } });
+  const r = await fetchSource('openalex', 'q', { retryDelay: 1 });
+  assert.equal(r.ok, false);
+  assert.match(r.error, /http_/);
+  globalThis.fetch = realFetch;
+});
+
+test('fetchSource：arXiv 不直连，只走同源代理', async () => {
+  const seen = stubFetch({ '/functions/v1/app/arxiv': { body: ATOM_HIT, type: 'application/atom+xml' } });
+  const r = await fetchSource('arxiv', 'q a', { proxyOnly: true });
+  assert.equal(r.ok, true);
+  assert.equal(r.via, 'proxy');
+  assert.equal(seen.length, 1, seen.join(' | '));
+  assert.ok(seen[0].startsWith('/functions/v1/app/arxiv?q=q+a'), seen[0]);
+  assert.ok(!seen.some((u) => u.includes('export.arxiv.org')), '绝不直连 export.arxiv.org');
+  globalThis.fetch = realFetch;
+});
+
+test('fetchSource：arXiv 无可用代理时标记 proxy_required 且不发请求', async () => {
+  const seen = stubFetch({});
+  const r = await fetchSource('arxiv', 'q', { proxyOnly: true, allowProxy: false });
+  assert.equal(r.ok, false);
+  assert.equal(r.error, 'proxy_required');
+  assert.equal(seen.length, 0);
+  globalThis.fetch = realFetch;
+});
+
+test('searchAll：OpenAlex/S2 直连可用，arXiv 无代理时跳过而非失败', async () => {
+  const events = [];
+  stubFetch({
+    'api.openalex.org': { body: OALEX_HIT },
+    'api.semanticscholar.org': { body: S2_HIT }
+  });
+  const out = await searchAll(['q one', 'q two'], {
+    allowProxy: false,
+    onSource: (name, st) => events.push([name, st.state, st.count, st.note])
+  });
+  globalThis.fetch = realFetch;
+  assert.equal(out.status.openalex.state, 'done');
+  assert.equal(out.status.s2.state, 'done');
+  assert.equal(out.status.arxiv.state, 'skipped', JSON.stringify(out.status));
+  assert.equal(out.status.arxiv.note, 'proxy_required');
+  assert.deepEqual(out.counts, { openalex: 2, s2: 2, arxiv: 0 });
+  assert.equal(out.raw.length, 4);
+  assert.ok(events.some(([n, s]) => n === 'arxiv' && s === 'skipped'));
+});
+
+test('searchAll：直连全 429 时三源都经代理取回', async () => {
+  stubFetch({
+    'api.openalex.org/works': { body: '{}', status: 429 },
+    'api.semanticscholar.org': { body: '{}', status: 429 },
+    '/functions/v1/app/openalex': { body: OALEX_HIT },
+    '/functions/v1/app/s2': { body: S2_HIT },
+    '/functions/v1/app/arxiv': { body: ATOM_HIT, type: 'application/atom+xml' }
+  });
+  const out = await searchAll(['q one'], {});
+  globalThis.fetch = realFetch;
+  assert.deepEqual(out.counts, { openalex: 1, arxiv: 1, s2: 1 });
+  assert.equal(out.status.openalex.via, 'proxy');
+  assert.equal(out.status.arxiv.via, 'proxy');
+  assert.equal(out.status.s2.state, 'done');
+  const ax = out.raw.find((p) => p.sources.includes('arxiv'));
+  assert.equal(ax.arxiv, '2401.00001', '版本号被剥掉');
 });

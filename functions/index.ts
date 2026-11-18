@@ -1,14 +1,21 @@
 // 可选的同源边缘函数（Deno）。站点在函数不存在时也能完整工作。
-// 路由按路径后缀匹配：…/health、…/llm、…/arxiv
+// 路由按路径后缀匹配：…/health、…/llm、…/arxiv、…/openalex、…/s2
 // 环境变量：DASHSCOPE_API_KEY
 
 const DASHSCOPE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
 const ARXIV_HOST = 'https://export.arxiv.org/api/query';
+const OPENALEX_HOST = 'https://api.openalex.org/works';
+const S2_HOST = 'https://api.semanticscholar.org/graph/v1/paper/search';
+const OPENALEX_SELECT = 'id,doi,title,publication_year,authorships,primary_location,abstract_inverted_index,cited_by_count,relevance_score';
+const S2_FIELDS = 'title,abstract,year,authors,venue,externalIds,url,citationCount';
 const ALLOWED_MODELS = ['qwen-plus', 'qwen-turbo', 'qwen-max'];
 const MAX_BODY = 64 * 1024;
 const LLM_TIMEOUT = 50_000;
-const ARXIV_TIMEOUT = 12_000;
+const PROXY_TIMEOUT = 12_000;
 const MAX_QUERY = 300;
+const MAX_N = 25;
+const RATE_LIMIT_PER_MIN = 60;
+const UA = 'qianren-site/1.0 (literature search demo)';
 const ALLOWED_ROLES = ['system', 'user', 'assistant'];
 
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -98,25 +105,82 @@ async function handleLlm(request: Request): Promise<Response> {
   }
 }
 
-async function handleArxiv(params: URLSearchParams): Promise<Response> {
-  const q = params.get('q') || '';
-  if (!q.trim()) return error('missing_query');
-  if (q.length > MAX_QUERY) return error('query_too_long');
-  const url = `${ARXIV_HOST}?search_query=${encodeURIComponent(q)}&max_results=10`;
-  try {
-    const upstream = await fetch(url, {
-      headers: { 'user-agent': 'qianren-site/1.0 (literature search demo)' },
-      signal: AbortSignal.timeout(ARXIV_TIMEOUT)
-    });
-    const text = await upstream.text();
-    if (!upstream.ok) return error(`upstream_${upstream.status}`, 502);
-    return new Response(text, {
-      status: 200,
-      headers: { 'content-type': 'application/atom+xml; charset=utf-8', 'cache-control': 'no-store' }
-    });
-  } catch {
-    return error('upstream_unreachable', 504);
+function qparam(params: URLSearchParams): string | null {
+  const q = (params.get('q') || '').trim();
+  if (!q) return null;
+  return q.length > MAX_QUERY ? null : q;
+}
+
+function nparam(params: URLSearchParams): number {
+  const raw = params.get('n');
+  if (raw === null) return 15;
+  const n = Number.parseInt(raw, 10);
+  if (!Number.isFinite(n)) return 15;
+  return Math.max(1, Math.min(MAX_N, n));
+}
+
+/* 内存级限流：每个 isolate 每分钟 RATE_LIMIT_PER_MIN 次 */
+const hits = new Map<string, number[]>();
+
+function limited(key: string): boolean {
+  const now = Date.now();
+  const recent = (hits.get(key) || []).filter((t) => now - t < 60_000);
+  if (recent.length >= RATE_LIMIT_PER_MIN) {
+    hits.set(key, recent);
+    return true;
   }
+  recent.push(now);
+  hits.set(key, recent);
+  return false;
+}
+
+function rateLimited(): Response {
+  return new Response(JSON.stringify({ ok: false, error: 'rate_limited' }), {
+    status: 429,
+    headers: { ...JSON_HEADERS, 'retry-after': '60' }
+  });
+}
+
+// 上游正文原样转发；命中缓存 1 小时，错误响应不缓存
+async function forward(url: string, contentType: string): Promise<Response> {
+  try {
+    const upstream = await fetch(url, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(PROXY_TIMEOUT) });
+    const body = await upstream.text();
+    if (!upstream.ok) {
+      return error(upstream.status === 429 ? 'upstream_rate_limited' : `upstream_${upstream.status}`, upstream.status === 429 ? 429 : 502);
+    }
+    return new Response(body, {
+      status: 200,
+      headers: { 'content-type': contentType, 'cache-control': 'public, max-age=3600' }
+    });
+  } catch (err) {
+    const name = err instanceof Error && err.name === 'TimeoutError' ? 'upstream_timeout' : 'upstream_unreachable';
+    return error(name, 504);
+  }
+}
+
+function handleArxiv(params: URLSearchParams): Response | Promise<Response> {
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  if (limited('arxiv')) return rateLimited();
+  const url = `${ARXIV_HOST}?search_query=${encodeURIComponent(q)}&max_results=10`;
+  return forward(url, 'application/atom+xml; charset=utf-8');
+}
+
+function handleOpenAlex(params: URLSearchParams): Response | Promise<Response> {
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  if (limited('openalex')) return rateLimited();
+  const url = `${OPENALEX_HOST}?search=${encodeURIComponent(q)}&per-page=${nparam(params)}&select=${OPENALEX_SELECT}`;
+  return forward(url, 'application/json; charset=utf-8');
+}
+
+function handleS2(params: URLSearchParams): Response | Promise<Response> {
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  if (limited('s2')) return rateLimited();
+  const url = `${S2_HOST}?query=${encodeURIComponent(q)}&limit=${nparam(params)}&fields=${S2_FIELDS}`;
+  return forward(url, 'application/json; charset=utf-8');
 }
 
 function route(request: Request): Promise<Response> | Response {
@@ -127,6 +191,8 @@ function route(request: Request): Promise<Response> | Response {
   }
   if (path.endsWith('/llm')) return handleLlm(request);
   if (path.endsWith('/arxiv')) return handleArxiv(url.searchParams);
+  if (path.endsWith('/openalex')) return handleOpenAlex(url.searchParams);
+  if (path.endsWith('/s2')) return handleS2(url.searchParams);
   return error('not_found', 404);
 }
 

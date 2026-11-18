@@ -3,9 +3,19 @@
 一句话想法 / 一个具体问题 → 并行检索 OpenAlex、arXiv、Semantic Scholar → 去重排序 → 逐篇抽取 7 个字段 → 方法簇、研究空白点、可排序对比矩阵，并导出 Markdown / CSV / BibTeX。
 
 - 纯静态：HTML + CSS + 原生 ES modules，无构建步骤、无外部 CDN。
-- 检索在浏览器里直连三个开放 API，服务器不参与，不记录任何输入。
+- 检索优先在浏览器里直连开放 API；只有 arXiv 必须经同源函数代理（它的响应没有 `Access-Control-Allow-Origin`）。
 - 抽取只依据标题与摘要，找不到依据的字段一律写「摘要未提及」，不做补全。
 - 全站中文 UI，移动端友好（矩阵可横向滚动 / 首列固定 / 一键切换卡片视图）。
+
+## 检索与回退策略
+
+| 数据源 | 直连 | 回退 | 全失败时 |
+| --- | --- | --- | --- |
+| OpenAlex | 支持 CORS，按 IP 限流 429 | 同源代理 `GET /functions/v1/app/openalex?q=&n=` | 再退避重试一次直连，仍失败才标记失败 |
+| Semantic Scholar | 支持 CORS，按 IP 限流 429 | 同源代理 `GET /functions/v1/app/s2?q=&n=` | 同上 |
+| arXiv | **不支持 CORS，浏览器直连必失败** | 只走同源代理 `GET /functions/v1/app/arxiv?q=` | 进度里显示「需服务器代理，已跳过（OpenAlex 已收录 arXiv 预印本）」，不算失败 |
+
+纯静态部署（没有函数）时前两个源仍可正常使用，arXiv 自动跳过；单源失败不影响其余结果。
 
 ## 三种运行方式
 
