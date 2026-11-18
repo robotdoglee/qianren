@@ -536,7 +536,7 @@ export function rulesResult({ id, mode, input, queries, papers, counts, dedupedT
       arxiv: 0,
       s2: 0,
       ...Object.fromEntries(
-        ['openalex', 'arxiv', 's2', 'crossref', 'europepmc', 'dblp']
+        ['openalex', 'arxiv', 's2', 'crossref', 'europepmc', 'dblp', 'scopus', 'ieee', 'springer', 'core', 'serpapi', 'import']
           .filter((key) => counts && key in counts)
           .map((key) => [key, Number(counts[key]) || 0])
       ),

@@ -28,3 +28,12 @@
 - 测试：`node dev/test-rules.mjs` 45/45、`node dev/test-v2.mjs` 7/7 通过；新增 JATS 去标签、Crossref/Europe PMC/DBLP 适配、跨源字段合并、PMID 去重、来源选择、OA 补全测试。
 - 截图与模拟：dev/shot-v2.py 无 pageerror；本地 Playwright 模拟六源 + Unpaywall 响应，手机端进度六行全部完成、合并来源 chip（如 OpenAlex + Semantic Scholar / OpenAlex + Crossref）、OA 按钮均正常，console 无错误。
 - 文档：README 更新检索与回退策略表、来源致谢与许可、函数环境变量、目录结构与 v2.1 更新记录。
+
+## 2026-11-18 v2.2 自带凭证与文件导入
+- 凭证：设置里新增 Semantic Scholar / Elsevier Scopus / IEEE Xplore / Springer Nature Meta / CORE / SerpApi 六项，key 只存 localStorage（`qianren.userkey.*`），检索时经 `X-User-Key-<source>` 请求头发给同源函数；函数用完即弃，不记录、不写日志，缓存键不含 key（IEEE/Springer/SerpApi 显式使用 key-free cacheKey）。无函数时只提示、不启用凭证来源，未填 key 时行为与 v2.1 一致。
+- 合规：不登录、不注入 Cookie、不抓取谷歌学术或知网；SerpApi 明示为第三方付费接口，Scopus 机构权限由用户自负；页面、导出与结果对象均不含 key（测试覆盖）。
+- 导入：新增 `import-papers.js`，纯浏览器解析 RIS、BibTeX、EndNote、NoteExpress、CNKI/RefWorks，自动识别格式；支持多文件，导入条目来源标「导入」，与检索结果按 DOI/标题去重，参与规则/Qwen 抽取、全景与 Markdown/CSV/BibTeX 导出，文件不上传。`includeImported` 保证导入文献不被相关性过滤淘汰。
+- 函数：新增 `/scopus`、`/ieee`、`/springer`、`/core`、`/serpapi` 路由与对应主机白名单；`/s2` 支持访客 key 覆盖环境变量。
+- 界面：首页「导入文献」按钮与导入摘要（篇数/格式/前三条/清除），设置里六行密码框与申请链接、启用状态徽标、清除全部。
+- 测试：`node dev/test-rules.mjs` 45/45、`node dev/test-v2.mjs` 18/18 通过；新增五种格式解析、格式识别、导入去重与相关性保留、六项凭证启用/请求头/泄漏、五个适配器、key 只进请求头测试。
+- 截图：dev/shot-v2.py 增加模拟 `/health` 与 favicon、RIS 导入、设置填 key；1280×800 与 390×844 均无 pageerror、无 console error，导入摘要「已导入 1 篇」、凭证 6 项与徽标、12 张演示卡片与详情抽屉正常。

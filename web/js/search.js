@@ -8,10 +8,19 @@ export const SOURCE_LABELS = {
   crossref: 'Crossref',
   europepmc: 'Europe PMC',
   dblp: 'DBLP',
-  arxiv: 'arXiv'
+  arxiv: 'arXiv',
+  scopus: 'Scopus',
+  ieee: 'IEEE Xplore',
+  springer: 'Springer Nature',
+  core: 'CORE',
+  serpapi: 'SerpApi',
+  import: '导入'
 };
 
 export const SOURCE_ORDER = ['openalex', 's2', 'crossref', 'europepmc', 'dblp', 'arxiv'];
+// 自带凭证来源：只在用户填了 key 且同源函数可用时启用
+export const KEYED_SOURCE_ORDER = ['scopus', 'ieee', 'springer', 'core', 'serpapi'];
+export const ALL_SOURCES = [...SOURCE_ORDER, ...KEYED_SOURCE_ORDER];
 export const DEFAULT_SOURCES = ['openalex', 's2', 'crossref', 'arxiv'];
 export const SELECT = 'id,ids,doi,title,publication_year,authorships,primary_location,abstract_inverted_index,cited_by_count,relevance_score';
 export const S2_FIELDS = 'title,abstract,year,authors,venue,externalIds,url,citationCount';
@@ -73,11 +82,14 @@ export function describeError(err) {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // 单次请求：不抛异常，统一返回 {ok, data|text, error}
-export async function attempt(url, timeout = 12000, kind = 'json') {
+export async function attempt(url, timeout = 12000, kind = 'json', headers = {}) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeout);
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: kind === 'json' ? { Accept: 'application/json' } : {} });
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      headers: { ...(kind === 'json' ? { Accept: 'application/json' } : {}), ...headers }
+    });
     if (res.status === 429) return { ok: false, error: 'rate_limited', retryable: true };
     if (!res.ok) return { ok: false, error: `http_${res.status}` };
     if (kind === 'json') return { ok: true, data: await res.json() };
@@ -106,7 +118,7 @@ export function directUrlFor(name, q, n) {
 export async function fetchSource(name, q, opts = {}) {
   const {
     timeout = 12000, proxyBase = FN_BASE, allowProxy = true, proxyOnly = false,
-    preferProxy = false, noProxy = false, n = null, retryDelay = 1600
+    preferProxy = false, noProxy = false, n = null, retryDelay = 1600, headers = {}
   } = opts;
   const kind = name === 'arxiv' ? 'text' : 'json';
   const steps = [];
@@ -128,7 +140,7 @@ export async function fetchSource(name, q, opts = {}) {
   let last = { ok: false, error: proxyOnly ? 'proxy_required' : 'unreachable', via: 'none' };
   for (const step of steps) {
     if (step.delay) await sleep(step.delay);
-    const r = await attempt(step.url, timeout, kind);
+    const r = await attempt(step.url, timeout, kind, headers);
     if (r.ok) return { ...r, via: step.via };
     last = { ...r, via: step.via };
   }
@@ -352,6 +364,125 @@ export function fromDblp(hit) {
   };
 }
 
+/* ---------------- 自带凭证来源适配器（Scopus / IEEE / Springer / CORE / SerpApi） ---------------- */
+
+export function fromScopus(e) {
+  const doi = normDoi(e['prism:doi']);
+  const year = Number(String(e['prism:coverDate'] || '').slice(0, 4)) || null;
+  const authors = String(e['dc:creator'] || '').split(/\s*;\s*/).filter(Boolean);
+  return {
+    title: stripJats(e['dc:title'] || ''),
+    authors: authors.slice(0, 12),
+    year,
+    venue: stripJats(e['prism:publicationName'] || ''),
+    venueSource: 'scopus',
+    url: e['prism:url'] || (doi ? `https://doi.org/${doi}` : e.link?.[0]?.['@href'] || ''),
+    doi,
+    arxiv: '',
+    pmid: '',
+    oaUrl: '',
+    sources: ['scopus'],
+    citations: Number(e['citedby-count']) || 0,
+    citationSource: 'scopus',
+    abstract: stripJats(e['dc:description'] || ''),
+    apiScore: 0
+  };
+}
+
+export function fromIeee(a) {
+  const doi = normDoi(a.doi);
+  const authors = ((a.authors && a.authors.authors) || []).map((x) => x && x.full_name).filter(Boolean);
+  return {
+    title: stripJats(a.title || ''),
+    authors: authors.slice(0, 12),
+    year: Number(a.publication_year) || null,
+    venue: stripJats(a.publication_title || ''),
+    venueSource: 'ieee',
+    url: a.html_url || a.pdf_url || (doi ? `https://doi.org/${doi}` : ''),
+    doi,
+    arxiv: '',
+    pmid: '',
+    oaUrl: a.pdf_url || '',
+    sources: ['ieee'],
+    citations: Number(a.citing_paper_count) || 0,
+    citationSource: 'ieee',
+    abstract: stripJats(a.abstract || ''),
+    apiScore: 0
+  };
+}
+
+export function fromSpringer(r) {
+  const doi = normDoi(r.doi);
+  const authors = (r.creators || []).map((c) => c && (c.creator || c.name)).filter(Boolean);
+  const urls = (r.url || []).map((u) => (typeof u === 'string' ? u : u && u.value)).filter(Boolean);
+  return {
+    title: stripJats(r.title || ''),
+    authors: authors.slice(0, 12),
+    year: Number(String(r.publicationDate || r.publicationDateOnline || '').slice(0, 4)) || null,
+    venue: stripJats(r.publicationName || ''),
+    venueSource: 'springer',
+    url: urls[0] || (doi ? `https://doi.org/${doi}` : ''),
+    doi,
+    arxiv: '',
+    pmid: '',
+    oaUrl: '',
+    sources: ['springer'],
+    citations: 0,
+    citationSource: 'springer',
+    abstract: stripJats(r.abstract || ''),
+    apiScore: 0
+  };
+}
+
+export function fromCore(r) {
+  const doi = normDoi(r.doi);
+  const authors = (r.authors || []).map((a) => (typeof a === 'string' ? a : a && (a.name || [a.firstName, a.lastName].filter(Boolean).join(' ')))).filter(Boolean);
+  const links = (r.links || []).map((l) => l && l.url).filter(Boolean);
+  return {
+    title: stripJats(r.title || ''),
+    authors: authors.slice(0, 12),
+    year: Number(r.yearPublished || r.yearPublishedSort) || null,
+    venue: stripJats(r.publisher || ''),
+    venueSource: 'core',
+    url: r.downloadUrl || links[0] || (doi ? `https://doi.org/${doi}` : ''),
+    doi,
+    arxiv: '',
+    pmid: '',
+    oaUrl: r.downloadUrl || links.find((u) => /pdf/i.test(u)) || '',
+    sources: ['core'],
+    citations: 0,
+    citationSource: 'core',
+    abstract: stripJats(r.abstract || ''),
+    apiScore: 0
+  };
+}
+
+export function fromSerpApi(r) {
+  const summary = String((r.publication_info && r.publication_info.summary) || '');
+  const parts = summary.split(' - ');
+  const authorText = parts.length > 1 ? parts[0] : '';
+  const venueText = parts.length > 1 ? parts.slice(1).join(' - ') : summary;
+  const year = Number((summary.match(/\b(1[89]\d{2}|20\d{2}|21\d{2})\b/) || [])[1]) || null;
+  const pdf = ((r.resources || []).find((x) => x && x.link) || {}).link || '';
+  return {
+    title: stripJats(r.title || ''),
+    authors: authorText.split(/\s*,\s*/).filter(Boolean).slice(0, 12),
+    year,
+    venue: stripJats(venueText.replace(/,\s*20\d{2}.*$/, '')),
+    venueSource: 'serpapi',
+    url: r.link || pdf,
+    doi: '',
+    arxiv: '',
+    pmid: '',
+    oaUrl: pdf,
+    sources: ['serpapi'],
+    citations: Number((r.inline_links && r.inline_links.cited_by && r.inline_links.cited_by.total) || 0) || 0,
+    citationSource: 'serpapi',
+    abstract: stripJats(r.snippet || ''),
+    apiScore: 0
+  };
+}
+
 // Atom XML → 条目数组（浏览器用 DOMParser；异常时退回轻量正则解析）
 export function parseAtom(xmlText) {
   const text = String(xmlText || '');
@@ -419,7 +550,10 @@ export function normArxiv(id) {
   return String(id || '').trim().toLowerCase().replace(/^arxiv:/, '').replace(/v\d+$/, '');
 }
 
-const VENUE_RANK = { crossref: 3, dblp: 3, europepmc: 2, openalex: 1, s2: 1, arxiv: 0 };
+const VENUE_RANK = {
+  crossref: 3, dblp: 3, ieee: 3, scopus: 3, springer: 3,
+  europepmc: 2, core: 2, serpapi: 1, openalex: 1, s2: 1, import: 1, arxiv: 0
+};
 
 function sourceList(p) {
   return Array.isArray(p.sources) && p.sources.length ? p.sources : ['unknown'];
@@ -585,6 +719,17 @@ export function rank(papers, terms, opts = {}) {
   return eligible.slice(0, kept).map((p, i) => ({ ...p, n: i + 1 }));
 }
 
+// 导入文献不参与相关性淘汰：与检索结果一起去重后，仍把来源含「导入」的论文补回并重新编号
+export function includeImported(ranked, deduped, { keep = 15 } = {}) {
+  const list = Array.isArray(ranked) ? ranked.slice() : [];
+  const seen = new Set(list.map((p) => p.id));
+  const extra = (deduped || []).filter((p) => sourceList(p).includes('import') && !seen.has(p.id));
+  const all = [...list, ...extra];
+  const api = all.filter((p) => !sourceList(p).includes('import'));
+  const imported = all.filter((p) => sourceList(p).includes('import'));
+  return [...api.slice(0, Math.max(0, keep)), ...imported].map((p, i) => ({ ...p, n: i + 1 }));
+}
+
 export function queryTermsFor(input) {
   return keywords(input).terms;
 }
@@ -704,7 +849,12 @@ const SOURCE_META = {
   crossref: { n: 10, maxQueries: 2, proxyOnly: true },
   europepmc: { n: 10, maxQueries: 2, noProxy: true },
   dblp: { n: 10, maxQueries: 1, pick: 'first', proxyOnly: true },
-  arxiv: { n: null, maxQueries: 1, pick: 'last', proxyOnly: true, kind: 'text' }
+  arxiv: { n: null, maxQueries: 1, pick: 'last', proxyOnly: true, kind: 'text' },
+  scopus: { n: 10, maxQueries: 1, proxyOnly: true },
+  ieee: { n: 10, maxQueries: 1, proxyOnly: true },
+  springer: { n: 10, maxQueries: 1, proxyOnly: true },
+  core: { n: 10, maxQueries: 1, proxyOnly: true },
+  serpapi: { n: 10, maxQueries: 1, proxyOnly: true }
 };
 
 function normalizeSource(name, r) {
@@ -712,6 +862,14 @@ function normalizeSource(name, r) {
   if (name === 's2') return ((r.data && r.data.data) || []).map(fromS2);
   if (name === 'crossref') return (((r.data && r.data.message) || {}).items || []).map(fromCrossref);
   if (name === 'europepmc') return (((r.data && r.data.resultList) || {}).result || []).map(fromEuropePmc);
+  if (name === 'scopus') {
+    const entries = (((r.data && r.data['search-results']) || {}).entry) || [];
+    return (Array.isArray(entries) ? entries : [entries]).filter((e) => e && e['dc:title']).map(fromScopus);
+  }
+  if (name === 'ieee') return ((r.data && r.data.articles) || []).map(fromIeee);
+  if (name === 'springer') return ((r.data && r.data.records) || []).map(fromSpringer);
+  if (name === 'core') return ((r.data && r.data.results) || []).map(fromCore);
+  if (name === 'serpapi') return ((r.data && r.data.organic_results) || []).map(fromSerpApi);
   if (name === 'dblp') {
     const hits = (((r.data && r.data.result) || {}).hits || {}).hit;
     return (Array.isArray(hits) ? hits : hits ? [hits] : []).map(fromDblp);
@@ -723,11 +881,12 @@ function normalizeSource(name, r) {
 export async function searchAll(queries, opts = {}) {
   const {
     timeout = 12000, proxyBase = FN_BASE, allowProxy = true, onSource = () => {},
-    sources = null, input = '', cache = true
+    sources = null, input = '', cache = true, userKeys = {}
   } = opts;
   const qs = (queries || []).filter(Boolean);
   const perSource = qs.slice(0, 2);
-  const active = SOURCE_ORDER.filter((s) => (sources || DEFAULT_SOURCES).includes(s));
+  const wanted = sources || DEFAULT_SOURCES;
+  const active = ALL_SOURCES.filter((s) => wanted.includes(s));
   const buckets = Object.fromEntries(active.map((s) => [s, []]));
   const tally = Object.fromEntries(active.map((s) => [s, { ok: 0, fail: 0, errors: [], ms: 0, via: '' }]));
   const status = Object.fromEntries(active.map((s) => [s, { state: 'running', count: 0, note: '', via: '', ms: 0 }]));
@@ -756,7 +915,9 @@ export async function searchAll(queries, opts = {}) {
       tally[name].ok += 1;
       tally[name].via = tally[name].via || 'cache';
     } else {
-      const r = await fetchSource(name, q, { timeout, proxyBase, allowProxy, ...meta, ...extra });
+      // key 只以请求头 X-User-Key-<source> 经同源函数转发；缓存键仍是 name:q:n，不含 key
+      const headers = userKeys[name] ? { [`X-User-Key-${name}`]: userKeys[name] } : {};
+      const r = await fetchSource(name, q, { timeout, proxyBase, allowProxy, ...meta, ...extra, headers });
       if (r.ok) {
         try {
           items = normalizeSource(name, r);

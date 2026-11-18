@@ -1,6 +1,8 @@
 // 可选的同源边缘函数（Deno）。站点在函数不存在时也能完整工作。
-// 路由按路径后缀匹配：…/health、…/llm、…/arxiv、…/openalex、…/s2、…/crossref、…/dblp、…/unpaywall
+// 路由按路径后缀匹配：…/health、…/llm、…/arxiv、…/openalex、…/s2、…/crossref、…/dblp、…/unpaywall、
+// …/scopus、…/ieee、…/springer、…/core、…/serpapi
 // 环境变量：DASHSCOPE_API_KEY；可选 CONTACT_EMAIL（Crossref/OpenAlex polite pool、Unpaywall 必填）、S2_API_KEY
+// 访客自带 key 只走请求头 X-User-Key-<source>，不记录、不写缓存键、不回显。
 
 const DASHSCOPE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
 const ARXIV_HOST = 'https://export.arxiv.org/api/query';
@@ -9,6 +11,11 @@ const S2_HOST = 'https://api.semanticscholar.org/graph/v1/paper/search';
 const CROSSREF_HOST = 'https://api.crossref.org/works';
 const DBLP_HOST = 'https://dblp.org/search/publ/api';
 const UNPAYWALL_HOST = 'https://api.unpaywall.org/v2';
+const SCOPUS_HOST = 'https://api.elsevier.com/content/search/scopus';
+const IEEE_HOST = 'https://ieeexploreapi.ieee.org/api/v1/search/articles';
+const SPRINGER_HOST = 'https://api.springernature.com/meta/v2/json';
+const CORE_HOST = 'https://api.core.ac.uk/v3/search/works';
+const SERPAPI_HOST = 'https://serpapi.com/search.json';
 const OPENALEX_SELECT = 'id,ids,doi,title,publication_year,authorships,primary_location,abstract_inverted_index,cited_by_count,relevance_score';
 const S2_FIELDS = 'title,abstract,year,authors,venue,externalIds,url,citationCount';
 const CROSSREF_SELECT = 'DOI,title,author,issued,published,container-title,abstract,is-referenced-by-count,URL,type,alternative-id';
@@ -20,6 +27,7 @@ const MAX_QUERY = 300;
 const MAX_N = 25;
 const MAX_DOIS = 20;
 const MAX_QUERY_LEN = 120;
+const MAX_USER_KEY_LEN = 512;
 const RATE_LIMIT_PER_MIN = 60;
 const ARXIV_MIN_INTERVAL = 3_000;
 const CACHE_TTL = 10 * 60 * 1000;
@@ -47,6 +55,17 @@ function env(name: string): string {
 // 联系方式只从环境变量读取，绝不写进前端或仓库
 function contactEmail(): string {
   return env('CONTACT_EMAIL');
+}
+
+// 访客自带凭证只从请求头读取并原样转发；不写日志、不写缓存键、不回显。
+function userKey(request: Request, source: string): string {
+  const raw = (request.headers.get(`x-user-key-${source}`) || '').trim();
+  if (!raw || raw.length > MAX_USER_KEY_LEN || /[\r\n]/.test(raw)) return '';
+  return raw;
+}
+
+function missingUserKey(): Response {
+  return error('missing_user_key', 400);
 }
 
 function withMailto(url: string): string {
@@ -198,9 +217,15 @@ function minIntervalExceeded(key: string, minMs: number): boolean {
   return false;
 }
 
-// 上游正文原样转发；命中内存缓存 10 分钟，错误响应不缓存
-async function forward(url: string, contentType: string, headers: Record<string, string> = {}): Promise<Response> {
-  const cached = cacheGet(url);
+// 上游正文原样转发；命中内存缓存 10 分钟，错误响应不缓存。
+// cacheKey 显式传入时，只含来源/检索式/条数，绝不含访客 key。
+async function forward(
+  url: string,
+  contentType: string,
+  headers: Record<string, string> = {},
+  cacheKey: string = url
+): Promise<Response> {
+  const cached = cacheGet(cacheKey);
   if (cached) {
     return new Response(cached.body, {
       status: 200,
@@ -216,7 +241,7 @@ async function forward(url: string, contentType: string, headers: Record<string,
     if (!upstream.ok) {
       return error(upstream.status === 429 ? 'upstream_rate_limited' : `upstream_${upstream.status}`, upstream.status === 429 ? 429 : 502);
     }
-    cachePut(url, body, contentType);
+    cachePut(cacheKey, body, contentType);
     return new Response(body, {
       status: 200,
       headers: { 'content-type': contentType, 'cache-control': 'public, max-age=600' }
@@ -244,15 +269,72 @@ function handleOpenAlex(params: URLSearchParams): Response | Promise<Response> {
   return forward(url, 'application/json; charset=utf-8');
 }
 
-function handleS2(params: URLSearchParams): Response | Promise<Response> {
+function handleS2(params: URLSearchParams, request: Request): Response | Promise<Response> {
   const q = qparam(params);
   if (!q) return error('missing_query_or_too_long');
   if (limited('s2')) return rateLimited();
   const url = `${S2_HOST}?query=${encodeURIComponent(q)}&limit=${nparam(params)}&fields=${S2_FIELDS}`;
   const headers: Record<string, string> = {};
-  const key = env('S2_API_KEY');
+  // 访客自带 key 优先于服务端环境变量；key 不进 URL 与缓存键
+  const key = userKey(request, 's2') || env('S2_API_KEY');
   if (key) headers['x-api-key'] = key;
   return forward(url, 'application/json; charset=utf-8', headers);
+}
+
+function handleScopus(params: URLSearchParams, request: Request): Response | Promise<Response> {
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  const key = userKey(request, 'scopus');
+  if (!key) return missingUserKey();
+  if (limited('scopus')) return rateLimited();
+  const n = Math.max(1, Math.min(25, nparam(params)));
+  const url = `${SCOPUS_HOST}?query=${encodeURIComponent(q)}&count=${n}`;
+  return forward(url, 'application/json; charset=utf-8', { 'X-ELS-APIKey': key, Accept: 'application/json' }, `scopus:${q}:${n}`);
+}
+
+function handleIeee(params: URLSearchParams, request: Request): Response | Promise<Response> {
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  const key = userKey(request, 'ieee');
+  if (!key) return missingUserKey();
+  if (limited('ieee')) return rateLimited();
+  const n = Math.max(1, Math.min(25, nparam(params)));
+  // IEEE 官方接口只接受 apikey 查询参数；缓存键单独构造，不含 key
+  const url = `${IEEE_HOST}?querytext=${encodeURIComponent(q)}&max_records=${n}&start_record=1&apikey=${encodeURIComponent(key)}`;
+  return forward(url, 'application/json; charset=utf-8', { Accept: 'application/json' }, `ieee:${q}:${n}`);
+}
+
+function handleSpringer(params: URLSearchParams, request: Request): Response | Promise<Response> {
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  const key = userKey(request, 'springer');
+  if (!key) return missingUserKey();
+  if (limited('springer')) return rateLimited();
+  const n = Math.max(1, Math.min(25, nparam(params)));
+  const url = `${SPRINGER_HOST}?q=${encodeURIComponent(q)}&p=${n}&api_key=${encodeURIComponent(key)}`;
+  return forward(url, 'application/json; charset=utf-8', { Accept: 'application/json' }, `springer:${q}:${n}`);
+}
+
+function handleCore(params: URLSearchParams, request: Request): Response | Promise<Response> {
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  const key = userKey(request, 'core');
+  if (!key) return missingUserKey();
+  if (limited('core')) return rateLimited();
+  const n = Math.max(1, Math.min(25, nparam(params)));
+  const url = `${CORE_HOST}?q=${encodeURIComponent(q)}&limit=${n}`;
+  return forward(url, 'application/json; charset=utf-8', { Authorization: `Bearer ${key}`, Accept: 'application/json' }, `core:${q}:${n}`);
+}
+
+function handleSerpApi(params: URLSearchParams, request: Request): Response | Promise<Response> {
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  const key = userKey(request, 'serpapi');
+  if (!key) return missingUserKey();
+  if (limited('serpapi')) return rateLimited();
+  const n = Math.max(1, Math.min(20, nparam(params)));
+  const url = `${SERPAPI_HOST}?engine=google_scholar&q=${encodeURIComponent(q)}&num=${n}&api_key=${encodeURIComponent(key)}`;
+  return forward(url, 'application/json; charset=utf-8', { Accept: 'application/json' }, `serpapi:${q}:${n}`);
 }
 
 function handleCrossref(params: URLSearchParams): Response | Promise<Response> {
@@ -352,10 +434,15 @@ function route(request: Request): Promise<Response> | Response {
   if (path.endsWith('/llm')) return handleLlm(request);
   if (path.endsWith('/arxiv')) return handleArxiv(url.searchParams);
   if (path.endsWith('/openalex')) return handleOpenAlex(url.searchParams);
-  if (path.endsWith('/s2')) return handleS2(url.searchParams);
+  if (path.endsWith('/s2')) return handleS2(url.searchParams, request);
   if (path.endsWith('/crossref')) return handleCrossref(url.searchParams);
   if (path.endsWith('/dblp')) return handleDblp(url.searchParams);
   if (path.endsWith('/unpaywall')) return handleUnpaywall(url.searchParams);
+  if (path.endsWith('/scopus')) return handleScopus(url.searchParams, request);
+  if (path.endsWith('/ieee')) return handleIeee(url.searchParams, request);
+  if (path.endsWith('/springer')) return handleSpringer(url.searchParams, request);
+  if (path.endsWith('/core')) return handleCore(url.searchParams, request);
+  if (path.endsWith('/serpapi')) return handleSerpApi(url.searchParams, request);
   return error('not_found', 404);
 }
 

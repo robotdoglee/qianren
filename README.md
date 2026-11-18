@@ -8,7 +8,7 @@
 > - 参赛者：上海交通大学（个人参赛）· Qoder 账号 nick6784593415
 > - 天池论坛作品帖：见 [WRITEUP.md](WRITEUP.md)（发布后补上帖子链接）
 
-一句话想法 / 一个具体问题 → 并行检索 OpenAlex、Semantic Scholar、Crossref、Europe PMC、DBLP、arXiv → 去重合并 → 逐篇抽取 7 个字段 → 全景（方法 × 年份）、带“与你想法的关联”的论文卡片、单篇详情、研究空白点与对比表，并导出 Markdown / CSV / BibTeX；有 DOI 时再用 Unpaywall 补全开放获取全文链接。
+一句话想法 / 一个具体问题 → 并行检索 OpenAlex、Semantic Scholar、Crossref、Europe PMC、DBLP、arXiv → 去重合并 → 逐篇抽取 7 个字段 → 全景（方法 × 年份）、带“与你想法的关联”的论文卡片、单篇详情、研究空白点与对比表，并导出 Markdown / CSV / BibTeX；有 DOI 时再用 Unpaywall 补全开放获取全文链接。也可以导入自己从知网、谷歌学术、Zotero 等处导出的文献文件（RIS / BibTeX / EndNote / NoteExpress / RefWorks），与检索结果一起去重、抽取、进全景；导入只在浏览器本地解析，不上传。
 
 - 纯静态：HTML + CSS + 原生 ES modules，无构建步骤、无外部 CDN。
 - 检索优先在浏览器里直连开放 API；arXiv、Crossref、DBLP 必须经同源函数代理（响应没有 CORS 头），Semantic Scholar 优先走代理以避开时好时坏的 CORS，Europe PMC 直连。
@@ -39,6 +39,28 @@
 2. **免 key 实时模式**（默认）：浏览器真实检索 + 规则抽取（中英术语词典查询扩展、线索词字段抽取、TF-IDF 聚类、空白点归纳）。
 3. **Qwen 增强模式**：同源函数已配置 `DASHSCOPE_API_KEY` 时默认走服务器端调用；否则在「设置」里填入自己的 DashScope Key，**它只保存在浏览器 localStorage**，可一键清除。LLM 调用失败会自动回落到规则模式并提示。
 
+### 自带凭证（可选）
+
+设置里可以填写六家服务的个人 key：Semantic Scholar、Elsevier Scopus、IEEE Xplore、Springer Nature Meta、CORE、SerpApi（Google Scholar 的付费第三方接口）。全部留空时行为与 v2.1 完全一致。
+
+| 服务 | 用途 | 转发方式 |
+| --- | --- | --- |
+| Semantic Scholar | 提高配额（不填也能检索） | `X-User-Key-s2` 请求头 → 同源函数 |
+| Elsevier Scopus | 追加 Scopus 结果 | `X-User-Key-scopus` → 函数转成 `X-ELS-APIKey` |
+| IEEE Xplore | 追加 IEEE 结果 | `X-User-Key-ieee` → 函数拼进 `apikey` 参数 |
+| Springer Nature Meta | 追加 Springer 结果 | `X-User-Key-springer` → 函数拼进 `api_key` 参数 |
+| CORE | 追加开放获取全文元数据 | `X-User-Key-core` → 函数转成 `Authorization: Bearer` |
+| SerpApi | 追加 Google Scholar 结果 | `X-User-Key-serpapi` → 函数拼进 `api_key` 参数 |
+
+- key **只存 localStorage**（前缀 `qianren.userkey.`），只在检索请求里放进自定义请求头发给同源函数，由函数转发给对应服务；函数不记录、不写日志，缓存键与 key 无关（`ieee:/springer:/serpapi:` 均使用不含 key 的缓存键）。
+- 凭证类来源必须经同源函数转发；没有函数时即使填了 key 也不会启用，设置里会标注“当前不可用”。
+- 不做谷歌学术 / 知网的登录、抓取或逆向；SerpApi 是用户自行付费的第三方接口，Scopus 等机构订阅的访问权限由用户自己负责。
+- 导入的文献、导出结果与页面展示都不会包含任何 key。
+
+### 导入文献
+
+首页「导入文献」支持 `.ris .bib .bibtex .enw .net .txt`，自动识别 RIS、BibTeX、EndNote、NoteExpress、CNKI/RefWorks 五种文本格式；一次可选多个文件，导入条目与检索结果按 DOI / 标题去重，来源标为「导入」，同样参与规则/Qwen 抽取与全景图，并导出进 Markdown / CSV / BibTeX。解析全部在浏览器里完成，**文件不上传**。
+
 ## 目录结构
 
 ```
@@ -52,14 +74,16 @@ web/
     llm.js            Qwen（同源函数 / 浏览器直连 DashScope compatible-mode）、key 与偏好存取
     render.js         进度面板、来源徽标、统计、检索式、簇卡片、空白点（[n] 可点击定位）、对比矩阵
     export.js         Markdown / CSV / BibTeX 生成
-    main.js           编排与交互（模式切换、示例、一键演示回放、来源选择、导出下载、设置）
+    userkeys.js       自带凭证的 provider 元数据、localStorage 存取、请求头与启用判断
+    import-papers.js  RIS / BibTeX / EndNote / NoteExpress / RefWorks 本地解析与格式识别
+    main.js           编排与交互（模式切换、示例、一键演示回放、来源选择、导入、凭证设置、导出下载、设置）
   demos/
     index.json        演示清单（结果 JSON 由作者以真实检索结果补充）
 functions/
-  index.ts            可选 Deno 边缘函数：/health、/llm、/arxiv、/openalex、/s2、/crossref、/dblp、/unpaywall
+  index.ts            可选 Deno 边缘函数：/health、/llm、/arxiv、/openalex、/s2、/crossref、/dblp、/unpaywall，以及凭证转发 /scopus、/ieee、/springer、/core、/serpapi
 dev/
   test-rules.mjs      离线单元测试（不访问网络）
-  test-v2.mjs         v2 纯函数测试
+  test-v2.mjs         v2 纯函数测试（含导入、凭证、去重合并）
   fixture.json        渲染自测用假数据（不发布，不在 web/ 下）
 SPEC.md               产品与技术规格
 ```
@@ -76,8 +100,8 @@ python3 -m http.server 8000
 跑单元测试与渲染自测：
 
 ```bash
-node dev/test-rules.mjs
-node dev/test-v2.mjs
+node dev/test-rules.mjs   # 45 项
+node dev/test-v2.mjs      # 18 项
 # 用假数据检查渲染器：http://localhost:8000/web/index.html?demoFile=../dev/fixture.json
 # 截图自查（需要 Playwright Chromium）：python3 dev/shot-v2.py
 ```
@@ -102,6 +126,8 @@ node dev/test-v2.mjs
 
   这些变量只存在于服务端，前端不会读到；联系邮箱不要写进任何前端文件或提交到仓库。
 
+- 凭证转发路由（/scopus、/ieee、/springer、/core、/serpapi）从请求头 `X-User-Key-<source>` 读取访客自带 key，用完即弃：不记录、不写日志、不放进缓存键；缺失时返回 400。服务端不需要为这些来源配置任何变量。
+
 配置后自检：`GET /functions/v1/app/health` 返回 `{"ok":true,"llm":…,"contactEmail":…,"sources":[…]}`，页面「设置」里会显示“同源函数可用”。
 
 限制：请求体 ≤ 64KB、模型白名单 `qwen-plus|qwen-turbo|qwen-max`、上游超时 50s、每路由 60 次/分钟、arXiv ≤1 次/3 秒、错误只返回分类码不回显原始异常。
@@ -121,6 +147,8 @@ node dev/test-v2.mjs
 - [arXiv](https://arxiv.org)
 - 开放获取链接来自 [Unpaywall](https://unpaywall.org)（CC0）
 
+可选凭证来源（仅在用户填入自己的 key 且同源函数可用时检索，按各服务条款使用）：[Semantic Scholar](https://www.semanticscholar.org/product/api)、[Elsevier Scopus](https://dev.elsevier.com/)、[IEEE Xplore](https://developer.ieee.org/)、[Springer Nature](https://dev.springernature.com/)、[CORE](https://core.ac.uk/services/api)、[SerpApi](https://serpapi.com/)。Scopus 的机构订阅权限、SerpApi 的费用均由用户自行承担；本项目不登录、不抓取谷歌学术或知网。
+
 Thank you to arXiv for use of its open access interoperability.
 
 抽取结果基于摘要，可能不完整，请以原文为准。联系邮箱只配置在边缘函数环境变量中，不出现在前端或仓库。
@@ -131,6 +159,8 @@ Thank you to arXiv for use of its open access interoperability.
 暖色纸感风格：米白底 #faf9f5、陶土色强调 #c96442。品牌与标题用自托管霞鹜文楷子集（`dev/make-font-subset.py` 生成，OFL），论文标题与关联说明用衬线，正文无衬线。图标是一滴水落在石面上，取“滴水穿石”：一滴恰到好处的点拨，击穿研究里看似坚不可摧的卡点。v2 设计稿见 [DESIGN-v2.md](DESIGN-v2.md)。
 
 ## 更新记录
+
+- 2026-11-18（v2.2）：新增六家服务的自带凭证（仅 localStorage，经同源函数转发，函数不记录、缓存键不含 key）；无函数或未填 key 时行为不变。新增本地文献导入，支持 RIS / BibTeX / EndNote / NoteExpress / RefWorks，导入条目参与去重、抽取、全景与导出，文件不上传。测试增至 63 项（45 + 18）。
 
 - 2026-11-18（v2.1）：新增 Crossref、Europe PMC、DBLP 三源与 Unpaywall 开放获取补全；DOI/arXiv/PMID/标题并集去重与字段合并；设置里可自动/手动选择来源；检索缓存与 429 退避；修复手机「处理进度」检索式挤在右侧的问题；新增合并/去重/JATS 去标签测试（45 项）。
 

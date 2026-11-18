@@ -1,12 +1,17 @@
 // 主编排：模式 A/B、三种运行方式、进度展示、导出下载
 import { buildQueries, keywords } from './terms.js';
 import {
-  dedupe, rank, searchAll, queryTermsFor, SOURCE_LABELS,
+  dedupe, rank, searchAll, queryTermsFor, SOURCE_LABELS, includeImported,
   pickSources, getSourcePrefs, setSourcePrefs, enrichOpenAccess
 } from './search.js';
 import { rulesResult, MISSING } from './extract-rules.js';
 import { createProgress, renderResult } from './render.js';
 import { toMarkdown, toCSV, toBibTeX, fileName } from './export.js';
+import { parseImport, IMPORT_FORMATS, IMPORT_ACCEPT } from './import-papers.js';
+import {
+  USER_KEY_PROVIDERS, getUserKeys, setUserKey, clearUserKeys,
+  enabledKeyedSources, enabledKeyedLabels
+} from './userkeys.js';
 import {
   probeHealth, serverInfo, llmAvailable, getKey, setKey, getModel, setModel, MODELS,
   enginePref, setEnginePref, llmExpandQueries, llmAnalyze
@@ -43,7 +48,7 @@ const EXAMPLES = {
 
 const ENGINE_BADGE = { auto: '自动（有 key 用 Qwen）', qwen: '强制 Qwen 增强', rules: '免 key 实时模式' };
 
-const state = { mode: 'idea', busy: false, lastResult: null, demos: [] };
+const state = { mode: 'idea', busy: false, lastResult: null, demos: [], imported: [] };
 const els = {};
 let progress = null;
 
@@ -132,6 +137,82 @@ function renderExamples() {
   );
 }
 
+/* ---------------- 导入文献（纯前端，不上传） ---------------- */
+
+function importKey(p) {
+  return `${String(p.doi || '').toLowerCase()}|${String(p.title || '').trim().toLowerCase()}`;
+}
+
+function addImported(papers, fileName) {
+  const seen = new Set(state.imported.map(importKey));
+  let added = 0;
+  for (const p of papers) {
+    const key = importKey(p);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    state.imported.push({ ...p, importFile: fileName });
+    added += 1;
+  }
+  return added;
+}
+
+function clearImported() {
+  state.imported = [];
+  if (els.importInput) els.importInput.value = '';
+  renderImportSummary();
+}
+
+function renderImportSummary(failures = []) {
+  if (!els.importSummary) return;
+  if (!state.imported.length && !failures.length) {
+    els.importSummary.hidden = true;
+    els.importSummary.replaceChildren();
+    return;
+  }
+  const formats = Array.from(new Set(state.imported.map((p) => IMPORT_FORMATS[p.importFormat] || p.importFormat).filter(Boolean)));
+  const titles = state.imported.slice(0, 3).map((p) => p.title).join('；');
+  const children = [];
+  if (state.imported.length) {
+    children.push(
+      EL('span', { class: 'chip src-chip', text: `已导入 ${state.imported.length} 篇` }),
+      formats.length ? EL('span', { class: 'muted tiny', text: `${formats.join(' / ')} · ${titles}${state.imported.length > 3 ? ' 等' : ''}` }) : null,
+      EL('button', { class: 'btn small ghost', type: 'button', text: '清除导入', onclick: clearImported })
+    );
+  }
+  if (failures.length) {
+    children.push(EL('span', { class: 'notice warn tiny', text: failures.join('；') }));
+  }
+  els.importSummary.replaceChildren(...children.filter(Boolean));
+  els.importSummary.hidden = false;
+}
+
+async function handleImportFiles(fileList) {
+  const files = Array.from(fileList || []);
+  if (!files.length) return;
+  const failures = [];
+  let added = 0;
+  for (const file of files) {
+    try {
+      const text = await file.text();
+      const { papers, format } = parseImport(text, file.name);
+      if (!papers.length) {
+        failures.push(`${file.name}：未识别到文献（支持 ${Object.values(IMPORT_FORMATS).join(' / ')}）`);
+        continue;
+      }
+      const n = addImported(papers, file.name);
+      added += n;
+      if (!n) failures.push(`${file.name}：与已导入文献重复，已跳过`);
+    } catch {
+      failures.push(`${file.name}：读取失败`);
+    }
+  }
+  renderImportSummary(failures);
+  if (added) {
+    showError(`已导入 ${added} 篇，开始检索时会与检索结果一起去重、抽取，来源标「导入」。文件只在本地解析，未上传。`, 'warn');
+  }
+  els.importInput.value = '';
+}
+
 /* ---------------- 实时运行 ---------------- */
 
 async function shouldUseLlm() {
@@ -156,7 +237,10 @@ async function runLive() {
   els.run.disabled = true;
   els.run.textContent = '检索中…';
   els.result.hidden = true;
-  const activeSources = pickSources(input, getSourcePrefs());
+  if (!serverInfo().checked) await probeHealth();
+  const userKeys = getUserKeys();
+  const keyed = serverInfo().ok ? enabledKeyedSources(userKeys) : [];
+  const activeSources = [...pickSources(input, getSourcePrefs()), ...keyed];
   progress.start('检索与抽取全部在浏览器里完成，目标 60 秒内；任一数据源失败不影响其余结果。', { sources: activeSources });
 
   let llmNote = '';
@@ -185,6 +269,7 @@ async function runLive() {
       sources: activeSources,
       input,
       allowProxy: serverInfo().ok,
+      userKeys,
       onSource: (name, st) => {
         progress.set(`search:${name}`, st.state === 'running' ? 'running' : st.state, sourceDetail(st));
       }
@@ -195,8 +280,10 @@ async function runLive() {
     if (sourceNotes.length) progress.setNote(`部分数据源缺失：${sourceNotes.join('；')}`);
 
     progress.set('dedupe', 'running', '去重、排序与开放获取补全…');
-    const deduped = dedupe(raw);
-    let ranked = rank(deduped, terms.length ? terms : buildQueries(input), { keep: 15 });
+    const imported = state.imported || [];
+    const deduped = dedupe([...raw, ...imported]);
+    const apiRanked = rank(deduped, terms.length ? terms : buildQueries(input), { keep: 15 });
+    let ranked = includeImported(apiRanked, deduped, { keep: 15 });
     let oaCount = 0;
     let oaState = null;
     if (ranked.length) {
@@ -208,7 +295,8 @@ async function runLive() {
     if (oaState && oaState.state === 'failed' && /rate|429/.test(oaState.note || '')) {
       sourceNotes.push('开放获取补全暂时限流，已跳过');
     }
-    progress.set('dedupe', 'done', `${raw.length} 条 → 去重 ${deduped.length} 篇 → 相关性过滤后保留 ${ranked.length} 篇${oaCount ? ` · 开放获取 ${oaCount} 篇` : ''}`);
+    const importNote = imported.length ? ` · 导入 ${imported.length} 篇（不参与相关性淘汰）` : '';
+    progress.set('dedupe', 'done', `${raw.length} 条${importNote} → 去重 ${deduped.length} 篇 → 保留 ${ranked.length} 篇${oaCount ? ` · 开放获取 ${oaCount} 篇` : ''}`);
 
     if (!ranked.length) {
       progress.stop();
@@ -249,7 +337,7 @@ async function runLive() {
       input,
       queries,
       papers: papersWithFields,
-      counts,
+      counts: { ...counts, import: imported.length },
       dedupedTotal: deduped.length,
       seconds: elapsed,
       engine: llmOut ? 'qwen' : 'rules'
@@ -389,10 +477,44 @@ function refreshSettingsUi() {
   els.keyState.textContent = getKey() ? '本浏览器已保存 key（清除浏览器数据即失效）' : '尚未保存 key';
   els.localBadge.textContent = llmAvailable() ? 'Qwen 增强：可用' : 'Qwen 增强：不可用（走免 key 规则模式）';
   els.engineBadge.textContent = ENGINE_BADGE[els.engineSelect.value] || ENGINE_BADGE.auto;
+  const labels = enabledKeyedLabels();
+  if (els.keyedBadge) {
+    els.keyedBadge.textContent = labels.length
+      ? `自带凭证已填：${labels.join('、')}${info.ok ? '' : '（需同源函数转发，当前不可用）'}`
+      : '自带凭证：未填写';
+  }
+}
+
+function renderUserKeys() {
+  if (!els.userKeyList) return;
+  const keys = getUserKeys();
+  els.userKeyList.replaceChildren(...USER_KEY_PROVIDERS.map((p) => EL('div', { class: 'key-item' }, [
+    EL('label', { class: 'key-label', for: `uk-${p.id}` }, [
+      EL('span', { class: 'key-name', text: p.label }),
+      EL('span', { class: 'muted tiny key-desc', text: p.desc })
+    ]),
+    EL('div', { class: 'key-row' }, [
+      EL('input', {
+        id: `uk-${p.id}`, class: 'input key-input', type: 'password', autocomplete: 'off',
+        spellcheck: 'false', placeholder: '可选，仅保存在本机', value: keys[p.id] || ''
+      }),
+      EL('a', { class: 'key-apply', href: p.apply, target: '_blank', rel: 'noopener noreferrer', text: '申请 ↗' })
+    ])
+  ])));
+}
+
+function saveUserKeys() {
+  if (!els.userKeyList) return;
+  for (const p of USER_KEY_PROVIDERS) {
+    const input = els.userKeyList.querySelector(`#uk-${p.id}`);
+    if (input) setUserKey(p.id, input.value);
+  }
+  refreshSettingsUi();
 }
 
 function openSettings() {
   els.keyInput.value = getKey();
+  renderUserKeys();
   refreshSettingsUi();
   if (typeof els.dialog.showModal === 'function') els.dialog.showModal();
   else els.dialog.setAttribute('open', '');
@@ -441,6 +563,7 @@ function wireSettings() {
     setKey(els.keyInput.value);
     setModel(els.modelSelect.value);
     setEnginePref(els.engineSelect.value);
+    saveUserKeys();
     refreshSettingsUi();
     els.saveHint.textContent = '已保存在本机浏览器 localStorage。';
     setTimeout(() => { els.saveHint.textContent = ''; }, 3000);
@@ -450,6 +573,12 @@ function wireSettings() {
     els.keyInput.value = '';
     refreshSettingsUi();
     els.saveHint.textContent = '已清除本地 key。';
+  });
+  els.clearUserKeys.addEventListener('click', () => {
+    clearUserKeys();
+    renderUserKeys();
+    refreshSettingsUi();
+    els.saveHint.textContent = '已清除全部自带凭证。';
   });
   els.engineSelect.addEventListener('change', () => {
     setEnginePref(els.engineSelect.value);
@@ -466,6 +595,9 @@ function boot() {
   els.input = $('#main-input');
   els.examples = $('#examples');
   els.run = $('#run-btn');
+  els.importBtn = $('#import-btn');
+  els.importInput = $('#import-input');
+  els.importSummary = $('#import-summary');
   els.demoWrap = $('#demo-wrap');
   els.progressPanel = $('#panel-progress');
   els.result = $('#panel-result');
@@ -480,6 +612,9 @@ function boot() {
   els.saveBtn = $('#save-settings');
   els.clearBtn = $('#clear-key');
   els.saveHint = $('#save-hint');
+  els.userKeyList = $('#user-key-list');
+  els.clearUserKeys = $('#clear-user-keys');
+  els.keyedBadge = $('#keyed-badge');
   els.closeSettings = $('#close-settings');
   els.openSettings = $('#open-settings');
   els.serverStatus = $('#server-status');
@@ -497,6 +632,9 @@ function boot() {
     if (btn) setMode(btn.dataset.mode);
   });
   els.run.addEventListener('click', runLive);
+  els.importInput.accept = IMPORT_ACCEPT;
+  els.importBtn.addEventListener('click', () => els.importInput.click());
+  els.importInput.addEventListener('change', (e) => handleImportFiles(e.target.files));
   els.openSettings.addEventListener('click', openSettings);
   els.closeSettings.addEventListener('click', () => els.dialog.close());
   els.result.addEventListener('click', (e) => {

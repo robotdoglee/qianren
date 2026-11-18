@@ -50,6 +50,12 @@
     </div>
     </div>
     <div id="examples" class="chips inline"></div>
+    <div class="import-row">
+      <button id="import-btn" class="btn ghost" type="button">导入文献</button>
+      <input id="import-input" type="file" multiple accept=".ris,.bib,.bibtex,.enw,.net,.txt" hidden>
+      <span class="muted tiny">RIS / BibTeX / EndNote / NoteExpress / 知网 RefWorks · 只在本地解析，不上传</span>
+    </div>
+    <div id="import-summary" class="import-summary" hidden></div>
     <div id="demo-wrap" class="demos"></div>
     <p id="errors" class="notice" hidden></p>
   </section>
@@ -61,8 +67,8 @@
     <div>
       <h2>怎么用</h2>
       <ol class="plain">
-        <li>选模式，写一句话（想法或问题）。</li>
-        <li>看进度：多源并行检索 → 去重排序 → 逐篇抽取 7 个字段；医学检索自动加 Europe PMC，计算机检索自动加 DBLP。</li>
+        <li>选模式，写一句话（想法或问题）；也可以导入自己的 RIS / BibTeX / EndNote / NoteExpress / RefWorks 文献，导入只在本机解析。</li>
+        <li>看进度：多源并行检索 → 去重排序 → 逐篇抽取 7 个字段；医学检索自动加 Europe PMC，计算机检索自动加 DBLP；填入自带凭证时再追加对应来源。</li>
         <li>读结果：方法簇、空白点、可排序对比矩阵，导出 Markdown / CSV / BibTeX 带去组会。</li>
       </ol>
     </div>
@@ -89,6 +95,7 @@
     开放获取链接来自 <a href="https://unpaywall.org" target="_blank" rel="noopener noreferrer">Unpaywall</a>（CC0）。
   </p>
   <p>Thank you to arXiv for use of its open access interoperability. 各来源仅通过官方公开 API 访问，遵守其条款与限流。</p>
+  <p class="muted tiny">可选的自带凭证来源（Scopus / IEEE Xplore / Springer Nature / CORE / SerpApi）只在你填写自己的 key 后启用，key 仅存本机 localStorage 并经同源函数转发；本站不登录、不注入 Cookie、不抓取谷歌学术或知网。文献导入在浏览器本地解析，文件不会上传。</p>
   <p>使用 <a href="https://qoder.com" target="_blank" rel="noopener noreferrer">Qoder</a> 构建，部署于 Qoder Sites。</p>
   <p class="muted tiny">免责声明：字段抽取基于论文标题与摘要，可能不完整或有偏差，请以原文为准；检索结果受各 API 覆盖范围与限流影响。联系邮箱只配置在边缘函数环境变量中，不出现在前端或仓库。</p>
 </footer>
@@ -124,6 +131,15 @@
     <label for="key-input">DashScope API Key（可选）</label>
     <input id="key-input" class="input" type="password" autocomplete="off" spellcheck="false" placeholder="sk-...">
     <p class="muted tiny">key 只保存在你的浏览器 localStorage，本站不收集、不转发；清除浏览器数据即失效。</p>
+  </div>
+  <div class="field user-keys">
+    <span class="field-label">自带凭证（可选，仅保存在本机）</span>
+    <p class="muted tiny">有 key 的来源才会启用；请求经同源函数转发，key 不记录、不缓存、不写进导出。未填写时体验与 v2.1 一致。不登录、不注入 Cookie、不抓取谷歌学术或知网。</p>
+    <div id="user-key-list" class="user-key-list"></div>
+    <div class="chips">
+      <span id="keyed-badge" class="chip badge"></span>
+      <button id="clear-user-keys" class="btn small ghost" type="button">清除全部自带凭证</button>
+    </div>
   </div>
   <p id="server-status" class="muted tiny">正在检测同源函数…</p>
   <p id="key-state" class="muted tiny">尚未保存 key</p>
