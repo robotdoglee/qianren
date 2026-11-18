@@ -1,6 +1,7 @@
 // 导出：Markdown / CSV / BibTeX（纯字符串函数，可离线测试）
 import { MISSING } from './extract-rules.js';
 import { SOURCE_LABELS } from './search.js';
+import { TYPE_ORDER, RESOURCE_TYPES } from './beyond.js';
 
 export const FIELD_LABELS = [
   ['question', '研究问题'],
@@ -73,6 +74,36 @@ function matrixSection(r) {
   return `\n## 对比矩阵\n\n${[head, sep, ...rows].join('\n')}\n`;
 }
 
+function mdTitle(value) {
+  return clean(value).replace(/\[/g, '［').replace(/\]/g, '］') || '(无标题)';
+}
+
+export function beyondSection(r) {
+  const resources = (r.beyond && r.beyond.resources) || [];
+  if (!resources.length) return '';
+  const groups = TYPE_ORDER.map((type) => ({
+    type,
+    items: resources.filter((x) => x.type === type)
+  })).filter((g) => g.items.length);
+  const body = groups.map((g) => [
+    `### ${RESOURCE_TYPES[g.type] || g.type}`,
+    '',
+    ...g.items.map((x) => {
+      const link = x.url ? `[${mdTitle(x.title)}](${x.url})` : mdTitle(x.title);
+      const detail = [x.snippet, x.meta && `（${x.meta}）`, `· ${x.sourceLabel || x.source}`]
+        .filter(Boolean).join(' ');
+      return `- ${x.rid || 'R'} ${link}${detail ? ` — ${clean(detail)}` : ''}`;
+    })
+  ].join('\n')).join('\n\n');
+  return `\n## 论文之外\n\n> 书籍、百科、代码、模型、问答与博客均未经同行评审，只作线索，引用时请核对原文。\n\n${body}\n`;
+}
+
+export function synthesisSection(r) {
+  const text = String((r.synthesis && r.synthesis.text) || '').trim();
+  if (!text) return '';
+  return `\n## 综合解答\n\n> 由 Qwen 依据论文与辅助资源生成；[P#] 指论文，[R#] 指「论文之外」资源。辅助资源未经同行评审。\n\n${text}\n`;
+}
+
 function refsSection(r) {
   const refs = (r.papers || []).map((p) => {
     const authors = (p.authors || []).slice(0, 4).join(', ') + ((p.authors || []).length > 4 ? ', et al.' : '');
@@ -82,7 +113,7 @@ function refsSection(r) {
 }
 
 export function toMarkdown(r) {
-  return [headerLine(r), matrixSection(r), approachesSection(r), clustersSection(r), gapsSection(r), refsSection(r)]
+  return [headerLine(r), matrixSection(r), approachesSection(r), clustersSection(r), gapsSection(r), beyondSection(r), synthesisSection(r), refsSection(r)]
     .filter(Boolean)
     .join('\n')
     .trim() + '\n';

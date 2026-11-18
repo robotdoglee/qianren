@@ -322,6 +322,189 @@ export function renderMatrix(result) {
   return wrap;
 }
 
+/* ---------------- v2.3 论文之外 ---------------- */
+
+const BEYOND_ERROR_LABELS = {
+  rate_limited: '限流',
+  timeout: '超时',
+  parse_error: '返回解析失败',
+  proxy_required: '需同源函数',
+  empty: '无结果',
+  failed: '请求失败'
+};
+
+function beyondErrorLabel(note) {
+  const key = String(note || '');
+  if (BEYOND_ERROR_LABELS[key]) return BEYOND_ERROR_LABELS[key];
+  if (key.startsWith('http_')) return `返回 ${key.slice(5)}`;
+  return '不可用';
+}
+
+function synthesisLines(text, { openPaper, locateResource }) {
+  const frag = document.createDocumentFragment();
+  const re = /\[([PR])(\d{1,3})\]/g;
+  const s = String(text || '').replace(/\*\*/g, '').replace(/`/g, '');
+  let last = 0;
+  let m;
+  while ((m = re.exec(s))) {
+    if (m.index > last) frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+    const kind = m[1];
+    const n = Number(m[2]);
+    frag.appendChild(EL('button', {
+      class: 'ref synth-ref',
+      type: 'button',
+      text: `[${kind}${n}]`,
+      title: kind === 'P' ? `打开论文 ${n}` : `定位辅助资源 R${n}`,
+      onclick: () => (kind === 'P' ? openPaper(n) : locateResource(n))
+    }));
+    last = m.index + m[0].length;
+  }
+  if (last < s.length) frag.appendChild(document.createTextNode(s.slice(last)));
+  return frag;
+}
+
+function synthesisBody(text, handlers) {
+  const wrap = EL('div', { class: 'synthesis-text' });
+  let list = null;
+  for (const raw of String(text || '').split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line) { list = null; continue; }
+    if (/^[-*]\s+/.test(line)) {
+      if (!list) {
+        list = EL('ul');
+        wrap.appendChild(list);
+      }
+      list.appendChild(EL('li', {}, [synthesisLines(line.replace(/^[-*]\s+/, ''), handlers)]));
+      continue;
+    }
+    list = null;
+    if (/^#{1,4}\s+/.test(line)) {
+      wrap.appendChild(EL('h4', {}, [synthesisLines(line.replace(/^#{1,4}\s+/, ''), handlers)]));
+    } else {
+      wrap.appendChild(EL('p', {}, [synthesisLines(line, handlers)]));
+    }
+  }
+  return wrap;
+}
+
+function createBeyondBlock({ onExpand, openPaper }) {
+  const host = EL('section', { class: 'block beyond-block', 'aria-label': '论文之外' });
+  const state = {
+    resources: [], groups: [], errors: [], status: {},
+    loading: false, reason: '', synthesis: null, expanded: false
+  };
+
+  const locateResource = (n) => {
+    const node = host.querySelector(`[data-rid="R${n}"]`);
+    if (!node) return;
+    node.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+    node.classList.add('flash');
+    setTimeout(() => node.classList.remove('flash'), 1600);
+  };
+
+  function cardNode(r) {
+    return EL('article', { class: 'beyond-card', dataset: { rid: r.rid } }, [
+      EL('div', { class: 'beyond-card-top' }, [
+        EL('span', { class: `beyond-type type-${r.type}`, text: `${r.typeLabel} · ${r.rid}` }),
+        EL('span', { class: 'beyond-source', text: r.sourceLabel || '' })
+      ]),
+      EL('h4', {}, [
+        r.url
+          ? EL('a', { href: r.url, target: '_blank', rel: 'noopener noreferrer', text: r.title })
+          : document.createTextNode(r.title)
+      ]),
+      r.snippet ? EL('p', { class: 'beyond-snippet', text: r.snippet }) : null,
+      EL('footer', { class: 'beyond-card-foot' }, [
+        EL('span', { text: r.meta || '' }),
+        EL('span', { class: 'beyond-unreviewed', text: '未经同行评审' })
+      ])
+    ]);
+  }
+
+  function synthesisNode() {
+    const s = state.synthesis;
+    if (!s) return null;
+    if (s.loading) return EL('p', { class: 'notice warn', text: '正在用 Qwen 综合论文与辅助资源…' });
+    if (s.noLlm) {
+      return EL('p', { class: 'muted tiny beyond-nollm', text: '未启用 Qwen：这里只按来源列出资源，不生成综合解答。' });
+    }
+    if (s.error) {
+      return EL('p', { class: 'notice warn', text: `综合解答生成失败（${s.error}）；辅助资源仍可参考。` });
+    }
+    if (!s.text) return null;
+    return EL('section', { class: 'synthesis-box' }, [
+      EL('div', { class: 'synthesis-head' }, [
+        EL('h3', { text: '综合解答' }),
+        EL('span', { class: 'chip small', text: 'Qwen 生成' })
+      ]),
+      EL('p', { class: 'muted tiny', text: '[P#] 论文证据 · [R#] 论文之外的辅助资源 · 辅助资源未经同行评审' }),
+      synthesisBody(s.text, { openPaper, locateResource })
+    ]);
+  }
+
+  function paint() {
+    const head = EL('div', { class: 'block-head beyond-head' }, [
+      EL('div', {}, [
+        EL('h2', { text: '论文之外' }),
+        EL('span', { class: 'muted tiny', text: '书籍 · 百科 · 代码 · 模型 · 问答 · 博客，均为辅助线索，未经同行评审。' })
+      ]),
+      onExpand
+        ? EL('button', {
+          class: 'btn small ghost', type: 'button', disabled: state.loading,
+          text: state.loading ? '正在拓展…' : (state.expanded ? '重新拓展' : '拓展到书籍与社区'),
+          onclick: () => onExpand()
+        })
+        : null
+    ]);
+
+    const body = [];
+    body.push(EL('p', { class: 'muted tiny beyond-note' }, [
+      state.reason === 'auto' && !state.expanded
+        ? '高相关论文不足 3 篇，正在自动补充论文之外的线索。'
+        : (state.reason === 'auto' ? '高相关论文不足 3 篇，已自动补充书籍与社区线索。' : '按检索式检索官方免费接口；GitHub 经同源函数转发。')
+    ]));
+
+    if (state.loading) {
+      body.push(EL('p', { class: 'notice warn', text: '正在检索 Open Library、Google Books、维基百科、GitHub、Hugging Face、Stack Exchange、Hacker News、dev.to…' }));
+    }
+
+    if (state.resources.length) {
+      body.push(EL('p', { class: 'muted tiny', text: `共 ${state.resources.length} 条辅助资源；每源最多 4 条，编号 [R#] 可在综合解答中定位。` }));
+      body.push(EL('div', { class: 'beyond-groups' }, state.groups.map((g) => EL('section', { class: 'beyond-group' }, [
+        EL('h3', { class: 'beyond-group-head' }, [
+          EL('span', { class: 'beyond-type', text: g.typeLabel }),
+          EL('span', { class: 'muted tiny', text: `${g.items.length} 条` })
+        ]),
+        EL('div', { class: 'beyond-grid' }, g.items.map(cardNode))
+      ]))));
+    } else if (!state.loading && state.expanded) {
+      body.push(EL('p', { class: 'notice', text: '这次没有取回论文之外的资源；论文结果不受影响，可稍后重试。' }));
+    }
+
+    if (state.errors.length) {
+      body.push(EL('p', {
+        class: 'muted tiny beyond-errors',
+        text: `部分来源未返回：${state.errors.map((e) => `${e.label}（${beyondErrorLabel(e.note)}）`).join('；')}`
+      }));
+    }
+
+    const syn = synthesisNode();
+    if (syn) body.push(syn);
+    host.replaceChildren(head, ...body.filter(Boolean));
+  }
+
+  paint();
+  return {
+    el: host,
+    state,
+    update(patch) {
+      Object.assign(state, patch || {});
+      if (patch && patch.resources) state.expanded = true;
+      paint();
+    }
+  };
+}
+
 /* ---------------- v2 结果区：L0 全景 / L1 卡片 / L2 抽屉 / 对比表 ---------------- */
 
 let activeDrawerCleanup = null;
@@ -532,7 +715,7 @@ function createDrawer(result, opts) {
   return { open, close, syncHash, destroy, el: frag, isOpen: () => !frag.hidden };
 }
 
-export function renderResult(container, rawResult, { onExport } = {}) {
+export function renderResult(container, rawResult, { onExport, onExpandBeyond } = {}) {
   const result = annotatePapers(rawResult);
   container.classList.remove('drawer-open');
   const papers = result.papers || [];
@@ -872,12 +1055,14 @@ export function renderResult(container, rawResult, { onExport } = {}) {
   });
   activeDrawerCleanup = drawer.destroy;
   const open = (n) => { container.classList.add('drawer-open'); drawer.open(n); };
+  const beyond = createBeyondBlock({ onExpand: onExpandBeyond, openPaper: (n) => open(n) });
+  container.updateBeyond = (patch) => beyond.update(patch);
 
   if (!papers.length) {
-    container.append(header, EL('p', { class: 'notice', text: '没有检索到可分析的论文：可能是三个数据源同时不可用，或检索式过窄。可换个说法重试。' }));
+    container.append(header, EL('p', { class: 'notice', text: '没有检索到可分析的论文：可能是各数据源同时不可用，或检索式过窄。可换个说法重试。' }), beyond.el);
     return container;
   }
-  container.append(header, overview, tabs, cardsPanel, matrixPanel, mobileExport);
+  container.append(header, overview, tabs, cardsPanel, matrixPanel, beyond.el, mobileExport);
   syncFilters();
   renderCards();
   drawer.syncHash();

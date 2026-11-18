@@ -187,6 +187,48 @@ export function buildAnalyzePrompt({ mode, input, queries, papers }) {
   return [{ role: 'system', content: system }, { role: 'user', content: user }];
 }
 
+// 综合解答（RAG）：论文用 [P#]，论文之外的资源用 [R#]，每句必须有依据
+export function buildSynthesisPrompt({ mode, input, papers, resources }) {
+  const system = [
+    '你是严谨的研究综述助手。请综合「论文证据」与「辅助资源」，回应用户的研究' +
+      (mode === 'problem' ? '问题' : '想法') + '。',
+    '写作规则：',
+    '1. 先给论文证据支持的结论，再补充书籍、百科、代码、模型、问答、博客中的线索。',
+    '2. 每个事实句末必须标注来源编号：论文用 [P1]、[P2]，辅助资源用 [R1]、[R2]；可并列多个。',
+    '3. 只能使用给定的标题、摘要与片段，禁止编造；辅助资源未经同行评审，要明确区分证据强弱。',
+    '4. 证据不足时直接写「证据不足」并说明缺什么，不要猜测或用常识补全。',
+    '5. 用简体中文输出 3–6 段短文字或短列表；不要复述全部材料，不要输出 JSON，不要写标题以外的元信息。',
+    '6. 不要给出医疗、法律等高风险建议；只做研究线索梳理。'
+  ].join('\n');
+  const paperCtx = (papers || []).map((p) => ({
+    ref: `P${p.n}`,
+    title: p.title,
+    year: p.year,
+    abstract: String(p.abstract || '').slice(0, 700),
+    method: String((p.fields || {}).method || '').slice(0, 240),
+    result: String((p.fields || {}).result || '').slice(0, 240),
+    limitation: String((p.fields || {}).limitation || '').slice(0, 240)
+  }));
+  const resourceCtx = (resources || []).map((r) => ({
+    ref: r.rid || `R${r.n}`,
+    type: r.typeLabel || r.type,
+    source: r.sourceLabel || r.source,
+    title: r.title,
+    snippet: String(r.snippet || '').slice(0, 320)
+  }));
+  return [
+    { role: 'system', content: system },
+    { role: 'user', content: JSON.stringify({ mode, input, papers: paperCtx, resources: resourceCtx }) }
+  ];
+}
+
+export async function llmSynthesize(ctx) {
+  const text = await chat(buildSynthesisPrompt(ctx), { model: getModel() });
+  const out = String(text || '').trim();
+  if (!out) throw new Error('empty_llm_response');
+  return out;
+}
+
 // 一次请求完成抽取 + 聚类 + 空白点
 export async function llmAnalyze(ctx) {
   const messages = buildAnalyzePrompt(ctx);

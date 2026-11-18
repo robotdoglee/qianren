@@ -15,6 +15,13 @@ import {
 } from '../web/js/userkeys.js';
 import { rulesResult } from '../web/js/extract-rules.js';
 import { toMarkdown } from '../web/js/export.js';
+import {
+  shouldExpandBeyond, highRelevanceCount, beyondUrl, beyondJobs, devtoTag,
+  parseOpenLibrary, parseGoogleBooks, parseWikipedia, parseGitHub,
+  parseHuggingFaceModels, parseHuggingFaceDatasets, parseStackExchange,
+  parseHackerNews, parseDevTo, assignResourceIds, groupResources, fetchBeyond
+} from '../web/js/beyond.js';
+import { buildSynthesisPrompt } from '../web/js/llm.js';
 
 const demo = JSON.parse(readFileSync(new URL('../web/demos/demo-gnn-fewshot.json', import.meta.url), 'utf8'));
 
@@ -344,4 +351,153 @@ test('自带凭证检索：key 只进请求头、不进 URL', async () => {
   assert.equal(seen[0].headers['X-User-Key-scopus'], 'SECRET-KEY');
   assert.ok(seen[0].url.includes('/functions/v1/app/scopus'));
   assert.ok(!seen[0].url.includes('SECRET-KEY'), 'key 不能出现在 URL 或缓存键里');
+});
+
+/* ---------------- v2.3 论文之外 ---------------- */
+
+test('论文之外触发：高相关 < 3 篇才自动拓展', () => {
+  const high = (n) => Array.from({ length: n }, (_, i) => ({ n: i + 1, relevance: 'high' }));
+  assert.equal(highRelevanceCount(high(2)), 2);
+  assert.equal(shouldExpandBeyond(high(2)), true);
+  assert.equal(shouldExpandBeyond(high(3)), false);
+  assert.equal(shouldExpandBeyond([{ fields: { relation: '高相关：x' } }]), true);
+});
+
+test('论文之外 URL：各源参数与 GitHub 必须走同源函数', () => {
+  assert.match(beyondUrl('openlibrary', 'graph neural nets'), /openlibrary\.org\/search\.json/);
+  assert.match(beyondUrl('gbooks', 'graph neural nets'), /googleapis\.com\/books\/v1\/volumes/);
+  assert.match(beyondUrl('wikipedia_zh', '图神经网络'), /zh\.wikipedia\.org\/w\/rest\.php/);
+  assert.match(beyondUrl('wikipedia_en', 'graph neural nets'), /en\.wikipedia\.org\/w\/rest\.php/);
+  assert.match(beyondUrl('github', 'graph neural nets'), /\/functions\/v1\/app\/beyond\?source=github/);
+  assert.match(beyondUrl('hf_models', 'bert'), /huggingface\.co\/api\/models/);
+  assert.match(beyondUrl('hf_datasets', 'squad'), /huggingface\.co\/api\/datasets/);
+  assert.match(beyondUrl('stackexchange', 'rag hallucination'), /api\.stackexchange\.com/);
+  assert.match(beyondUrl('hn', 'rag'), /hn\.algolia\.com/);
+  assert.equal(devtoTag('Retrieval-augmented generation'), 'retrieval');
+  assert.match(beyondUrl('devto', 'rag systems'), /dev\.to\/api\/articles\?tag=rag/);
+  assert.equal(beyondUrl('devto', '中文想法'), '');
+
+  const noProxy = beyondJobs({ input: 'RAG', queries: ['RAG'], allowProxy: false });
+  assert.ok(!noProxy.some((j) => j.source === 'github'));
+  const withProxy = beyondJobs({ input: 'RAG', queries: ['RAG'], allowProxy: true });
+  assert.ok(withProxy.some((j) => j.source === 'github'));
+});
+
+test('论文之外解析：书 / 百科 / 代码 / 模型 / 问答 / 博客', () => {
+  const books = parseOpenLibrary({
+    docs: [{ key: '/works/OL1W', title: 'Deep Learning', first_publish_year: 2016, edition_count: 3, subject: ['AI', 'ML'] }]
+  });
+  assert.equal(books[0].type, 'book');
+  assert.equal(books[0].typeLabel, '书');
+  assert.equal(books[0].url, 'https://openlibrary.org/works/OL1W');
+  assert.match(books[0].meta, /2016/);
+
+  const gbooks = parseGoogleBooks({
+    items: [{ volumeInfo: { title: 'Book', authors: ['A B'], publishedDate: '2020-01-01', description: 'Desc', infoLink: 'https://books/x' } }]
+  });
+  assert.equal(gbooks[0].year, undefined);
+  assert.equal(gbooks[0].source, 'gbooks');
+  assert.equal(gbooks[0].url, 'https://books/x');
+
+  const zh = parseWikipedia({ pages: [{ key: '图神经网络', title: '图神经网络', excerpt: '<b>图</b>神经网络…' }] }, 'zh');
+  assert.equal(zh[0].type, 'wiki');
+  assert.match(zh[0].snippet, /图 神经网络/);
+  assert.ok(zh[0].url.startsWith('https://zh.wikipedia.org/wiki/'));
+
+  const gh = parseGitHub({ items: [{ full_name: 'o/r', html_url: 'https://github.com/o/r', description: 'repo', stargazers_count: 42, language: 'Python' }] });
+  assert.equal(gh[0].type, 'code');
+  assert.match(gh[0].meta, /42/);
+
+  const hf = parseHuggingFaceModels([{ id: 'org/model', downloads: 100, likes: 5, pipeline_tag: 'text-generation', tags: ['llm'] }]);
+  assert.equal(hf[0].type, 'model');
+  assert.equal(hf[0].url, 'https://huggingface.co/org/model');
+  const ds = parseHuggingFaceDatasets([{ id: 'org/data', downloads: 2, likes: 1, tags: ['qa'] }]);
+  assert.equal(ds[0].url, 'https://huggingface.co/datasets/org/data');
+
+  const se = parseStackExchange({ items: [{ title: 'How &amp; why?', link: 'https://stackoverflow.com/q/1', score: 9, answer_count: 2, is_answered: true, tags: ['python'] }] });
+  assert.equal(se[0].type, 'qa');
+  assert.equal(se[0].title, 'How & why?');
+  assert.match(se[0].meta, /9 分/);
+
+  const hn = parseHackerNews({ hits: [{ title: 'Show HN', url: 'https://x', objectID: '1', points: 3, num_comments: 4 }] });
+  assert.equal(hn[0].type, 'qa');
+  const devto = parseDevTo([{ title: 'Post', url: 'https://dev.to/p', description: 'd', tag_list: ['rag'], positive_reactions_count: 7 }]);
+  assert.equal(devto[0].type, 'blog');
+  assert.match(devto[0].meta, /7/);
+  assert.deepEqual(parseDevTo([{ title: 'bad', url: 'javascript:alert(1)' }]), [], '只接受 http(s) 链接');
+});
+
+test('论文之外合并：去重、编号与类型分组有序', () => {
+  const a = parseOpenLibrary({ docs: [{ key: '/works/1', title: 'B1' }, { key: '/works/1', title: 'B1 dup' }] });
+  const b = parseDevTo([{ title: 'P1', url: 'https://dev.to/p1' }]);
+  const ids = assignResourceIds([...a, ...b]);
+  assert.equal(ids.length, 2);
+  assert.deepEqual(ids.map((x) => x.rid), ['R1', 'R2']);
+  const groups = groupResources(ids);
+  assert.deepEqual(groups.map((g) => g.type), ['book', 'blog']);
+  assert.equal(groups[0].typeLabel, '书');
+  assert.equal(groups[1].typeLabel, '博客');
+});
+
+test('论文之外抓取：无函数时跳过 GitHub、失败不拖垮其他来源', async () => {
+  const calls = [];
+  const fetchImpl = async (url) => {
+    calls.push(String(url));
+    if (String(url).includes('hn.algolia.com')) return { ok: false, status: 429, text: async () => '' };
+    if (String(url).includes('openlibrary.org')) {
+      return { ok: true, status: 200, text: async () => JSON.stringify({ docs: [{ key: '/works/1', title: 'B1' }] }) };
+    }
+    if (String(url).includes('dev.to')) {
+      return { ok: true, status: 200, text: async () => JSON.stringify([{ title: 'P1', url: 'https://dev.to/p1' }]) };
+    }
+    return { ok: true, status: 200, text: async () => JSON.stringify({}) };
+  };
+  const out = await fetchBeyond({ input: 'RAG', queries: ['retrieval augmented generation'], allowProxy: false, fetchImpl });
+  assert.ok(calls.length >= 8);
+  assert.ok(!calls.some((u) => u.includes('/beyond?source=github')));
+  assert.equal(out.status.github.state, 'skipped');
+  assert.equal(out.status.hn.state, 'failed');
+  assert.ok(out.resources.some((r) => r.source === 'openlibrary'));
+  assert.ok(out.errors.some((e) => e.source === 'hn'));
+  assert.equal(out.resources[0].rid, 'R1');
+});
+
+test('综合解答 prompt：论文 [P#] 与资源 [R#] 都在上下文，并要求证据不足直说', () => {
+  const messages = buildSynthesisPrompt({
+    mode: 'idea',
+    input: '用 RAG 减少幻觉',
+    papers: [{ n: 1, title: 'Paper', year: 2024, abstract: 'Abstract', fields: { method: 'RAG', result: 'less hallucination' } }],
+    resources: [{ rid: 'R1', typeLabel: '百科', sourceLabel: '中文维基百科', title: 'RAG', snippet: '定义' }]
+  });
+  assert.equal(messages.length, 2);
+  assert.match(messages[0].content, /\[P1\]/);
+  assert.match(messages[0].content, /\[R1\]/);
+  assert.match(messages[0].content, /证据不足/);
+  const ctx = JSON.parse(messages[1].content);
+  assert.equal(ctx.papers[0].ref, 'P1');
+  assert.equal(ctx.resources[0].ref, 'R1');
+  assert.equal(ctx.resources[0].type, '百科');
+});
+
+test('Markdown 导出：论文之外按类型分节，综合解答保留引用', () => {
+  const withBeyond = {
+    ...demo,
+    beyond: {
+      resources: [
+        { rid: 'R1', type: 'book', typeLabel: '书', source: 'openlibrary', sourceLabel: 'Open Library', title: 'Book [1]', url: 'https://openlibrary.org/works/1', snippet: 'Book desc', meta: '2016' },
+        { rid: 'R2', type: 'wiki', typeLabel: '百科', source: 'wikipedia_zh', sourceLabel: '中文维基百科', title: 'Wiki', url: 'https://zh.wikipedia.org/wiki/x', snippet: 'Wiki desc', meta: '' }
+      ]
+    },
+    synthesis: { text: '论文认为 RAG 能减少幻觉 [P1]，百科给出定义 [R2]。' }
+  };
+  const md = toMarkdown(withBeyond);
+  assert.match(md, /## 论文之外/);
+  assert.match(md, /### 书/);
+  assert.match(md, /### 百科/);
+  assert.match(md, /未经同行评审/);
+  assert.match(md, /R1 \[Book ［1］\]\(https:\/\/openlibrary\.org\/works\/1\)/);
+  assert.match(md, /## 综合解答/);
+  assert.match(md, /\[P1\]/);
+  assert.match(md, /\[R2\]/);
+  assert.ok(!toMarkdown(demo).includes('## 论文之外'));
 });

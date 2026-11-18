@@ -70,6 +70,7 @@
         <li>选模式，写一句话（想法或问题）；也可以导入自己的 RIS / BibTeX / EndNote / NoteExpress / RefWorks 文献，导入只在本机解析。</li>
         <li>看进度：多源并行检索 → 去重排序 → 逐篇抽取 7 个字段；医学检索自动加 Europe PMC，计算机检索自动加 DBLP；填入自带凭证时再追加对应来源。</li>
         <li>读结果：方法簇、空白点、可排序对比矩阵，导出 Markdown / CSV / BibTeX 带去组会。</li>
+        <li>高相关论文不足 3 篇时会自动、也可随时点「拓展到书籍与社区」：补充 Open Library / Google Books / 维基百科 / GitHub / Hugging Face / Stack Exchange / Hacker News / dev.to 的线索，均标「未经同行评审」。有 Qwen 时生成带 [P#] / [R#] 引用的综合解答；无 key 只列资源、不生成。</li>
       </ol>
     </div>
     <div>
@@ -93,8 +94,16 @@
     <a href="https://dblp.org" target="_blank" rel="noopener noreferrer">DBLP</a>（CC0）、
     <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv</a>，
     开放获取链接来自 <a href="https://unpaywall.org" target="_blank" rel="noopener noreferrer">Unpaywall</a>（CC0）。
+    「论文之外」来自 <a href="https://openlibrary.org" target="_blank" rel="noopener noreferrer">Open Library</a>、
+    <a href="https://developers.google.com/books" target="_blank" rel="noopener noreferrer">Google Books</a>、
+    <a href="https://www.wikipedia.org" target="_blank" rel="noopener noreferrer">Wikipedia</a>、
+    <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>、
+    <a href="https://huggingface.co" target="_blank" rel="noopener noreferrer">Hugging Face</a>、
+    <a href="https://stackexchange.com" target="_blank" rel="noopener noreferrer">Stack Exchange</a>、
+    <a href="https://news.ycombinator.com" target="_blank" rel="noopener noreferrer">Hacker News</a>、
+    <a href="https://dev.to" target="_blank" rel="noopener noreferrer">dev.to</a>。
   </p>
-  <p>Thank you to arXiv for use of its open access interoperability. 各来源仅通过官方公开 API 访问，遵守其条款与限流。</p>
+  <p>Thank you to arXiv for use of its open access interoperability. 各来源仅通过官方公开 API 访问，遵守其条款与限流。论文之外的资源未经同行评审，只作线索。</p>
   <p class="muted tiny">可选的自带凭证来源（Scopus / IEEE Xplore / Springer Nature / CORE / SerpApi）只在你填写自己的 key 后启用，key 仅存本机 localStorage 并经同源函数转发；本站不登录、不注入 Cookie、不抓取谷歌学术或知网。文献导入在浏览器本地解析，文件不会上传。</p>
   <p>使用 <a href="https://qoder.com" target="_blank" rel="noopener noreferrer">Qoder</a> 构建，部署于 Qoder Sites。</p>
   <p class="muted tiny">免责声明：字段抽取基于论文标题与摘要，可能不完整或有偏差，请以原文为准；检索结果受各 API 覆盖范围与限流影响。联系邮箱只配置在边缘函数环境变量中，不出现在前端或仓库。</p>

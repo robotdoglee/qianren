@@ -14,8 +14,9 @@ import {
 } from './userkeys.js';
 import {
   probeHealth, serverInfo, llmAvailable, getKey, setKey, getModel, setModel, MODELS,
-  enginePref, setEnginePref, llmExpandQueries, llmAnalyze
+  enginePref, setEnginePref, llmExpandQueries, llmAnalyze, llmSynthesize
 } from './llm.js';
+import { shouldExpandBeyond, fetchBeyond } from './beyond.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -30,6 +31,8 @@ const ERROR_LABELS = {
   no_contact_email: '未配置联系邮箱，已跳过',
   no_doi: '没有可查询的 DOI',
   empty_queries: '检索式为空',
+  no_llm_channel: '未检测到 Qwen 通道',
+  empty_llm_response: 'Qwen 返回为空',
   failed: '请求失败'
 };
 
@@ -48,7 +51,7 @@ const EXAMPLES = {
 
 const ENGINE_BADGE = { auto: '自动（有 key 用 Qwen）', qwen: '强制 Qwen 增强', rules: '免 key 实时模式' };
 
-const state = { mode: 'idea', busy: false, lastResult: null, demos: [], imported: [] };
+const state = { mode: 'idea', busy: false, lastResult: null, demos: [], imported: [], beyondToken: 0 };
 const els = {};
 let progress = null;
 
@@ -232,6 +235,7 @@ async function runLive() {
     return;
   }
   showError('');
+  state.beyondToken += 1;
   state.busy = true;
   state.busyStart = Date.now();
   els.run.disabled = true;
@@ -361,14 +365,65 @@ async function runLive() {
   }
 }
 
+async function expandBeyond(result, view, { auto = false } = {}) {
+  if (!result || !view || typeof view.updateBeyond !== 'function') return;
+  const token = ++state.beyondToken;
+  view.updateBeyond({ loading: true, expanded: false, reason: auto ? 'auto' : 'manual', errors: [], synthesis: null });
+  try {
+    if (!serverInfo().checked) await probeHealth();
+    const data = await fetchBeyond({
+      input: result.input,
+      queries: result.queries,
+      allowProxy: serverInfo().ok
+    });
+    if (token !== state.beyondToken || state.lastResult !== result) return;
+    result.beyond = { resources: data.resources, errors: data.errors, status: data.status, at: data.at };
+    view.updateBeyond({
+      loading: false, expanded: true, resources: data.resources, groups: data.groups,
+      errors: data.errors, status: data.status, reason: auto ? 'auto' : 'manual'
+    });
+    const wantLlm = await shouldUseLlm();
+    if (token !== state.beyondToken || state.lastResult !== result) return;
+    if (!wantLlm) {
+      view.updateBeyond({ synthesis: { noLlm: true } });
+      return;
+    }
+    view.updateBeyond({ synthesis: { loading: true } });
+    try {
+      const text = await llmSynthesize({
+        mode: result.mode, input: result.input, papers: result.papers, resources: data.resources
+      });
+      if (token !== state.beyondToken || state.lastResult !== result) return;
+      result.synthesis = { text, engine: 'qwen', generatedAt: new Date().toISOString() };
+      view.updateBeyond({ synthesis: { text } });
+    } catch (err) {
+      if (token !== state.beyondToken || state.lastResult !== result) return;
+      const msg = labelError(err && err.message);
+      result.synthesis = { error: msg };
+      view.updateBeyond({ synthesis: { error: msg } });
+    }
+  } catch (err) {
+    if (token !== state.beyondToken || state.lastResult !== result) return;
+    view.updateBeyond({
+      loading: false, expanded: true, reason: auto ? 'auto' : 'manual',
+      errors: [{ label: '论文之外', note: err && err.message }], synthesis: null
+    });
+  }
+}
+
 function finish(result) {
   progress.stop();
+  state.beyondToken += 1;
   state.lastResult = result;
-  renderResult(els.result, result, { onExport: download });
+  const view = renderResult(els.result, result, {
+    onExport: download,
+    onExpandBeyond: () => expandBeyond(result, view, { auto: false })
+  });
   const notes = [result.llmNote, result.sourceNotes?.length ? `数据源提示：${result.sourceNotes.join('；')}` : '']
     .filter(Boolean).join(' ｜ ');
   showError(notes, 'warn');
   requestAnimationFrame(() => els.result.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }));
+  if (shouldExpandBeyond(result.papers)) expandBeyond(result, view, { auto: true });
 }
 
 /* ---------------- 一键演示 ---------------- */
@@ -406,6 +461,7 @@ async function runDemo(id) {
 // demoFile 参数用于本地自测（例如 ?demoFile=../dev/fixture.json），不用于线上
 async function runDemoFile(path, label = path) {
   if (state.busy) return;
+  state.beyondToken += 1;
   let result;
   try {
     const res = await fetch(path, { cache: 'no-store' });
@@ -442,7 +498,10 @@ async function runDemoFile(path, label = path) {
   progress.stop();
   result.engine = result.engine || 'demo';
   state.lastResult = result;
-  renderResult(els.result, result, { onExport: download });
+  const view = renderResult(els.result, result, {
+    onExport: download,
+    onExpandBeyond: () => expandBeyond(result, view, { auto: false })
+  });
   state.busy = false;
   els.run.disabled = false;
   requestAnimationFrame(() => els.result.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }));

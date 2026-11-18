@@ -1,6 +1,6 @@
 // 可选的同源边缘函数（Deno）。站点在函数不存在时也能完整工作。
 // 路由按路径后缀匹配：…/health、…/llm、…/arxiv、…/openalex、…/s2、…/crossref、…/dblp、…/unpaywall、
-// …/scopus、…/ieee、…/springer、…/core、…/serpapi
+// …/scopus、…/ieee、…/springer、…/core、…/serpapi、…/beyond（GitHub 仓库搜索）
 // 环境变量：DASHSCOPE_API_KEY；可选 CONTACT_EMAIL（Crossref/OpenAlex polite pool、Unpaywall 必填）、S2_API_KEY
 // 访客自带 key 只走请求头 X-User-Key-<source>，不记录、不写缓存键、不回显。
 
@@ -16,6 +16,7 @@ const IEEE_HOST = 'https://ieeexploreapi.ieee.org/api/v1/search/articles';
 const SPRINGER_HOST = 'https://api.springernature.com/meta/v2/json';
 const CORE_HOST = 'https://api.core.ac.uk/v3/search/works';
 const SERPAPI_HOST = 'https://serpapi.com/search.json';
+const GITHUB_SEARCH_HOST = 'https://api.github.com/search/repositories';
 const OPENALEX_SELECT = 'id,ids,doi,title,publication_year,authorships,primary_location,abstract_inverted_index,cited_by_count,relevance_score';
 const S2_FIELDS = 'title,abstract,year,authors,venue,externalIds,url,citationCount';
 const CROSSREF_SELECT = 'DOI,title,author,issued,published,container-title,abstract,is-referenced-by-count,URL,type,alternative-id';
@@ -337,6 +338,23 @@ function handleSerpApi(params: URLSearchParams, request: Request): Response | Pr
   return forward(url, 'application/json; charset=utf-8', { Accept: 'application/json' }, `serpapi:${q}:${n}`);
 }
 
+// v2.3 论文之外：GitHub 未认证搜索按官方要求走服务端（带上 UA 与 API 版本头）
+function handleBeyond(params: URLSearchParams): Response | Promise<Response> {
+  const source = (params.get('source') || '').trim();
+  if (source !== 'github') return error('unsupported_source');
+  const q = qparam(params);
+  if (!q) return error('missing_query_or_too_long');
+  if (limited('github')) return rateLimited();
+  const n = Math.max(1, Math.min(5, nparam(params)));
+  const url = `${GITHUB_SEARCH_HOST}?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=${n}`;
+  return forward(
+    url,
+    'application/json; charset=utf-8',
+    { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+    `github:${q}:${n}`
+  );
+}
+
 function handleCrossref(params: URLSearchParams): Response | Promise<Response> {
   const q = qparam(params);
   if (!q) return error('missing_query_or_too_long');
@@ -421,7 +439,7 @@ function route(request: Request): Promise<Response> | Response {
   const url = new URL(request.url);
   const path = url.pathname;
   if (path.endsWith('/health')) {
-    const sources = ['openalex', 's2', 'arxiv', 'crossref', 'europepmc', 'dblp'];
+    const sources = ['openalex', 's2', 'arxiv', 'crossref', 'europepmc', 'dblp', 'github'];
     if (hasEnv('CONTACT_EMAIL')) sources.push('unpaywall');
     return json({
       ok: true,
@@ -443,6 +461,7 @@ function route(request: Request): Promise<Response> | Response {
   if (path.endsWith('/springer')) return handleSpringer(url.searchParams, request);
   if (path.endsWith('/core')) return handleCore(url.searchParams, request);
   if (path.endsWith('/serpapi')) return handleSerpApi(url.searchParams, request);
+  if (path.endsWith('/beyond')) return handleBeyond(url.searchParams);
   return error('not_found', 404);
 }
 
