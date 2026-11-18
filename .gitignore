@@ -10,3 +10,4 @@ data-gen/gather.log
 dev/shots/
 *.qoder.site
 dev/fonts/*.ttf
+post-assets/
