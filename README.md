@@ -1,5 +1,11 @@
 # 前人做过吗
 
+> 2026 Qoder 高校创造力大赛 · StudyHack 学习科研赛道参赛作品
+>
+> - 在线体验（Qoder Sites，公开访问）：https://qianren-9o3elwijmv8.qoder.zone
+> - 参赛者：上海交通大学（个人参赛）· Qoder 账号 nick6784593415
+> - 天池论坛作品帖：见 [WRITEUP.md](WRITEUP.md)（发布后补上帖子链接）
+
 一句话想法 / 一个具体问题 → 并行检索 OpenAlex、arXiv、Semantic Scholar → 去重排序 → 逐篇抽取 7 个字段 → 方法簇、研究空白点、可排序对比矩阵，并导出 Markdown / CSV / BibTeX。
 
 - 纯静态：HTML + CSS + 原生 ES modules，无构建步骤、无外部 CDN。
@@ -28,7 +34,7 @@
 ```
 web/
   index.html          入口
-  app.css             样式（深靛蓝 + 暖色点缀）
+  app.css             样式（参考 Claude 的暖色纸感风格）
   js/
     terms.js          中英学术术语词典、停用词、数据集/指标表、线索词、规则查询扩展
     search.js         三源并行检索（12s 超时、429 最多退避重试 1 次）、摘要还原、去重、BM25 风格排序
@@ -89,5 +95,11 @@ Thank you to arXiv for use of its open access interoperability.
 
 抽取结果基于摘要，可能不完整，请以原文为准。
 
+
 ## 设计
-2026-11-18 起界面改为暖色纸感风格（参考 Claude）：米白底 #faf9f5、陶土色强调 #c96442、标题衬线字体、居中大输入框与分段式模式切换。线上：https://qianren-9o3elwijmv8.qoder.zone （个人账号发布，公开访问）。
+
+2026-11-18 起界面改为暖色纸感风格（参考 Claude）：米白底 #faf9f5、陶土色强调 #c96442、标题衬线字体、居中大输入框与分段式模式切换。
+
+## 更新记录
+
+- 2026-11-18：v1 发布到 Qoder Sites 并公开；界面改为暖色纸感风格；完成论坛作品帖。
