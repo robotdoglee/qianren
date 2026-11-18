@@ -293,7 +293,17 @@ export function dedupe(papers) {
     else if (ax) put(`arxiv:${ax}`, paper);
     else if (tk) put(`title:${tk}`, paper);
   }
-  return result.map((p, i) => ({ ...p, n: i + 1, id: paperId(p) }));
+  // 二次合并：DOI 不同（如 10.x/y 与 10.x/y/pdf）但规范化标题相同、年份相差 ≤1 → 视为同一篇
+  const collapsed = [];
+  for (const p of result) {
+    const tk = titleKey(p.title);
+    const hit = tk
+      ? collapsed.find((q) => titleKey(q.title) === tk && p.year && q.year && Math.abs(p.year - q.year) <= 1)
+      : null;
+    if (hit) collapsed[collapsed.indexOf(hit)] = mergeTwo(hit, p);
+    else collapsed.push(p);
+  }
+  return collapsed.map((p, i) => ({ ...p, n: i + 1, id: paperId(p) }));
 }
 
 export function paperId(p) {

@@ -141,8 +141,8 @@ async function runLive() {
     }
     if (!queries.length) throw new Error('empty_queries');
     progress.set('understand', 'done', queries.join(' ／ '));
-    if (!terms.length && unmapped.length) {
-      progress.setNote(`「${unmapped.slice(0, 3).join('、')}」未在术语词典中命中，建议补一两个英文关键词，或在设置里启用 Qwen 增强。`);
+    if (unmapped.length) {
+      progress.setHint('understand', `未识别：${unmapped.slice(0, 3).join('、')}（建议用英文描述或在设置里启用 Qwen 增强）`);
     }
 
     for (const name of Object.keys(SOURCE_LABELS)) progress.set(`search:${name}`, 'running');

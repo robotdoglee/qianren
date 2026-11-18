@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { buildQueries, keywords, segmentChinese } from '../web/js/terms.js';
+import { buildQueries, keywords, segmentChinese, STOPWORDS } from '../web/js/terms.js';
 import {
   dedupe, rank, restoreAbstract, titleKey, parseAtom, fromOpenAlex, fromS2, fromArxivEntry,
   openalexUrl, s2Url, arxivUrl, proxyUrl, attempt, fetchSource, searchAll, MAX_N
@@ -40,6 +40,63 @@ test('规则查询扩展：生成 3–5 条英文检索式', () => {
   assert.deepEqual(buildQueries(''), []);
 });
 
+// 断言：3–5 条检索式，纯英文，且不含任何停用词 token
+function assertCleanQueries(qs) {
+  assert.ok(qs.length >= 3 && qs.length <= 5, `检索式应 3–5 条，实际 ${qs.length}：${JSON.stringify(qs)}`);
+  for (const q of qs) {
+    assert.ok(!/[\u4e00-\u9fff]/.test(q), `检索式不应含中文：${q}`);
+    for (const raw of q.split(/\s+/)) {
+      const w = raw.toLowerCase().replace(/[^a-z]/g, '');
+      assert.ok(!w || !STOPWORDS.has(w), `检索式含停用词「${raw}」：${q}`);
+    }
+  }
+}
+
+test('中文预处理：程度副词/虚词剔除 + 最长匹配 + 保留内嵌英文', () => {
+  // 「极度」被剔除后「类别不平衡」应命中；「少数类」「分类」需识别；CT 原样保留
+  const imbalance = keywords('我的医学影像分类模型在类别极度不平衡时少数类召回率很低');
+  for (const want of ['class imbalance', 'minority class', 'classification', 'medical imaging', 'recall']) {
+    assert.ok(imbalance.terms.includes(want), `缺少术语 ${want}：${imbalance.terms.join(',')}`);
+  }
+  const denoise = keywords('基于扩散模型的低剂量CT图像去噪');
+  for (const want of ['diffusion model', 'low-dose', 'image denoising', 'CT']) {
+    assert.ok(denoise.terms.includes(want), `缺少术语 ${want}：${denoise.terms.join(',')}`);
+  }
+  // 未识别片段兜底：仅剩的「低」等单字不进 unmapped
+  assert.deepEqual(imbalance.unmapped, [], `不应有未识别片段：${imbalance.unmapped.join(',')}`);
+});
+
+test('英文输入：停用词过滤 + 短语识别', () => {
+  const r = keywords('How to detect AI-generated text in student essays');
+  assert.ok(r.terms.includes('AI-generated text'), r.terms.join(','));
+  assert.ok(r.terms.includes('student essays'), r.terms.join(','));
+  // 不应把 how/to/in 这类词带进术语或检索式
+  assert.ok(!r.terms.some((t) => STOPWORDS.has(t.toLowerCase())), r.terms.join(','));
+  assertCleanQueries(buildQueries('How to detect AI-generated text in student essays'));
+});
+
+test('五个真实输入的检索式均 3–5 条且不含停用词', () => {
+  for (const s of [
+    '我的医学影像分类模型在类别极度不平衡时少数类召回率很低',
+    '基于扩散模型的低剂量CT图像去噪',
+    'How to detect AI-generated text in student essays',
+    '用检索增强生成减少大模型在医学问答中的幻觉',
+    '用图神经网络在小样本数据上预测分子性质'
+  ]) {
+    assertCleanQueries(buildQueries(s));
+  }
+  // RAG 与 GNN 输入的术语质量
+  const rag = keywords('用检索增强生成减少大模型在医学问答中的幻觉').terms;
+  assert.ok(rag.includes('retrieval-augmented generation') && rag.includes('hallucination'), rag.join(','));
+  const gnn = keywords('用图神经网络在小样本数据上预测分子性质').terms;
+  assert.ok(gnn.includes('graph neural network') && gnn.includes('few-shot') && gnn.includes('molecular property prediction'), gnn.join(','));
+});
+
+test('词典规模 ≥ 400 条', async () => {
+  const { TERMS } = await import('../web/js/terms.js');
+  assert.ok(TERMS.length >= 400, `词典仅 ${TERMS.length} 条`);
+});
+
 test('OpenAlex 摘要还原', () => {
   const text = restoreAbstract({
     We: [0], propose: [1], a: [2], method: [3], dot: [4], words: [5]
@@ -63,6 +120,28 @@ test('去重：DOI 优先，其次 arXiv ID，其次规范化标题', () => {
   assert.equal(out[1].id, 'arxiv:2101.00001');
   assert.deepEqual(out.map((p) => p.n), [1, 2], '去重后重新编号');
   assert.equal(titleKey('A, B!: c'), 'abc');
+});
+
+test('去重：DOI 变体（规范化标题相同 + 年份相差 ≤1）合并', () => {
+  const mk = (over) => ({ sources: ['openalex'], citations: 1, abstract: 'x', ...over });
+  const base = { title: 'Diffusion Models for Low-Dose CT Denoising', year: 2023 };
+  const a = mk({ ...base, doi: '10.5/a', sources: ['openalex'], citations: 3 });
+  const pdf = mk({ ...base, doi: 'https://doi.org/10.5/a/pdf', sources: ['s2'], citations: 9, abstract: 'longer abstract here' });
+  const out = dedupe([a, pdf]);
+  assert.equal(out.length, 1, '同一论文的 DOI 与其 /pdf 变体应合并');
+  assert.deepEqual(out[0].sources.sort(), ['openalex', 's2']);
+  assert.equal(out[0].citations, 9, '合并后取较大引用数');
+  assert.equal(out[0].abstract, 'longer abstract here');
+
+  // 年份相差 >1：同名不合并（避免误并不同版本/再版）
+  const far1 = mk({ title: 'A Recurring Title', year: 2019, doi: '10.9/far1' });
+  const far2 = mk({ title: 'A Recurring Title', year: 2023, doi: '10.9/far2' });
+  assert.equal(dedupe([far1, far2]).length, 2, '年份相差过大应视为不同文献');
+
+  // 相邻年份（差 1）同名：合并
+  const adj1 = mk({ title: 'Neighboring Year Paper', year: 2020, doi: '10.9/adj1' });
+  const adj2 = mk({ title: 'Neighboring Year Paper', year: 2021, doi: '10.9/adj2' });
+  assert.equal(dedupe([adj1, adj2]).length, 1);
 });
 
 test('排序：关键词命中优先，无摘要降权，引用小幅加成', () => {
