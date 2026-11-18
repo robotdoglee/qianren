@@ -39,7 +39,9 @@
 ## 五、怎么做到的
 
 - 一句话（中英文均可）经 600 多条中英学术术语词典扩展成 3–5 条英文检索式。
-- 并行检索 OpenAlex、arXiv、Semantic Scholar，去重排序后保留 10–15 篇。
+- 并行检索 OpenAlex、Semantic Scholar、Crossref、arXiv，医学方向自动加 Europe PMC、计算机方向加 DBLP；按 DOI、arXiv 号、PMID、标题去重合并，保留 10–15 篇，Unpaywall 补开放获取全文链接。全部是官方开放接口，不抓取任何网页。
+- 有能力的用户可在设置里自带 Semantic Scholar、Scopus、IEEE、Springer、CORE、SerpApi 的 key（只存在浏览器本地），也可导入知网、谷歌学术、Zotero 导出的 RIS / BibTeX / EndNote / NoteExpress 文件。
+- 论文太少时（高相关不足 3 篇）自动拓展到书籍、维基、GitHub、Hugging Face、Stack Exchange 和技术博客，单列「论文之外」并标注未经同行评审；填入 Qwen key 后按 RAG 生成综合解答，先引论文再引其他资源。
 - 逐篇从标题和摘要抽取 7 个字段：研究问题、方法、数据集、指标、结果、局限、与你想法的关系，并给出高/中/低相关度。**摘要没写就标“摘要未提及”，绝不编造。**
 - 三层浏览：全景（关系与对比一眼看清）→ 论文卡片 → 单篇详情，层层深入、随时返回。
 - 三种运行方式：一键演示（预计算的真实检索结果）、免 key 实时模式（浏览器内规则抽取，卡片标注「规则抽取」）、Qwen 增强（可在设置里填自己的百炼 key，只存在浏览器本地）。
@@ -62,4 +64,4 @@
 - 检索结果受各开放 API 覆盖范围和限流影响。
 - 后续计划：上传 PDF 全文抽取、引用关系图、收藏与历史。
 
-数据来源：OpenAlex、arXiv、Semantic Scholar 开放 API。Thank you to arXiv for use of its open access interoperability.
+数据来源：OpenAlex、Semantic Scholar、Crossref、arXiv、Europe PMC、DBLP、Unpaywall 开放 API；扩展资源来自 Open Library、Google Books、Wikipedia、GitHub、Hugging Face、Stack Exchange、Hacker News、DEV 的公开接口。Thank you to arXiv for use of its open access interoperability.
