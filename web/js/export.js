@@ -24,7 +24,7 @@ function sourcesLabel(p) {
 }
 
 function headerLine(r) {
-  return `# 前人做过吗 · ${r.mode === 'problem' ? '问题驱动' : '想法驱动'}检索结果\n\n- 输入：${clean(r.input)}\n- 引擎：${r.engine || 'rules'} ｜ 生成时间：${r.generatedAt || ''}\n- 检索式：${(r.queries || []).map((q) => `\`${q}\``).join(' ; ') || '—'}\n- 统计：OpenAlex ${(r.stats && r.stats.openalex) ?? '—'} / arXiv ${(r.stats && r.stats.arxiv) ?? '—'} / Semantic Scholar ${(r.stats && r.stats.s2) ?? '—'} → 去重后 ${(r.stats && r.stats.deduped) ?? '—'} → 保留 ${(r.stats && r.stats.kept) ?? '—'} 篇\n`;
+  return `# 问渠 · ${r.mode === 'problem' ? '问题驱动' : '想法驱动'}检索结果\n\n- 输入：${clean(r.input)}\n- 引擎：${r.engine || 'rules'} ｜ 生成时间：${r.generatedAt || ''}\n- 检索式：${(r.queries || []).map((q) => `\`${q}\``).join(' ; ') || '—'}\n- 统计：OpenAlex ${(r.stats && r.stats.openalex) ?? '—'} / arXiv ${(r.stats && r.stats.arxiv) ?? '—'} / Semantic Scholar ${(r.stats && r.stats.s2) ?? '—'} → 去重后 ${(r.stats && r.stats.deduped) ?? '—'} → 保留 ${(r.stats && r.stats.kept) ?? '—'} 篇\n`;
 }
 
 function clustersSection(r) {

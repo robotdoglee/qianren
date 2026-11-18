@@ -422,7 +422,7 @@ test('来源适配器：OpenAlex 与 Semantic Scholar 字段归一', () => {
 test('导出 Markdown：包含矩阵、簇、空白点与缺失标注', () => {
   const result = rulesResult({ mode: 'idea', input: IDEA, queries: fixture.queries, papers: fixture.papers, counts: fixture.stats, dedupedTotal: 24, seconds: 18.6 });
   const md = toMarkdown(result);
-  assert.match(md, /^# 前人做过吗/);
+  assert.match(md, /^# 问渠/);
   assert.match(md, /## 对比矩阵/);
   assert.match(md, /## 方法簇/);
   assert.match(md, /## 空白点/);

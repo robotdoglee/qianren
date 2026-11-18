@@ -531,3 +531,4 @@ ol.plain li, ul.plain li { margin-bottom: 6px; }
 
 /* hidden 属性优先于组件自身的 display */
 [hidden] { display: none !important; }
+.nowrap { display: inline-block; }
