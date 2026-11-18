@@ -113,7 +113,7 @@ export function overviewLayout(papers, { width = 860, laneH = 54, padL = 96, pad
     r: 4 + Math.log10(1 + (Number(p.citations) || 0)) / Math.log10(1 + maxCit) * 8
   }));
   const lanes = laneIds.map((id, i) => ({ id, y: padT + i * laneH + laneH / 2 }));
-  return { width, height, minY, maxY, padL, padR, padT, points, lanes, x, laneY };
+  return { width, height, minY, maxY, padL, padR, padT, padB, laneH, points, lanes, x, laneY };
 }
 
 export function relationLinks(papers, mode = 'dataset') {

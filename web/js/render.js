@@ -27,6 +27,10 @@ const EL = (tag, props = {}, children = []) => {
 
 const ENGINE_LABELS = { demo: '一键演示', rules: '免 key 实时（规则抽取）', qwen: 'Qwen 增强' };
 
+const scrollBehavior = () => (
+  typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+);
+
 export function fieldMissing(value) {
   return !value || String(value).trim() === MISSING || String(value).trim() === '';
 }
@@ -300,7 +304,7 @@ export function renderMatrix(result) {
     }
     const target = wrap.querySelector(`[data-n="${n}"]`);
     if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
       target.classList.add('flash');
       setTimeout(() => target.classList.remove('flash'), 1600);
     }
@@ -420,7 +424,7 @@ function createDrawer(result, opts) {
         EL('div', { class: 'chips tight' }, [
           relevanceChip(p),
           EL('span', { class: 'chip', text: p.year ? String(p.year) : '年份未知' }),
-          p.venue ? EL('span', { class: 'chip', text: p.venue }) : null,
+          p.venue ? EL('span', { class: 'chip venue-chip', title: p.venue }, [EL('span', { class: 'venue-text', text: p.venue })]) : null,
           EL('span', { class: 'chip', text: `引用 ${p.citations ?? '—'}` })
         ]),
         EL('h2', { class: 'drawer-title', text: p.title || '(无标题)' }),
@@ -534,7 +538,7 @@ export function renderResult(container, rawResult, { onExport } = {}) {
     EL('span', { class: 'conclusion-num', text: `共 ${papers.length} 篇` }),
     '，最接近你的是 ',
     top ? paperRefButton(top.n, (n) => open(n)) : '—',
-    top ? EL('strong', { text: `《${top.title || '(无标题)'}》` }) : null,
+    top ? EL('strong', { class: 'conclusion-title', text: `《${top.title || '(无标题)'}》` }) : null,
     clusters.length ? '，主流方法是 ' : '',
     ...topClusters.map((i, k) => [
       k ? ' / ' : '',
@@ -551,7 +555,13 @@ export function renderResult(container, rawResult, { onExport } = {}) {
     for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
     return node;
   };
-  const layout = overviewLayout(papers, { width: 860 });
+  const laneName = (id) => clusters[id]?.name || `簇 ${id + 1}`;
+  const layout = (() => {
+    const laneIds = Array.from(new Set(papers.map((p) => p.cluster).filter((i) => i != null))).sort((a, b) => a - b);
+    const longest = Math.max(0, ...laneIds.map((id) => laneName(id).length));
+    const padL = Math.min(220, Math.max(96, Math.round(longest * 12.5 + 26)));
+    return overviewLayout(papers, { width: 860, padL });
+  })();
   const svg = svgEl('svg', { class: 'overview-svg', viewBox: `0 0 ${layout.width} ${layout.height}`, role: 'img', 'aria-label': '方法 × 年份全景图' });
   const gridG = svgEl('g', { class: 'ov-grid' });
   const linkG = svgEl('g', { class: 'ov-links' });
@@ -573,11 +583,16 @@ export function renderResult(container, rawResult, { onExport } = {}) {
     t.textContent = String(y);
     gridG.appendChild(t);
   }
+  const maxLaneChars = Math.max(6, Math.floor((layout.padL - 30) / 12));
   for (const lane of layout.lanes) {
-    const name = clusters[lane.id]?.name || `簇 ${lane.id + 1}`;
+    const name = laneName(lane.id);
+    const shown = name.length > maxLaneChars ? `${name.slice(0, maxLaneChars - 1)}…` : name;
     labelG.appendChild(svgEl('line', { x1: layout.padL - 8, x2: layout.width - 8, y1: lane.y, y2: lane.y, class: 'ov-lane-line' }));
     const label = svgEl('text', { x: layout.padL - 14, y: lane.y + 4, class: 'ov-lane-label', 'text-anchor': 'end' });
-    label.textContent = name.length > 10 ? name.slice(0, 9) + '…' : name;
+    const tip = svgEl('title');
+    tip.textContent = name;
+    label.append(tip, document.createTextNode(shown));
+    label.setAttribute('aria-label', name);
     label.addEventListener('click', () => setCluster(state.cluster === lane.id ? null : lane.id));
     labelG.appendChild(label);
   }
@@ -669,18 +684,39 @@ export function renderResult(container, rawResult, { onExport } = {}) {
     relBtns.push(b);
     return b;
   };
-  const yearFrom = EL('input', { class: 'input year', type: 'number', placeholder: '起', 'aria-label': '起始年份' });
-  const yearTo = EL('input', { class: 'input year', type: 'number', placeholder: '止', 'aria-label': '结束年份' });
-  yearFrom.addEventListener('input', () => { state.yearFrom = Number(yearFrom.value) || 0; renderCards(); });
-  yearTo.addEventListener('input', () => { state.yearTo = Number(yearTo.value) || 0; renderCards(); });
-  const datasetSel = EL('select', { class: 'input', 'aria-label': '数据集筛选' }, [
-    EL('option', { value: '', text: '全部数据集' }),
-    ...allDatasets.map((d) => EL('option', { value: d, text: d.length > 26 ? d.slice(0, 25) + '…' : d }))
-  ]);
-  datasetSel.addEventListener('change', () => { state.dataset = datasetSel.value; renderCards(); });
+  const yearRows = [];
+  const datasetSelects = [];
+  const syncYearRows = (source) => {
+    for (const g of yearRows) {
+      if (g.from !== source) g.from.value = state.yearFrom ? String(state.yearFrom) : '';
+      if (g.to !== source) g.to.value = state.yearTo ? String(state.yearTo) : '';
+    }
+  };
+  const makeYearRow = () => {
+    const from = EL('input', { class: 'input year', type: 'number', placeholder: '起', 'aria-label': '起始年份', inputmode: 'numeric', min: '1900', max: '2100' });
+    const to = EL('input', { class: 'input year', type: 'number', placeholder: '止', 'aria-label': '结束年份', inputmode: 'numeric', min: '1900', max: '2100' });
+    yearRows.push({ from, to });
+    from.addEventListener('input', () => { state.yearFrom = Number(from.value) || 0; syncYearRows(from); renderCards(); });
+    to.addEventListener('input', () => { state.yearTo = Number(to.value) || 0; syncYearRows(to); renderCards(); });
+    return EL('div', { class: 'year-row' }, [from, EL('span', { class: 'muted', text: '–' }), to]);
+  };
+  const makeDatasetSelect = () => {
+    const sel = EL('select', { class: 'input', 'aria-label': '数据集筛选' }, [
+      EL('option', { value: '', text: '全部数据集' }),
+      ...allDatasets.map((d) => EL('option', { value: d, text: d.length > 26 ? d.slice(0, 25) + '…' : d }))
+    ]);
+    datasetSelects.push(sel);
+    sel.addEventListener('change', () => {
+      state.dataset = sel.value;
+      for (const other of datasetSelects) if (other !== sel) other.value = sel.value;
+      renderCards();
+    });
+    return sel;
+  };
   const resetBtn = EL('button', { class: 'btn small ghost', type: 'button', text: '重置筛选', onclick: () => {
     state.cluster = null; state.relevance = 'all'; state.yearFrom = 0; state.yearTo = 0; state.dataset = '';
-    yearFrom.value = ''; yearTo.value = ''; datasetSel.value = '';
+    for (const g of yearRows) { g.from.value = ''; g.to.value = ''; }
+    for (const sel of datasetSelects) sel.value = '';
     syncFilters(); renderCards();
   } });
 
@@ -688,8 +724,8 @@ export function renderResult(container, rawResult, { onExport } = {}) {
     EL('h3', { text: '筛选' }),
     EL('div', { class: 'filter-group' }, [EL('h4', { text: '方法簇' }), ...clusterBtns.length ? [] : [], mkClusterBtn(null, '全部', papers.length), ...clusters.map((c, i) => mkClusterBtn(i, c.name, (c.papers || []).length))]),
     EL('div', { class: 'filter-group' }, [EL('h4', { text: '相关度' }), mkRelBtn('all', '全部'), mkRelBtn('high', '高'), mkRelBtn('mid', '中'), mkRelBtn('low', '背景')]),
-    EL('div', { class: 'filter-group' }, [EL('h4', { text: '年份' }), EL('div', { class: 'year-row' }, [yearFrom, EL('span', { class: 'muted', text: '–' }), yearTo])]),
-    EL('div', { class: 'filter-group' }, [EL('h4', { text: '数据集' }), datasetSel]),
+    EL('div', { class: 'filter-group' }, [EL('h4', { text: '年份' }), makeYearRow()]),
+    EL('div', { class: 'filter-group' }, [EL('h4', { text: '数据集' }), makeDatasetSelect()]),
     resetBtn
   ]);
   // 手机/平板顶部横向筛选
@@ -700,7 +736,7 @@ export function renderResult(container, rawResult, { onExport } = {}) {
       EL('span', { class: 'filter-sep' }),
       mkRelBtn('all', '全部相关度', true), mkRelBtn('high', '高', true), mkRelBtn('mid', '中', true), mkRelBtn('low', '背景', true)
     ]),
-    EL('div', { class: 'filter-mobile-row' }, [yearFrom, EL('span', { class: 'muted', text: '–' }), yearTo, datasetSel])
+    EL('div', { class: 'filter-mobile-row' }, [makeYearRow(), makeDatasetSelect()])
   ]);
   // 把桌面端筛选组按钮补到 aside（上面已生成引用）
   function syncFilters() {

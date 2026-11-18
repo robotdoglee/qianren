@@ -61,6 +61,10 @@ const EL = (tag, props = {}, children = []) => {
 
 const nextTick = () => new Promise((r) => setTimeout(r, 0));
 
+const scrollBehavior = () => (
+  typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+);
+
 function labelError(code) {
   const key = String(code || 'failed');
   if (ERROR_LABELS[key]) return ERROR_LABELS[key];
@@ -238,7 +242,7 @@ function finish(result) {
   const notes = [result.llmNote, result.sourceNotes?.length ? `数据源提示：${result.sourceNotes.join('；')}` : '']
     .filter(Boolean).join(' ｜ ');
   showError(notes, 'warn');
-  requestAnimationFrame(() => els.result.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  requestAnimationFrame(() => els.result.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }));
 }
 
 /* ---------------- 一键演示 ---------------- */
@@ -314,7 +318,7 @@ async function runDemoFile(path, label = path) {
   renderResult(els.result, result, { onExport: download });
   state.busy = false;
   els.run.disabled = false;
-  requestAnimationFrame(() => els.result.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  requestAnimationFrame(() => els.result.scrollIntoView({ behavior: scrollBehavior(), block: 'start' }));
 }
 
 /* ---------------- 导出 ---------------- */
@@ -427,7 +431,7 @@ function boot() {
     if (wrap && wrap.locate) wrap.locate(n);
     else {
       const card = els.result.querySelector(`.paper-card[data-n="${n}"]`);
-      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (card) card.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     }
   });
   document.addEventListener('keydown', (e) => {
