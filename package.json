@@ -1,0 +1,6 @@
+{
+  "name": "qianren-qoder",
+  "private": true,
+  "type": "module",
+  "description": "前人做过吗 - 纯静态站点，此文件仅用于让 node 以 ESM 方式加载 web/js 下的模块以便跑单元测试"
+}

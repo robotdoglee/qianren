@@ -1,0 +1,20 @@
+{
+  "note": "本文件只列出「一键演示」按钮。演示结果 JSON（<id>.json）由作者以真实 API 检索结果提供，本仓库不含论文数据。",
+  "demos": [
+    {
+      "id": "demo-rag-med",
+      "mode": "idea",
+      "title": "用检索增强生成减少大模型在医学问答中的幻觉"
+    },
+    {
+      "id": "demo-gnn-fewshot",
+      "mode": "idea",
+      "title": "用图神经网络在小样本数据上预测分子性质"
+    },
+    {
+      "id": "demo-imbalance",
+      "mode": "problem",
+      "title": "我的医学影像分类模型在类别极度不平衡时少数类召回率很低"
+    }
+  ]
+}

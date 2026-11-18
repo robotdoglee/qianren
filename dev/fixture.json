@@ -1,0 +1,133 @@
+{
+  "__test_only__": "这是渲染自测用的假数据文件，全部内容为编造的占位文本，不是真实论文，禁止发布到站点（不在 web/ 目录下）。",
+  "id": "fixture-render-test",
+  "mode": "idea",
+  "input": "【测试】占位想法：用假方法在假数据集上做假任务",
+  "engine": "demo",
+  "generatedAt": "2026-11-18",
+  "queries": ["fake method placeholder task", "placeholder dataset benchmark", "fake approach evaluation"],
+  "stats": { "openalex": 15, "arxiv": 8, "s2": 12, "deduped": 24, "kept": 4, "seconds": 18.6 },
+  "papers": [
+    {
+      "n": 1,
+      "id": "doi:10.0000/test.0001",
+      "title": "【测试论文 1】一种占位方法在占位任务上的可行性评估",
+      "authors": ["测试作者甲", "测试作者乙"],
+      "year": 2024,
+      "venue": "占位会议（测试数据）",
+      "url": "https://example.com/test-1",
+      "doi": "10.0000/test.0001",
+      "arxiv": "",
+      "sources": ["openalex", "s2"],
+      "citations": 42,
+      "abstract": "This placeholder study aims to evaluate a fake approach on a made-up benchmark. We propose a placeholder method based on a synthetic module. Experiments on TestSet-Bench show a 3.5% improvement in accuracy over the baseline. However, our evaluation is limited to synthetic data.",
+      "score": 0.91,
+      "fields": {
+        "question": "原文摘录：This placeholder study aims to evaluate a fake approach on a made-up benchmark.",
+        "method": "原文摘录：We propose a placeholder method based on a synthetic module.",
+        "dataset": "原文摘录：Experiments on TestSet-Bench show a 3.5% improvement in accuracy over the baseline.",
+        "metric": "摘要中出现指标名：accuracy",
+        "result": "原文摘录：Experiments on TestSet-Bench show a 3.5% improvement in accuracy over the baseline.",
+        "limitation": "原文摘录：However, our evaluation is limited to synthetic data.",
+        "relation": "高相关：共同关键词 placeholder、benchmark"
+      }
+    },
+    {
+      "n": 2,
+      "id": "arxiv:2301.00001",
+      "title": "【测试论文 2】占位任务上的假重排序策略",
+      "authors": ["测试作者丙"],
+      "year": 2023,
+      "venue": "arXiv preprint（测试数据）",
+      "url": "https://example.com/test-2",
+      "doi": "",
+      "arxiv": "2301.00001",
+      "sources": ["arxiv"],
+      "citations": 0,
+      "abstract": "We investigate the problem of ranking fake candidates. Our method combines a synthetic scorer with re-weighting. We achieve better F1 on the placeholder corpus. Limitations include the small scale of the fake evaluation.",
+      "score": 0.62,
+      "fields": {
+        "question": "原文摘录：We investigate the problem of ranking fake candidates.",
+        "method": "原文摘录：Our method combines a synthetic scorer with re-weighting.",
+        "dataset": "原文摘录：We achieve better F1 on the placeholder corpus.",
+        "metric": "摘要中出现指标名：F1",
+        "result": "原文摘录：We achieve better F1 on the placeholder corpus.",
+        "limitation": "原文摘录：Limitations include the small scale of the fake evaluation.",
+        "relation": "中相关：共同关键词 ranking"
+      }
+    },
+    {
+      "n": 3,
+      "id": "doi:10.0000/test.0003",
+      "title": "【测试论文 3】无摘要的占位工作",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "url": "https://example.com/test-3",
+      "doi": "10.0000/test.0003",
+      "arxiv": "",
+      "sources": ["openalex"],
+      "citations": 3,
+      "abstract": "",
+      "score": 0.11,
+      "fields": {
+        "question": "摘要未提及",
+        "method": "摘要未提及",
+        "dataset": "摘要未提及",
+        "metric": "摘要未提及",
+        "result": "摘要未提及",
+        "limitation": "摘要未提及",
+        "relation": "低相关：标题与摘要中未出现该想法的关键词，仅作背景参考"
+      }
+    },
+    {
+      "n": 4,
+      "id": "title:ceshipianwen4zhanyongfangfa",
+      "title": "【测试论文 4】占位方法与占位数据集的另一个组合",
+      "authors": ["测试作者丁", "测试作者戊", "测试作者己", "测试作者庚", "测试作者辛"],
+      "year": 2025,
+      "venue": "占位期刊（测试数据）",
+      "url": "",
+      "doi": "",
+      "arxiv": "",
+      "sources": ["s2"],
+      "citations": 7,
+      "abstract": "Despite recent progress, ranking placeholder items remains a difficult challenge. We present a framework using contrastive learning and few-shot prompts. On TestSet-Bench it improves recall by 6 points. We leave the study of larger scale data to future work.",
+      "score": 0.44,
+      "fields": {
+        "question": "原文摘录：Despite recent progress, ranking placeholder items remains a difficult challenge.",
+        "method": "原文摘录：We present a framework using contrastive learning and few-shot prompts.",
+        "dataset": "原文摘录：On TestSet-Bench it improves recall by 6 points.",
+        "metric": "摘要中出现指标名：recall",
+        "result": "原文摘录：On TestSet-Bench it improves recall by 6 points.",
+        "limitation": "原文摘录：We leave the study of larger scale data to future work.",
+        "relation": "高相关：共同关键词 placeholder、benchmark"
+      }
+    }
+  ],
+  "clusters": [
+    { "name": "占位方法 + 合成模块", "summary": "测试用簇说明：共 2 篇，代表工作 [1][4]。", "papers": [1, 4] },
+    { "name": "排序与重加权", "summary": "测试用簇说明：共 1 篇，代表工作 [2]。", "papers": [2] }
+  ],
+  "gaps": [
+    {
+      "title": "测试空白点 1：假方法与占位数据集的组合稀少",
+      "detail": "仅为渲染测试：[1][4] 使用了同一占位数据集，[2] 未使用；真实结论请见演示数据。",
+      "papers": [1, 2, 4]
+    },
+    {
+      "title": "测试空白点 2：多数论文未共同报告召回率",
+      "detail": "仅为渲染测试：只有 [2][4] 给出数字，跨论文不可直接比较。",
+      "papers": [2, 4]
+    }
+  ],
+  "approaches": [
+    {
+      "name": "测试用思路分组（模式 B 渲染检查）",
+      "summary": "本条目用于验证模式 B 的分组卡片渲染，内容为编造占位文本。",
+      "papers": [1, 2],
+      "effect": "[1] 测试效果占位描述；[2] 摘要未提及",
+      "limits": "[1] 仅限合成数据（占位）；[2] 规模小（占位）"
+    }
+  ]
+}

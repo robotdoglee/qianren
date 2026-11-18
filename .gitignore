@@ -1,0 +1,8 @@
+.env
+.env.*
+node_modules/
+*.key
+*.pem
+.qoder-run*.log
+data-gen/gather.log
+.DS_Store
