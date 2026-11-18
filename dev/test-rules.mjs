@@ -114,6 +114,17 @@ test('规则抽取不会编造：无数据集/指标信息时保持缺失', () =
   assert.equal(f.metric, MISSING);
 });
 
+test('无摘要的论文不回显标题，除关系外全部「摘要未提及」', () => {
+  const f = extractFields({
+    title: 'A survey of retrieval-augmented generation for medical question answering', abstract: '',
+    sources: ['openalex']
+  }, ['retrieval-augmented generation', 'hallucination']);
+  for (const key of ['question', 'method', 'dataset', 'metric', 'result', 'limitation']) {
+    assert.equal(f[key], MISSING, key);
+  }
+  assert.match(f.relation, /高相关|中相关|低相关/);
+});
+
 test('聚类 3–5 簇 + 空白点引用论文编号', () => {
   const result = rulesResult({ mode: 'idea', input: IDEA, papers: fixture.papers, counts: { openalex: 1, arxiv: 1, s2: 1 }, dedupedTotal: 4, seconds: 1 });
   assert.ok(result.clusters.length >= 1 && result.clusters.length <= 5);

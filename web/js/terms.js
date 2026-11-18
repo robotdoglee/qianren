@@ -270,14 +270,6 @@ export const METHOD_WORDS = [
 const TERM_MAP = new Map(TERMS);
 const SORTED_ZH = TERMS.map(([zh]) => zh).sort((a, b) => b.length - a.length);
 
-export function translateTerm(zh) {
-  return TERM_MAP.get(zh) || null;
-}
-
-export function isChinese(text) {
-  return /[\u4e00-\u9fff]/.test(text || '');
-}
-
 // 中文最长匹配切分：命中词典的词 + 未命中的连续中文字符（供兜底提示）
 export function segmentChinese(text) {
   const s = text || '';
@@ -308,7 +300,7 @@ export function segmentChinese(text) {
   return { hits, rest: runs };
 }
 
-export function englishWords(text) {
+function englishWords(text) {
   return (text || '')
     .toLowerCase()
     .replace(/[^a-z0-9+\-@/. ]+/g, ' ')

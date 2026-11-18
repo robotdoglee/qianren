@@ -91,15 +91,17 @@ export function extractRelation(paper, terms) {
 }
 
 export function extractFields(paper, terms = []) {
+  const relation = extractRelation(paper, terms);
   const sentences = splitSentences(paper.abstract || '');
-  const use = sentences.length ? sentences : splitSentences(paper.title || '');
-  if (!use.length) {
+  // 摘要缺失时不回显标题：七个字段里除关系外一律「摘要未提及」
+  if (!sentences.length) {
     return {
       question: MISSING, method: MISSING, dataset: MISSING, metric: MISSING,
-      result: MISSING, limitation: MISSING, relation: extractRelation(paper, terms)
+      result: MISSING, limitation: MISSING, relation
     };
   }
-  const question = pickSentence(use, CLUES.question) || (use.length ? use[0] : '');
+  const use = sentences;
+  const question = pickSentence(use, CLUES.question) || use[0];
   const result = pickSentence(use, CLUES.result, (s) => /\d|outperform|improve|state[- ]of[- ]the[- ]art|achiev/i.test(s));
   const limitation = pickSentence(use, CLUES.limitation, (s) => s !== question);
   return {
@@ -109,7 +111,7 @@ export function extractFields(paper, terms = []) {
     metric: extractMetricSnippet(paper, use),
     result: result ? excerpt(result) : MISSING,
     limitation: limitation ? excerpt(limitation) : MISSING,
-    relation: extractRelation(paper, terms)
+    relation
   };
 }
 

@@ -25,12 +25,6 @@ export function arxivProxyUrl(q, base = '/functions/v1/app') {
   return `${base}/arxiv?q=${encodeURIComponent(q)}`;
 }
 
-export function withTimeout(ms, options = {}) {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), ms);
-  return { ...options, signal: ctrl.signal };
-}
-
 export async function fetchJson(url, ms = 12000) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ms);
@@ -135,33 +129,39 @@ export function fromArxivEntry(e) {
   };
 }
 
-// Atom XML → 条目数组（浏览器用 DOMParser；Node 下用轻量正则兜底，便于离线测试）
+// Atom XML → 条目数组（浏览器用 DOMParser；异常时退回轻量正则解析）
 export function parseAtom(xmlText) {
   const text = String(xmlText || '');
   if (typeof DOMParser !== 'undefined') {
-    const doc = new DOMParser().parseFromString(text, 'application/atom+xml');
-    if (doc.querySelector('parsererror')) return parseAtomFallback(text);
-    const entries = Array.from(doc.getElementsByTagName('entry'));
-    return entries.map((entry) => {
-      const get = (tag) => {
-        const nodes = entry.getElementsByTagName(tag);
-        return nodes.length ? nodes[0].textContent : '';
-      };
-      const authors = Array.from(entry.getElementsByTagName('author'))
-        .map((a) => {
-          const n = a.getElementsByTagName('name');
-          return n.length ? n[0].textContent.trim() : '';
-        })
-        .filter(Boolean);
-      return {
-        id: get('id').trim(),
-        title: get('title'),
-        summary: get('summary'),
-        published: get('published'),
-        doi: get('arxiv:doi'),
-        authors
-      };
-    });
+    try {
+      // application/atom+xml 并非 DOMParser 支持的类型，按 XML 解析
+      const doc = new DOMParser().parseFromString(text, 'application/xml');
+      if (!doc.querySelector('parsererror')) {
+        const entries = Array.from(doc.getElementsByTagName('entry'));
+        return entries.map((entry) => {
+          const get = (tag) => {
+            const nodes = entry.getElementsByTagName(tag);
+            return nodes.length ? nodes[0].textContent : '';
+          };
+          const authors = Array.from(entry.getElementsByTagName('author'))
+            .map((a) => {
+              const n = a.getElementsByTagName('name');
+              return n.length ? n[0].textContent.trim() : '';
+            })
+            .filter(Boolean);
+          return {
+            id: get('id').trim(),
+            title: get('title'),
+            summary: get('summary'),
+            published: get('published'),
+            doi: get('arxiv:doi'),
+            authors
+          };
+        });
+      }
+    } catch {
+      // 落到下面的兜底解析
+    }
   }
   return parseAtomFallback(text);
 }
@@ -429,8 +429,12 @@ export async function searchAll(queries, opts = {}) {
         report('arxiv');
         return;
       }
-      for (const e of parseAtom(raw)) buckets.arxiv.push(fromArxivEntry(e));
-      status.arxiv = { state: 'done', count: buckets.arxiv.length, note: '' };
+      try {
+        for (const e of parseAtom(raw)) buckets.arxiv.push(fromArxivEntry(e));
+        status.arxiv = { state: 'done', count: buckets.arxiv.length, note: '' };
+      } catch {
+        status.arxiv = { state: 'failed', count: 0, note: 'parse_error' };
+      }
       report('arxiv');
     })()
   );

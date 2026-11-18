@@ -93,7 +93,7 @@ export function createProgress(panelEl, { onFinish } = {}) {
       rows.clear();
       for (const [key, label] of STEP_DEFS) {
         const detail = EL('span', { class: 'step-detail' });
-        const row = EL('li', { class: 'step', dataset: { key: '' } }, [
+        const row = EL('li', { class: 'step', dataset: { key } }, [
           EL('span', { class: 'step-icon', text: STATE_ICON.pending }),
           EL('span', { class: 'step-label', text: label }),
           detail

@@ -15,6 +15,7 @@ const ERROR_LABELS = {
   rate_limited: '限流，稍后重试',
   timeout: '请求超时（12s）',
   unreachable: '不可达（浏览器限制且无可用代理）',
+  parse_error: '返回内容解析失败',
   cors_blocked: '浏览器跨域限制（未启用同源代理）',
   empty_queries: '检索式为空',
   failed: '请求失败'
@@ -102,7 +103,7 @@ async function shouldUseLlm() {
   if (pref === 'rules') return false;
   if (!serverInfo().checked) await probeHealth();
   const available = llmAvailable();
-  return pref === 'qwen' ? available : available;
+  return available;
 }
 
 async function runLive() {

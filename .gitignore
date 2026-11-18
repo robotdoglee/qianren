@@ -6,3 +6,4 @@ node_modules/
 .qoder-run*.log
 data-gen/gather.log
 .DS_Store
+.tmp-dom/
